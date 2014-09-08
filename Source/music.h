@@ -1,5 +1,5 @@
 // music.h
-
+#pragma once
 
 void EnableMusic( MBoolean on );
 void PauseMusic( void );

@@ -1,4 +1,5 @@
 // victory.h
+#pragma once
 
 void EndRound( int player );
 void BeginVictory( int player );

@@ -1,4 +1,5 @@
 // control.h
+#pragma once
 
 void PlayerControl( int player );
 void AIControl( int player );

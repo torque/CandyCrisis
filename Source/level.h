@@ -1,4 +1,5 @@
 // level.h
+#pragma once
 
 void InitGame( int player1, int player2 );
 MBoolean InitCharacter( int player, int level );

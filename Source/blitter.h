@@ -1,4 +1,5 @@
 // blitter.h
+#pragma once
 
 #include "SDL.h"
 

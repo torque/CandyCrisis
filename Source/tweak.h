@@ -1,4 +1,5 @@
 // tweak.h
+#pragma once
 
 void TweakFirstBlob( int player, MRect *first );
 void TweakSecondBlob( int player, MRect *second );

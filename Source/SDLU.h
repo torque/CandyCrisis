@@ -1,11 +1,5 @@
-///
-///  SDLU.h
-///
-
-
-#ifndef __SDLU__
-#define __SDLU__
-
+//  SDLU.h
+#pragma once
 
 #include "MTypes.h"
 

@@ -1,4 +1,5 @@
 // moving.h
+#pragma once
 
 MBoolean CanMoveDirection( int player, int dirX, int dirY );
 void CalcSecondBlobOffset( int player, int *x, int *y );

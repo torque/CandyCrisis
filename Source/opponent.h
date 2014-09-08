@@ -1,4 +1,5 @@
 // opponent.h
+#pragma once
 
 void InitOpponent( void );
 void BeginOpponent( int which );

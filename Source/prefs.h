@@ -1,4 +1,5 @@
 // prefs.h
+#pragma once
 
 void LoadPrefs( void );
 void SavePrefs( void );

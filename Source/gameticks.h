@@ -1,4 +1,5 @@
 // gameticks.h
+#pragma once
 
 unsigned long MTickCount();
 void InitGameTickCount( void );

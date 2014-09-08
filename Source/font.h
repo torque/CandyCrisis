@@ -1,9 +1,5 @@
 // font.h
-
-
-#ifndef __FONT__
-#define __FONT__
-
+#pragma once
 
 #include "SDL.h"
 
@@ -20,6 +16,3 @@ SkittlesFont, *SkittlesFontPtr;
 void            InitFont( void );
 SkittlesFontPtr GetFont( int pictID );
 int             GetTextWidth( SkittlesFontPtr font, const char *text );
-
-
-#endif

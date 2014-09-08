@@ -1,4 +1,5 @@
 // players.h
+#pragma once
 
 void HandlePlayers( void );
 void RetrieveBlobs( int player );

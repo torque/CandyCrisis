@@ -1,4 +1,5 @@
 // zap.h
+#pragma once
 
 #include "font.h"
 

@@ -1,4 +1,5 @@
 // tutorial.h
+#pragma once
 
 typedef enum
 {

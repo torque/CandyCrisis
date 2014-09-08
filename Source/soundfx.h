@@ -1,4 +1,5 @@
 // soundfx.h
+#pragma once
 
 void InitSound( void );
 void PlayStereo( short player, short which );

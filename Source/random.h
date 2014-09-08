@@ -1,4 +1,5 @@
 // random.h
+#pragma once
 
 void InitRandom( int numPieces );
 int GetPiece( int player );

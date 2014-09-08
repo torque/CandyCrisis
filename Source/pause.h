@@ -1,4 +1,5 @@
 // pause.h
+#pragma once
 
 void SharewareNotice( int forcedWait );
 void HandleDialog( int type );

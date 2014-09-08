@@ -1,4 +1,5 @@
 // score.h
+#pragma once
 
 void InitScore( void );
 void UpdateScore( int player );

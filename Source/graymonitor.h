@@ -1,4 +1,5 @@
 // graymonitor.h
+#pragma once
 
 void InitGrayMonitors( void );
 void ShowGrayMonitor( short player );

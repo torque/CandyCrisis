@@ -5,11 +5,7 @@
 ///
 ///  John Stiles, 2002/10/14
 ///
-
-
-#ifndef __MTYPES__
-#define __MTYPES__
-
+#pragma once
 
 typedef signed char MBoolean;
 
@@ -41,6 +37,3 @@ typedef struct MPoint
 void UnionMRect( const MRect* a, const MRect* b, MRect* u );
 void OffsetMRect( MRect* r, int x, int y );
 unsigned char MPointInMRect( MPoint p, MRect* r );
-
-
-#endif

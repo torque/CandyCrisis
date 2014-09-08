@@ -1,4 +1,5 @@
 // hiscore.h
+#pragma once
 
 #define kNameLength 40
 

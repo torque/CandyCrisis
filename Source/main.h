@@ -1,5 +1,5 @@
 // main.h
-
+#pragma once
 
 #include "SDL.h"
 #include "MTypes.h"

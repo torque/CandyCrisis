@@ -1,5 +1,5 @@
 // gworld.h
-
+#pragma once
 
 #include "SDL.h"
 
