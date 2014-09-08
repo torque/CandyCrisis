@@ -1,6 +1,6 @@
 // gameticks.c
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "gameticks.h"
 
 unsigned long baseTickCount, freezeTickCount;

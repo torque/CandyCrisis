@@ -224,9 +224,9 @@
 #include <io.h> // for _chdir
 #endif
 
-#include "SDL.h"
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include "SDLU.h"
-#include "SDL_image.h"
 
 #include "main.h"
 

@@ -1,7 +1,7 @@
 // graphics.h
 #pragma once
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 
 
 void DrawSpriteBlobs( int player, int type );

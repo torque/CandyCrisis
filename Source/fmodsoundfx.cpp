@@ -4,8 +4,8 @@
 #include "soundfx.h"
 #include "music.h"
 
-#include "fmod.h"
-#include "fmod_errors.h"
+#include <fmod.h>
+#include <fmod_errors.h>
 
 FSOUND_SAMPLE*  sound[kNumSounds];
 MBoolean        soundOn = true;

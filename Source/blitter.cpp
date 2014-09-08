@@ -1,8 +1,8 @@
 // blitter.c
 
-#include "SDL.h"
+#include <SDL/SDL.h>
+#include <SDL/SDL_endian.h>
 #include "SDLU.h"
-#include "SDL_endian.h"
 
 #include "main.h"
 #include "gworld.h"

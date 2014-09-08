@@ -1,7 +1,7 @@
 // main.h
 #pragma once
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "MTypes.h"
 
 

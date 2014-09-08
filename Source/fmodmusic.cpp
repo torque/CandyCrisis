@@ -9,8 +9,8 @@
 #include "soundfx.h"
 #include "graphics.h"
 
-#include "fmod.h"
-#include "fmod_errors.h"
+#include <fmod.h>
+#include <fmod_errors.h>
 
 const int kNoMusic = -1;
 

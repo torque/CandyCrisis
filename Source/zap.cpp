@@ -1,6 +1,6 @@
 // zap.c
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "SDLU.h"
 
 #include <stdio.h>
