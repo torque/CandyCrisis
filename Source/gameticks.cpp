@@ -19,7 +19,7 @@ void InitGameTickCount( void )
 
 void FreezeGameTickCount( void )
 {
-	if( freezeLevel	== 0 ) 
+	if( freezeLevel	== 0 )
     {
          freezeTickCount = MTickCount( );
     }

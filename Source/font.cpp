@@ -21,53 +21,53 @@ static SkittlesFontPtr LoadFont( SkittlesFontPtr font, int pictID, unsigned char
 	int            start, across, skip;
 	SDL_Surface*   temporarySurface;
 	SDL_Rect       sdlRect;
-	
+
 	temporarySurface = LoadPICTAsSurface( pictID, 8 );
-	
+
 	if( temporarySurface )
 	{
 		sdlRect.x = 0;
 		sdlRect.y = 0;
 		sdlRect.h = temporarySurface->h;
 		sdlRect.w = temporarySurface->w;
-		
+
 		font->surface = SDLU_InitSurface( &sdlRect, 8 );
-		
+
 		SDLU_BlitSurface(  temporarySurface, &temporarySurface->clip_rect,
 		                   font->surface,    &temporarySurface->clip_rect  );
-		
+
 		SDL_FreeSurface( temporarySurface );
-		
+
 		white    = SDL_MapRGB( font->surface->format, 0xFF, 0xFF, 0xFF );
 		lastLine = (unsigned char*) font->surface->pixels + (font->surface->pitch * (font->surface->h - 1));
 		across   = 0;
-		
+
 		// Measure empty space between character breaks
 		while( lastLine[across] == white ) across++;
 		skip = across;
-		
+
 		success = true;
 
 		// Measure character starts and widths
 		while( *letterMap )
 		{
 			while( lastLine[across] != white ) across++;
-			if( across > font->surface->pitch ) 
+			if( across > font->surface->pitch )
 			{
 				success = false;
 				break;
 			}
-			
+
 			start = across;
 			font->across[*letterMap] = across + (skip/2);
 
-			while( lastLine[across] == white ) across++;		
+			while( lastLine[across] == white ) across++;
 			font->width [*letterMap] = across - start - skip;
 
 			letterMap++;
 		}
 	}
-	
+
 	if( success )
 	{
 		return font;
@@ -80,7 +80,7 @@ static SkittlesFontPtr LoadFont( SkittlesFontPtr font, int pictID, unsigned char
 }
 
 
-void InitFont( void ) 
+void InitFont( void )
 {
 	LoadFont( &s_font[0],  picFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!:,.()*?0123456789'|-Áª£¢° " );
 	LoadFont( &s_font[1],  picHiScoreFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*().,/-=_+<>?|'\":; " );
@@ -99,12 +99,12 @@ void InitFont( void )
 SkittlesFontPtr GetFont( int pictID )
 {
 	int fontID = pictID - picFont;
-	
-	if( (fontID < 0) || (fontID > kNumFonts) ) 
+
+	if( (fontID < 0) || (fontID > kNumFonts) )
 		Error( "GetFont: fontID" );
-			
+
 	return &s_font[fontID];
-} 
+}
 
 
 int GetTextWidth( SkittlesFontPtr font, const char *text )
@@ -114,7 +114,7 @@ int GetTextWidth( SkittlesFontPtr font, const char *text )
 	{
 		width += font->width[*text++];
 	}
-	
+
 	return width;
 }
 

@@ -12,21 +12,21 @@
 void CalcSecondBlobOffset( int player, int *x, int *y )
 {
 	*x = *y = 0;
-	
+
 	switch( blobR[player] )
 	{
 		case rightRotate:
 			*x = 1;
 			break;
-		
+
 		case downRotate:
 			*y = 1;
 			break;
-			
+
 		case leftRotate:
 			*x = -1;
 			break;
-		
+
 		case upRotate:
 			*y = -1;
 			break;
@@ -44,7 +44,7 @@ void GoLeft( int player )
 	blobX[player]--;
 	StartTweak( player, -1, 0, 0 );
 	DrawSpriteBlobs( player, kNoSuction );
-	
+
 	PlayStereo( player, kShift );
 }
 
@@ -59,7 +59,7 @@ void GoRight( int player )
 	blobX[player]++;
 	StartTweak( player, 1, 0, 0 );
 	DrawSpriteBlobs( player, kNoSuction );
-	
+
 	PlayStereo( player, kShift );
 }
 
@@ -71,25 +71,25 @@ MBoolean CanFall( int player )
 MBoolean CanMoveDirection( int player, int dirX, int dirY )
 {
 	int currentX = blobX[player], currentY = blobY[player], x, y;
-	
+
 	currentX += dirX;
 	currentY += dirY;
-	
+
 	if( currentX < 0 || currentX >= kGridAcross || currentY >= kGridDown )
 		return false;
-	
+
 	if( currentY >= 0 )
 		if( grid[player][currentX][currentY] != kEmpty )
 			return false;
 
 	CalcSecondBlobOffset( player, &x, &y );
-	
+
 	currentX += x;
 	currentY += y;
-	
+
 	if( currentX < 0 || currentX >= kGridAcross || currentY >= kGridDown )
 		return false;
-	
+
 	if( currentY >= 0 )
 		if( grid[player][currentX][currentY] != kEmpty )
 			return false;
@@ -100,11 +100,11 @@ MBoolean CanMoveDirection( int player, int dirX, int dirY )
 void DoFall( int player )
 {
 	EraseSpriteBlobs( player );
-	
+
 	if( halfway[player] )
 		blobY[player]++;
 	halfway[player] = !halfway[player];
-	
+
 	StartTweak( player, 0, 0, 1 );
 
 	DrawSpriteBlobs( player, kNoSuction );
@@ -113,23 +113,23 @@ void DoFall( int player )
 MBoolean CanRotate( int player )
 {
 	if( role[player] == kChooseDifficulty ) return false;
-	
+
 	if( grenade[player] ) return false;
-	
+
 	return true;
-	
+
 }
 
 void DoRotate( int player )
 {
 	MBoolean possible;
-	
+
 	EraseSpriteBlobs( player );
-	
+
 	blobR[player] = ( blobR[player] + 1 ) % 4;
 	possible = CanMoveDirection( player, 0, halfway[player]? 1: 0 );
 	StartTweak( player, 0, 1, 0 ); // only rotates clockwise
-	
+
 	if( !possible )
 	{
 		if( blobR[player] == downRotate )
@@ -138,7 +138,7 @@ void DoRotate( int player )
 				halfway[player] = false;
 			else
 				blobY[player]--;
-				
+
 			if( ++blobSpin[player] >= 4 )
 			{
 				blobTime[player] = animTime[player] = GameTickCount( );
@@ -147,7 +147,7 @@ void DoRotate( int player )
 				PlayStereoFrequency( player, kPlace, player );
 			}
 		}
-		
+
 		if( blobR[player] == leftRotate )
 		{
 			if( CanGoRight(player) )
@@ -158,7 +158,7 @@ void DoRotate( int player )
 				StartTweak( player, 0, 2, 0 );
 			}
 		}
-		
+
 		if( blobR[player] == rightRotate  )
 		{
 			if( CanGoLeft(player) )
@@ -167,7 +167,7 @@ void DoRotate( int player )
 			{
 				blobR[player]++;
 				StartTweak( player, 0, 2, 0 );
-				
+
 				if( !CanMoveDirection( player, 0, halfway[player]? 1: 0 ) )
 				{
 					if( halfway[player] )
@@ -186,16 +186,16 @@ void DoRotate( int player )
 			}
 		}
 	}
-	
+
 	DrawSpriteBlobs( player, kNoSuction );
-	
+
 	PlayStereo( player, kRotate );
 }
 
 void DoDrop( int player )
 {
 	dropping[player] = true;
-	
+
 	if( role[player] != kJiggleBlobs &&
 		role[player] != kFastJiggleBlobs &&
 		role[player] != kLockdownBlobs      )

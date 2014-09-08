@@ -8,7 +8,7 @@
 #include "SDL.h"
 
 
-typedef struct 
+typedef struct
 {
 	SDL_Surface *surface;
 	int width[256];

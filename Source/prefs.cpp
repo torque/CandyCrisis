@@ -17,14 +17,14 @@
 #define kPrefsMaxSize 65536
 
 PrefList prefList[] = {
-		{ 'mod ', &musicOn,                    sizeof( MBoolean       ) },
-		{ 'sfx ', &soundOn,                    sizeof( MBoolean       ) },
-		{ 'size', registeredKey,               sizeof( registeredKey  ) },
-		{ 'keys', playerKeys,                  sizeof( playerKeys     ) },
-		{ 'high', scores,                      sizeof( scores         ) },
-		{ 'cmbx', &best,                       sizeof( best           ) },
-		{ 'user', registeredName,              sizeof( registeredName ) }
-					  };
+	{ 'mod ', &musicOn,                    sizeof( MBoolean       ) },
+	{ 'sfx ', &soundOn,                    sizeof( MBoolean       ) },
+	{ 'size', registeredKey,               sizeof( registeredKey  ) },
+	{ 'keys', playerKeys,                  sizeof( playerKeys     ) },
+	{ 'high', scores,                      sizeof( scores         ) },
+	{ 'cmbx', &best,                       sizeof( best           ) },
+	{ 'user', registeredName,              sizeof( registeredName ) }
+};
 
 #define kPrefListSize (sizeof(prefList)/sizeof(prefList[0]))
 
@@ -36,7 +36,7 @@ void LoadPrefs( void )
 	FILE *F;
 	int fileSize, count, digitsLeft;
 	unsigned char info, *infoAt, *dataAt, *fileData;
-	
+
 	F = fopen( QuickResourceName( "Preferences", 0, ".txt" ), "r" );
 
 	if( F != NULL )
@@ -54,20 +54,20 @@ void LoadPrefs( void )
 					{
 						dataAt = (unsigned char*) prefList[count].itemPointer;
 						digitsLeft = prefList[count].size;
-						
+
 						while( digitsLeft-- )
 						{
 							info  = ((*infoAt >= 'A')? (*infoAt - 'A' + 0xA): (*infoAt - '0')) << 4;
 							infoAt++;
 							info |= ((*infoAt >= 'A')? (*infoAt - 'A' + 0xA): (*infoAt - '0'));
 							infoAt++;
-							
+
 							*dataAt++ = info;
 						}
 					}
 				}
 			}
-			
+
 			free( fileData );
 		}
 
@@ -80,22 +80,22 @@ void LoadPrefs( void )
 unsigned char* FindPrefsLine( unsigned char *prefsText, long prefsLength, long searchCode, long dataQuantity )
 {
 	unsigned char *prefsAt, *check, *endCheck;
-	
+
 	for( prefsAt = prefsText; prefsAt < (prefsText+prefsLength-3); prefsAt++ )
 	{
 		if( (prefsAt[0] == ((searchCode >> 24) & 0xFF)) &&
 		    (prefsAt[1] == ((searchCode >> 16) & 0xFF)) &&
 		    (prefsAt[2] == ((searchCode >>  8) & 0xFF)) &&
-		    (prefsAt[3] == ((searchCode      ) & 0xFF))    ) 
+		    (prefsAt[3] == ((searchCode      ) & 0xFF))    )
 		{
 			prefsAt += 6;
-			
+
 			// perform sizing check
-			
+
 			dataQuantity *= 2; // hexadecimal bytes are 2 chars
-			
+
 			if( ((prefsAt + dataQuantity) - prefsText) > prefsLength ) return NULL; // prefs block ended too early
-			
+
 			check = prefsAt;
 			endCheck = check + dataQuantity;
 			while( check < endCheck )
@@ -104,19 +104,19 @@ unsigned char* FindPrefsLine( unsigned char *prefsText, long prefsLength, long s
 				{
 					return NULL; // incorrect size, too short
 				}
-					
+
 				check++;
 			}
-			
+
 			if( (*endCheck >= '0' && *endCheck <= '9') || (*endCheck >= 'A' && *endCheck <= 'F') )
 			{
 				return NULL; // incorrect size, too long
 			}
-			
+
 			return prefsAt;
 		}
 	}
-	
+
 	return NULL;
 }
 
@@ -127,28 +127,28 @@ void SavePrefs( void )
 	FILE *F;
 	short count, size;
 	unsigned char* dataAt;
-	
+
 	F = fopen( QuickResourceName( "Preferences", 0, ".txt" ), "w" );
-	
+
 	if( F != NULL )
 	{
 		for( count=0; count<kPrefListSize; count++ )
 		{
-			fprintf( F, "%c%c%c%c: ", (prefList[count].itemName >> 24) & 0xFF, 
+			fprintf( F, "%c%c%c%c: ", (prefList[count].itemName >> 24) & 0xFF,
 			                          (prefList[count].itemName >> 16) & 0xFF,
 			                          (prefList[count].itemName >>  8) & 0xFF,
 			                          (prefList[count].itemName      ) & 0xFF   );
-			
+
 			dataAt = (unsigned char*) prefList[count].itemPointer;
 			for( size=0; size<prefList[count].size; size++ )
 			{
 				fprintf( F, "%02X", *dataAt );
 				dataAt++;
 			}
-			
+
 			fputc( '\n', F );
 		}
 	}
-			
+
 	fclose( F );
 }

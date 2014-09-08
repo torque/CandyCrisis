@@ -13,13 +13,13 @@ MBoolean        soundOn = true;
 void InitSound( void )
 {
 	int  index;
-	
+
     if (!FSOUND_Init(44100, 64, FSOUND_INIT_USEDEFAULTMIDISYNTH))
 	{
-		musicOn = soundOn = false; 
+		musicOn = soundOn = false;
 		return;
 	}
-	
+
 	for( index=0; index<kNumSounds; index++ )
 	{
 		sound[index] = FSOUND_Sample_Load( FSOUND_UNMANAGED, QuickResourceName( "snd", index+128, ".wav" ), FSOUND_NORMAL | FSOUND_LOOP_OFF | FSOUND_2D, 0 );
@@ -51,7 +51,7 @@ void PlayStereoFrequency( short player, short which, short freq )
 		int chanHandle = FSOUND_PlaySoundEx( FSOUND_FREE, sound[which], NULL, true );
 		FSOUND_SetPan( chanHandle, player? 255: 0 );
 		FSOUND_SetFrequency( chanHandle, (FSOUND_GetFrequency(chanHandle) * (16 + freq)) / 16 );
-	    FSOUND_SetPaused( chanHandle, false );
+		FSOUND_SetPaused( chanHandle, false );
 	}
 }
 

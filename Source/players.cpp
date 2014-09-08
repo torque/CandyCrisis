@@ -42,7 +42,7 @@ int glowColors[][3] = { { 0,  0,  0},
 void HandlePlayers( void )
 {
 	int player;
-	
+
 	for( player = 0; player<=1; player++ )
 	{
 		UpdateScore( player );
@@ -60,86 +60,86 @@ void HandlePlayers( void )
 					AutoControl( player );
 					break;
 				}
-				
+
 				role[player] = kRetrieveBlobs;
 				// fallthrough
-				
+
 			case kRetrieveBlobs:
 				LockGrays( 1-player );
 				RetrieveBlobs( player );
 				break;
-				
+
 			case kFalling:
 				Falling( player );
 				break;
-			
+
 			case kLockdownBlobs:
 				LockdownBlobs( player );
 				break;
-				
+
 			case kJiggleBlobs:
 				JiggleBlobs( player );
 				break;
-				
+
 			case kFastJiggleBlobs:
 				FastJiggleBlobs( player );
 				break;
-				
+
 			case kPlaceBlobs:
 				PlaceBlobs( player );
 				break;
-			
+
 			case kDropBlobs:
 				DropBlobs( player );
 				break;
-			
+
 			case kZapBlobs:
 				ZapBlobs( player );
 				break;
-			
+
 			case kKillBlobs:
 				KillBlobs( player );
 				break;
-			
+
 			case kDropGrays:
 				DropGrays( player );
 				break;
-			
+
 			case kLosing:
 				Lose( player );
 				break;
-			
+
 			case kWinning:
 				Win( player );
 				break;
-				
+
 			case kChooseDifficulty:
 				ChooseDifficulty( player );
 				break;
-			
+
 			case kWaitingToStart:
 				if( role[1-player] == kWaitingToStart )
 					role[0] = role[1] = kZapBlobs;
 				break;
-			
+
 			case kIdlePlayer:
 				break;
 		}
-		
+
 		UpdatePlayerWindow( player );
 	}
 }
 
 void LockdownBlobs( int player )
 {
-	const int shadowList[] = { 
-								 kBlobShadowDepth, 
-								 kBlobShadowDepth*5/6, 
-								 kBlobShadowDepth*5/6, 
-								 kBlobShadowDepth*4/6, 
-								 kBlobShadowDepth*3/6, 
-								 kBlobShadowDepth*1/6, 
-								};
+	const int shadowList[] = {
+		kBlobShadowDepth,
+		kBlobShadowDepth*5/6,
+		kBlobShadowDepth*5/6,
+		kBlobShadowDepth*4/6,
+		kBlobShadowDepth*3/6,
+		kBlobShadowDepth*1/6,
+	};
 
 	int frame = (GameTickCount( ) - blobTime[player]) / 2;
 
@@ -148,23 +148,23 @@ void LockdownBlobs( int player )
 		role[player] = kPlaceBlobs;
 		return;
 	}
-	
+
 	shadowDepth[player] = shadowList[frame];
 	UpdateTweak( player, blobJiggleAnimation );
 }
 
 void FastJiggleBlobs( int player )
 {
-	const int shadowList[] = { 
-								 kBlobShadowDepth, 
-								 kBlobShadowDepth*5/6, 
-								 kBlobShadowDepth*5/6, 
-								 kBlobShadowDepth*4/6, 
-								 kBlobShadowDepth*3/6, 
-								 kBlobShadowDepth*2/6, 
-								 kBlobShadowDepth*1/6,
-								 0 
-								};
+	const int shadowList[] = {
+		kBlobShadowDepth,
+		kBlobShadowDepth*5/6,
+		kBlobShadowDepth*5/6,
+		kBlobShadowDepth*4/6,
+		kBlobShadowDepth*3/6,
+		kBlobShadowDepth*2/6,
+		kBlobShadowDepth*1/6,
+		0
+	};
 
 	int frame = (GameTickCount( ) - blobTime[player]) / 2;
 
@@ -179,16 +179,16 @@ void FastJiggleBlobs( int player )
 		case kPlayerControl:
 			PlayerControl( player );
 			break;
-		
+
 		case kAIControl:
 			AIControl( player );
 			break;
-		
+
 		case kAutoControl:
 			AutoControl( player );
 			break;
 	}
-	
+
 	shadowDepth[player] = shadowList[frame];
 	UpdateTweak( player, blobJiggleAnimation );
 
@@ -199,18 +199,18 @@ void FastJiggleBlobs( int player )
 
 void JiggleBlobs( int player )
 {
-	const int shadowList[] = { 
-								 kBlobShadowDepth, kBlobShadowDepth,
-								 kBlobShadowDepth*5/6, kBlobShadowDepth*5/6,
-								 kBlobShadowDepth*5/6, kBlobShadowDepth*4/6,
-								 kBlobShadowDepth*4/6, kBlobShadowDepth*3/6,
-								 kBlobShadowDepth*3/6, kBlobShadowDepth*2/6,
-								 kBlobShadowDepth*2/6, kBlobShadowDepth*1/6,
-								 kBlobShadowDepth*1/6, 0
-								};
+	const int shadowList[] = {
+		kBlobShadowDepth, kBlobShadowDepth,
+		kBlobShadowDepth*5/6, kBlobShadowDepth*5/6,
+		kBlobShadowDepth*5/6, kBlobShadowDepth*4/6,
+		kBlobShadowDepth*4/6, kBlobShadowDepth*3/6,
+		kBlobShadowDepth*3/6, kBlobShadowDepth*2/6,
+		kBlobShadowDepth*2/6, kBlobShadowDepth*1/6,
+		kBlobShadowDepth*1/6, 0
+	};
 
 	int frame = (GameTickCount( ) - blobTime[player]) / 2;
-	
+
 	if( frame >= 14 )
 	{
 		role[player] = kPlaceBlobs;
@@ -222,11 +222,11 @@ void JiggleBlobs( int player )
 		case kPlayerControl:
 			PlayerControl( player );
 			break;
-		
+
 		case kAIControl:
 			AIControl( player );
 			break;
-			
+
 		case kAutoControl:
 			AutoControl( player );
 			break;
@@ -234,7 +234,7 @@ void JiggleBlobs( int player )
 
 	shadowDepth[player] = shadowList[frame];
 	UpdateTweak( player, kJiggleAnimation );
-	
+
 	if( CanFall( player ) )
 		role[player] = kFalling;
 }
@@ -247,10 +247,10 @@ void PlaceGrenade( int player )
 	int charTypes[3][5] = { { kDarkChar | kChar11, kDarkChar | kChar12, kDarkChar | kChar13, kDarkChar | kChar14, kNoCharring         },
 	                        { kNoCharring,         kNoCharring,         kNoCharring,         kNoCharring,         kDarkChar | kChar24 },
 	                        { kDarkChar | kChar31, kDarkChar | kChar32, kDarkChar | kChar33, kDarkChar | kChar34, kNoCharring         } };
-	
+
 	int amount = ((level <= kLevels)? level: 1) * 100;
 	int multiplier = 0;
-	
+
 	grenadeFrame[player] = 0;
 	grenadeRect [player].top    = (currentY * kBlobVertSize ) - (kBlastHeight/2);
 	grenadeRect [player].left   = (currentX * kBlobHorizSize) + (kBlobHorizSize/2) - (kBlastWidth/2);
@@ -258,11 +258,11 @@ void PlaceGrenade( int player )
 	grenadeRect [player].right  = grenadeRect[player].left + kBlastWidth ;
 
 	SDLU_AcquireSurface( playerSurface[player] );
-	
+
 	for( x=-1; x<=1; x++ )
 	{
 		atX = currentX + x;
-		
+
 		for( y=-2; y<=2; y++ )
 		{
 			atY = currentY + y;
@@ -285,13 +285,13 @@ void PlaceGrenade( int player )
 	}
 
 	SDLU_ReleaseSurface( playerSurface[player] );
-	
-	if( currentY < (kGridDown-1) && 
-		( grid[player][currentX][currentY+1] >= kFirstBlob && 
-		  grid[player][currentX][currentY+1] <= kLastBlob    ) )
+
+	if( currentY < (kGridDown-1) &&
+	  ( grid[player][currentX][currentY+1] >= kFirstBlob &&
+	    grid[player][currentX][currentY+1] <= kLastBlob    ) )
 	{
 		color = grid[player][currentX][currentY+1];
-		
+
 		for( x=0; x<kGridAcross; x++ )
 		{
 			for( y=0; y<kGridDown; y++ )
@@ -301,7 +301,7 @@ void PlaceGrenade( int player )
 					suction[player][x][y] = kInDeath;
 					death[player][x][y] = -abs( x - currentX + y - currentY );
 					multiplier++;
-					
+
 					if( (x <= (kGridAcross-2)) && (grid[player][x+1][y] == kGray) )
 					{
 						suction[player][x+1][y] = kGrayBlink1;
@@ -353,15 +353,15 @@ void PlaceGrenade( int player )
 			}
 		}
 	}
-	
+
 	PlayStereo( player, kSplop );
 
 	if( multiplier > 0 )
 	{
-		score[player] += amount * multiplier;	
+		score[player] += amount * multiplier;
 		ZapScoreDisplay( player, amount, multiplier, blobX[player], blobY[player], 8 );
 	}
-	
+
 	blobTime[player] = GameTickCount( );
 	role[player] = kKillBlobs;
 }
@@ -371,7 +371,7 @@ void PlaceBlobs( int player )
 	MRect myRect;
 	int x, y, height, delay = -6;
 	int currentX = blobX[player], currentY = blobY[player];
-	
+
 	potentialCombo[player].x = currentX;
 	potentialCombo[player].r = blobR[player];
 
@@ -394,16 +394,16 @@ void PlaceBlobs( int player )
 	SDLU_ReleaseSurface( playerSurface[player] );
 
 	EraseSpriteBlobs( player );
-	
+
 	CalcBlobRect( currentX, currentY, &myRect );
 	CalcSecondBlobOffset( player, &x, &y );
-	
+
 	if( grenade[player] )
 	{
-		PlaceGrenade( player );	
+		PlaceGrenade( player );
 		return;
 	}
-	
+
 	if( magic[player] )
 	{
 		switch( blobR[player] )
@@ -414,14 +414,14 @@ void PlaceBlobs( int player )
 				colorA[player] = BestColor( player, currentX, height+1 );
 				grid[player][currentX][height] = kEmpty;
 				break;
-			
+
 			case downRotate:
 				height = GetRowHeight(player, currentX);
 				grid[player][currentX][height] = colorB[player];
 				colorA[player] = BestColor( player, currentX, height-1 );
 				grid[player][currentX][height] = kEmpty;
 				break;
-			
+
 			case rightRotate:
 				height = GetRowHeight(player, currentX+1);
 				grid[player][currentX+1][height] = colorB[player];
@@ -437,12 +437,12 @@ void PlaceBlobs( int player )
 				break;
 		}
 	}
-	
+
 	SDLU_AcquireSurface( playerSurface[player] );
 
 	if( currentX >= 0 && currentX < kGridAcross &&
 		currentY >= 0 && currentY < kGridDown )
-	{	
+	{
 		grid[player][currentX][currentY] = colorA[player];
 		suction[player][currentX][currentY] = kNoSuction;
 		charred[player][currentX][currentY] = kNoCharring;
@@ -450,24 +450,24 @@ void PlaceBlobs( int player )
 		SurfaceDrawBlob( player, &myRect, colorA[player], kNoSuction, kNoCharring );
 		CleanSpriteArea( player, &myRect );
 	}
-	
+
 	OffsetMRect( &myRect, x * kBlobHorizSize, y * kBlobVertSize );
-	currentX += x; 
+	currentX += x;
 	currentY += y;
-	
+
 	if( currentX >= 0 && currentX < kGridAcross &&
 		currentY >= 0 && currentY < kGridDown )
 	{
 		grid[player][currentX][currentY] = colorB[player];
 		suction[player][currentX][currentY] = kNoSuction;
 		charred[player][currentX][currentY] = kNoCharring;
-		
+
 		SurfaceDrawBlob( player, &myRect, colorB[player], kNoSuction, kNoCharring );
 		CleanSpriteArea( player, &myRect );
 	}
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
-	
+
 	blobTime[player] = GameTickCount( );
 	halfway[player] = false;
 	role[player] = kDropBlobs;
@@ -478,21 +478,21 @@ void DropBlobs( int player )
 	MBoolean busy = false;
 	signed char tempG[kGridDown], tempC[kGridDown];
 	const int jiggleList[] = { kNoSuction, kSquish,
-					      	   kNoSuction, kSquash,
-						  	   kNoSuction, kSquish,
-						  	   kNoSuction, kSquash };
+	                           kNoSuction, kSquash,
+	                           kNoSuction, kSquish,
+	                           kNoSuction, kSquash };
 	MRect myRect;
 	int x, y;
-	
+
 	if( GameTickCount( ) < blobTime[player] )
 		return;
-	
+
 	blobTime[player] += 1;
-	
+
 	halfway[player] = !halfway[player];
-	
+
 	SDLU_AcquireSurface( playerSurface[player] );
-	
+
 	if( halfway[player] )
 	{
 		for( x=0; x<kGridAcross; x++ )
@@ -502,14 +502,14 @@ void DropBlobs( int player )
 				tempG[y] = grid[player][x][y];
 				tempC[y] = charred[player][x][y];
 			}
-			
+
 			for( y = kGridDown-1; y; y-- )
 			{
 				if( tempG[y] == kEmpty && tempG[y-1] != kEmpty )
 				{
 					CalcBlobRect( x, y, &myRect );
 					OffsetMRect( &myRect, 0, -kBlobVertSize/2 );
-					
+
 					if( tempG[y-1] == kGray )
 					{
 						SurfaceDrawBoard( player, &myRect );
@@ -519,14 +519,14 @@ void DropBlobs( int player )
 					{
 						SurfaceDrawBlob( player, &myRect, tempG[y-1], kNoSuction, tempC[y-1] );
 					}
-					
+
 					tempG[y]   = tempG[y-1];
 					tempG[y-1] = kEmpty;
 					tempC[y]   = tempC[y-1];
 					tempC[y-1] = kNoCharring;
 
 					CleanSpriteArea( player, &myRect );
-					
+
 					OffsetMRect( &myRect, 0, -kBlobVertSize );
 					SurfaceDrawBoard( player, &myRect );
 					CleanSpriteArea( player, &myRect );
@@ -548,9 +548,9 @@ void DropBlobs( int player )
 						jiggleList[ suction[player][x][y] - kJiggle1 ],
 						charred[player][x][y] );
 					CleanSpriteArea( player, &myRect );
-					
+
 					suction[player][x][y]++;
-					
+
 					busy = true;
 				}
 				else if( grid[player][x][y] == kEmpty && grid[player][x][y-1] != kEmpty )
@@ -560,7 +560,7 @@ void DropBlobs( int player )
 					charred[player][x][y] = charred[player][x][y-1];
 					charred[player][x][y-1] = kNoCharring;
 					suction[player][x][y-1] = kNoSuction;
-					
+
 					CalcBlobRect( x, y, &myRect );
 					if( grid[player][x][y] == kGray )
 					{
@@ -573,11 +573,11 @@ void DropBlobs( int player )
 					}
 
 					CleanSpriteArea( player, &myRect );
-					
+
 					OffsetMRect( &myRect, 0, -kBlobVertSize );
 					SurfaceDrawBoard( player, &myRect );
 					CleanSpriteArea( player, &myRect );
-					
+
 					if( grid[player][x][y] >= kFirstBlob && grid[player][x][y] <= kLastBlob )
 					{
 						if( y >= (kGridDown-1) || grid[player][x][y+1] != kEmpty )
@@ -589,15 +589,15 @@ void DropBlobs( int player )
 					{
 						suction[player][x][y] = kNoSuction;
 					}
-					
+
 					busy = true;
 				}
 			}
 		}
 	}
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
-	
+
 	if( !busy && !halfway[player] )
 	{
 		ResolveSuction( player );
@@ -609,9 +609,9 @@ void RedrawBoardContents( int player )
 {
 	int x, y;
 	MRect myRect;
-	
+
 	SDLU_AcquireSurface( playerSurface[player] );
-	
+
 	for( y=0; y<kGridDown; y++ )
 	{
 		for( x=0; x<kGridAcross; x++ )
@@ -626,11 +626,11 @@ void RedrawBoardContents( int player )
 			{
 				SurfaceDrawBlob( player, &myRect, grid[player][x][y], suction[player][x][y], charred[player][x][y] );
 			}
-			
+
 			CleanSpriteArea( player, &myRect );
 		}
 	}
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
 }
 
@@ -638,37 +638,37 @@ void ResolveSuction( int player )
 {
 	int x, y, suck, actualSuck, color;
 	MRect myRect;
-	
+
 	SDLU_AcquireSurface( playerSurface[player] );
-	
+
 	for( x=0; x<kGridAcross; x++ )
 	{
 		for( y=1; y<kGridDown; y++ )
 		{
 			suck = kNoSuction;
 			color = grid[player][x][y];
-			
+
 			if( color >= kFirstBlob && color <= kLastBlob )
 			{
 				if( x > 0 )
 					if( grid[player][x-1][y] == color ) suck |= kLeft;
-				
+
 				if( x < (kGridAcross-1) )
 					if( grid[player][x+1][y] == color ) suck |= kRight;
-					
+
 				if( y > 1 )
 					if( grid[player][x][y-1] == color ) suck |= kUp;
-					
+
 				if( y < (kGridDown-1) )
 					if( grid[player][x][y+1] == color ) suck |= kDown;
-				
+
 				actualSuck = suction[player][x][y];
 				if( actualSuck == kBlinkBlob || actualSuck == kSobBlob ) actualSuck = kNoSuction;
-				
+
 				if( actualSuck != suck )
 				{
 					suction[player][x][y] = suck;
-					
+
 					CalcBlobRect( x, y, &myRect );
 					SurfaceDrawBlob( player, &myRect, grid[player][x][y], suck, charred[player][x][y] );
 					CleanSpriteArea( player, &myRect );
@@ -680,7 +680,7 @@ void ResolveSuction( int player )
 			}
 		}
 	}
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
 }
 
@@ -694,15 +694,15 @@ void HandleMagic( int player )
 }
 
 void Falling( int player )
-{	
+{
 	if( role[1-player] == kLosing )
 	{
 		BeginVictory( player );
 		return;
 	}
-	
+
 	shadowDepth[player] = kBlobShadowDepth;
-	
+
 	UpdateTweak( player, kNoSuction );
 
 	if( GameTickCount( ) >= blobTime[player] )
@@ -727,7 +727,7 @@ void Falling( int player )
 		case kPlayerControl:
 			PlayerControl( player );
 			break;
-		
+
 		case kAIControl:
 			AIControl( player );
 			break;
@@ -745,7 +745,7 @@ void RetrieveBlobs( int player )
 		EndRound( player );
 		return;
 	}
-	
+
 	// See if it's time to update levels in Solitaire mode
 	if( control[1] == kNobodyControl )
 	{
@@ -762,13 +762,13 @@ void RetrieveBlobs( int player )
 		                     200000,
 		                     500000,
 		                     1000000 };
-		
+
 		if( (level <= kLevels) && (score[player] > levelClear[level]) )
 		{
 			FreezeGameTickCount( );
-			
+
 			PlayMono( kLevelUp );
-			
+
 			level++;
 			if( InitCharacter( 1, level ) )
 			{
@@ -784,37 +784,37 @@ void RetrieveBlobs( int player )
 			}
 
 			if( level == 2 || level == 4 || level == 7 || level == 9 ) AddExtraPiece( );
-			
+
 			PrepareStageGraphics( character[1].picture );
 			ChooseMusic( character[1].music );
 
 			UnfreezeGameTickCount( );
-		}		                     
+		}
 	}
-	
+
 	PullNext( player );
-	
+
 	dropping[player] = false;
 	anim[player] = 0;
 	magic[player] = nextM[player];
 	grenade[player] = nextG[player];
 	zapIteration[player] = 0;
 	chain[player] = 1;
-	
+
 	emotions[player] = DetermineEmotion(player);
-	if( players == 1 && player == 0 ) 
+	if( players == 1 && player == 0 )
 	{
 		if( emotions[0] == kEmotionPanic ) FastMusic(); else SlowMusic();
 	}
-	
+
 	if( magic[player] || grenade[player] )
 	{
 		PlayStereoFrequency( player, kMagic, player );
 	}
-	
+
 	colorA[player] = nextA[player];
 	colorB[player] = nextB[player];
-	
+
 	nextG[player] = GetGrenade( player );
 
 	if( nextG[player] )
@@ -831,7 +831,7 @@ void RetrieveBlobs( int player )
 	}
 
 	ChooseGlowingBlobs( player );
-	
+
 	if( control[player] == kPlayerControl )
 	{
 		memcpy( potentialCombo[player].grid, grid[player], kGridAcross * kGridDown );
@@ -846,19 +846,19 @@ void RetrieveBlobs( int player )
 		potentialCombo[player].value = 0;
 		potentialCombo[player].name[0] = 0;
 	}
-	
+
 	blobX[player] = 2;
 	blobY[player] = 0;
 	blobR[player] = upRotate;
 	blobSpin[player] = 0;
 	halfway[player] = false;
-	
+
 	DrawSpriteBlobs( player, kNoSuction );
-	
+
 	speed[player] = character[player].dropSpeed;
 	blobTime[player] = animTime[player] = GameTickCount( );
 	role[player] = kFalling;
-	
+
 	if( control[player] == kAIControl )
 		ChooseAIDestination( player );
 }
@@ -866,17 +866,17 @@ void RetrieveBlobs( int player )
 void ChooseGlowingBlobs( int player )
 {
 	int x, height[kGridAcross];
-	
+
     if( character[player].hints && !grenade[player] && !magic[player] )
     {
 		for( x=0; x<kGridAcross; x++ )
 		{
 			height[x] = GetRowHeight( player, x );
 		}
-				
+
 		for( x=0; x<kGridAcross; x++ )
 		{
-			if( x>0 && height[x]>1 && height[x-1]>1 ) 
+			if( x>0 && height[x]>1 && height[x-1]>1 )
 			{
 				// left
 
@@ -888,7 +888,7 @@ void ChooseGlowingBlobs( int player )
 				grid[player][x-1][height[x-1]] = kEmpty;
 			}
 
-			if( x<(kGridAcross-1) && height[x]>1 && height[x+1]>1 ) 
+			if( x<(kGridAcross-1) && height[x]>1 && height[x+1]>1 )
 			{
 				// right
 
@@ -900,7 +900,7 @@ void ChooseGlowingBlobs( int player )
 				grid[player][x+1][height[x+1]] = kEmpty;
 			}
 
-			if( height[x]>2 ) 
+			if( height[x]>2 )
 			{
 				// up
 
@@ -928,7 +928,7 @@ void ConsiderGlow( int player, int color, int x, int y )
 {
 	if( GetChainSize( grid[player], x, y, color ) >= kBlobClusterSize )
 	{
-		CleanWithPolish( grid[player], glow[player], x, y, color );					
+		CleanWithPolish( grid[player], glow[player], x, y, color );
 	}
 	else
 	{
@@ -940,10 +940,10 @@ void GlowBlobs( int player )
 {
 	int x, y, color, suck;
 	MRect myRect;
-	
+
 	if( (!character[player].hints) || (GameTickCount() < hintTime[player]) )
 		return;
-		
+
 	hintTime[player] += 3;
 	if( ++hintGlow >= kGlowArraySize ) hintGlow = 0;
 
@@ -957,11 +957,11 @@ void GlowBlobs( int player )
 			{
 				if( glow[player][x][y] && grid[player][x][y] != kEmpty )
 				{
-					CalcBlobRect( x, y, &myRect );	
+					CalcBlobRect( x, y, &myRect );
 
 					color = grid[player][x][y];
 					suck = suction[player][x][y];
-					
+
 					SurfaceDrawBlob( player, &myRect, color, suck, charred[player][x][y] );
 					SurfaceDrawColor( &myRect, color, suck, glowColors[color][0], glowColors[color][1], glowColors[color][2], glowArray[hintGlow] );
 					CleanSpriteArea( player, &myRect );
@@ -969,7 +969,7 @@ void GlowBlobs( int player )
 			}
 		}
 	}
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
 }
 
@@ -977,13 +977,13 @@ void FadeCharred( int player )
 {
 	int x, y;
 	MRect myRect;
-	
+
 	if( GameTickCount() < fadeCharTime[player] || role[player] != kFalling ) return;
-	
+
 	fadeCharTime[player] += 135;
-	
-	SDLU_AcquireSurface( playerSurface[player] ); 
-	
+
+	SDLU_AcquireSurface( playerSurface[player] );
+
 	for( x=0; x<kGridAcross; x++ )
 	{
 		for( y=0; y<kGridDown; y++ )
@@ -991,7 +991,7 @@ void FadeCharred( int player )
 			if( charred[player][x][y] & 0xF0 )
 			{
 				charred[player][x][y] = ( charred[player][x][y] & 0x0F ) | ( ( charred[player][x][y] & 0xF0 ) - 0x10 );
-				
+
 				if( rowBounce[player][x] == -1 )
 				{
 					CalcBlobRect( x, y, &myRect );
@@ -1002,21 +1002,21 @@ void FadeCharred( int player )
 		}
 	}
 
-	SDLU_ReleaseSurface( playerSurface[player] ); 
+	SDLU_ReleaseSurface( playerSurface[player] );
 }
 
 void BlinkBored( int player )
 {
 	MRect myRect;
 	int which, x, y, count;
-	
+
 	if( GameTickCount() < boredTime[player] )
 		return;
-	
-	SDLU_AcquireSurface( playerSurface[player] ); 
-	
+
+	SDLU_AcquireSurface( playerSurface[player] );
+
 	// undo any previously bored blobs
-	
+
 	for( x=0; x<kGridAcross; x++ )
 	{
 		for( y=0; y<kGridDown; y++ )
@@ -1025,16 +1025,16 @@ void BlinkBored( int player )
 				( suction[player][x][y] == kBlinkBlob || suction[player][x][y] == kSobBlob ) )
 			{
 				suction[player][x][y] = kNoSuction;
-				
+
 				CalcBlobRect( x, y, &myRect );
 				SurfaceDrawBlob( player, &myRect, grid[player][x][y],
-								   suction[player][x][y],
-								   charred[player][x][y] );
+				                 suction[player][x][y],
+				                 charred[player][x][y] );
 				CleanSpriteArea( player, &myRect );
-			}				
+			}
 		}
 	}
-		
+
 	// make some boredom
 
 	which = RandomBefore( 2 );
@@ -1045,34 +1045,34 @@ void BlinkBored( int player )
 	{
 		x = RandomBefore( kGridAcross );
 		y = RandomBefore( kGridDown );
-		
+
 		if( rowBounce[player][x] == -1 &&
 			suction[player][x][y] == kNoSuction &&
 			grid[player][x][y] >= kFirstBlob &&
-			grid[player][x][y] <= kLastBlob   
-		  ) 
+			grid[player][x][y] <= kLastBlob
+		  )
 		{
 			suction[player][x][y] = which;
-			
+
 			CalcBlobRect( x, y, &myRect );
 			SurfaceDrawBlob( player, &myRect,
-					    grid[player][x][y],
-					    suction[player][x][y],
-					    charred[player][x][y] );
+			                 grid[player][x][y],
+			                 suction[player][x][y],
+			                 charred[player][x][y] );
 			CleanSpriteArea( player, &myRect );
 		}
 	}
 
-	SDLU_ReleaseSurface( playerSurface[player] ); 
+	SDLU_ReleaseSurface( playerSurface[player] );
 }
 
 void InitPlayers( void )
 {
 	const double windowLoc[ ] = { kLeftPlayerWindowCenter, kRightPlayerWindowCenter };
-	
+
 	playerWindowZRect.top = playerWindowZRect.left = 0;
 	playerWindowZRect.bottom = 288; playerWindowZRect.right = 144;
-	
+
 	playerWindowRect[0] = playerWindowRect[1] = playerWindowZRect;
 	CenterRectOnScreen( &playerWindowRect[0], windowLoc[0], 0.5 );
 	CenterRectOnScreen( &playerWindowRect[1], windowLoc[1], 0.5 );

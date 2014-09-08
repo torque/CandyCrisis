@@ -31,7 +31,7 @@ void ShowGameOverScreen( void );
 #define kUltraLevel  110
 
 
-typedef struct 
+typedef struct
 {
 	short color;
 	short time;
@@ -63,5 +63,3 @@ enum
 extern Character character[2];
 extern int level, players, credits, difficulty[2];
 extern int difficultyTicks, backdropTicks, backdropFrame;
-
-

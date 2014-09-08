@@ -169,25 +169,25 @@ enum
 
 enum
 {
-	kNoSuction		 = 0,
-	kUp				 = 1,
-	kRight			 = 2,
-	kUpRight		 = 3,
-	kDown			 = 4,
-	kUpDown			 = 5,
-	kRightDown		 = 6,
-	kUpRightDown	 = 7,
-	kLeft			 = 8,
-	kLeftUp			 = 9,
-	kLeftRight 		 = 10,
-	kLeftUpRight	 = 11,
-	kLeftDown		 = 12,
-	kLeftUpDown		 = 13,
-	kLeftRightDown	 = 14,
+	kNoSuction       = 0,
+	kUp              = 1,
+	kRight           = 2,
+	kUpRight         = 3,
+	kDown            = 4,
+	kUpDown          = 5,
+	kRightDown       = 6,
+	kUpRightDown     = 7,
+	kLeft            = 8,
+	kLeftUp          = 9,
+	kLeftRight       = 10,
+	kLeftUpRight     = 11,
+	kLeftDown        = 12,
+	kLeftUpDown      = 13,
+	kLeftRightDown   = 14,
 	kLeftUpRightDown = 15,
-	kDying			 = 16,
-	kSquish			 = 17,
-	kSquash 		 = 18,
+	kDying           = 16,
+	kSquish          = 17,
+	kSquash          = 18,
 	kSquish1         = 19,
 	kSquish2         = 20,
 	kSquish3         = 21,
@@ -199,14 +199,14 @@ enum
 	kFlashBrightBlob = 27,
 	kJiggle1         = 28,
 	kJiggle2         = 29,
-	kJiggle3		 = 30, 
-	kJiggle4		 = 31,  
-	kJiggle5		 = 32, 
-	kJiggle6		 = 33, 
-	kJiggle7		 = 34, 
-	kJiggle8		 = 35, 
-	kInDoubt		 = 36,
-	kInDeath		 = 37
+	kJiggle3         = 30,
+	kJiggle4         = 31,
+	kJiggle5         = 32,
+	kJiggle6         = 33,
+	kJiggle7         = 34,
+	kJiggle8         = 35,
+	kInDoubt         = 36,
+	kInDeath         = 37
 };
 
 enum
@@ -220,12 +220,12 @@ enum
 	kBlinkBomb3      = 5,
 	kChar11,
 	kChar31,
-	kChar12, 
-	kChar32, 
-	kChar13, 
-	kChar33, 
-	kChar14, 
-	kChar24, 
+	kChar12,
+	kChar32,
+	kChar13,
+	kChar33,
+	kChar14,
+	kChar24,
 	kChar34
 };
 
@@ -235,7 +235,7 @@ enum
 	kLightestChar = 0x00
 };
 
-enum 
+enum
 {
 	kFlashAnimation  = 0,
 	kJiggleAnimation
@@ -278,13 +278,13 @@ enum
 extern SDL_Surface* frontSurface;
 
 extern signed char nextA[2], nextB[2], nextM[2], nextG[2], colorA[2], colorB[2],
-	blobX[2], blobY[2], blobR[2], blobSpin[2], speed[2], role[2], halfway[2],
-	control[2], dropping[2], magic[2], grenade[2], anim[2];
+    blobX[2], blobY[2], blobR[2], blobSpin[2], speed[2], role[2], halfway[2],
+    control[2], dropping[2], magic[2], grenade[2], anim[2];
 extern int chain[2];
 extern long blobTime[2], startTime, endTime;
 extern MBoolean finished, pauseKey, showStartMenu;
 extern signed char grid[2][kGridAcross][kGridDown], suction[2][kGridAcross][kGridDown],
-	charred[2][kGridAcross][kGridDown], glow[2][kGridAcross][kGridDown];
+    charred[2][kGridAcross][kGridDown], glow[2][kGridAcross][kGridDown];
 extern MRect playerWindowZRect, playerWindowRect[2];
 extern MBoolean playerWindowVisible[2];
 extern KeyList hitKey[2];

@@ -84,31 +84,31 @@ static MPoint DrawRainbowText( SkittlesFontPtr font, const char *line, MPoint dP
 	int   length, current;
 	int   r,g,b;
 	float s;
-	
+
 	current = 0;
 	length = strlen(line);
-	
+
 	switch( bright )
-	{	
+	{
 			case kTextGray:
 				r = g = b = 12;
 				break;
-				
+
 			case kTextBlueGlow:
 				s = sin(wave);
 				r = (int)(11.0 + 15.0 * s * s);
 				g = r;
 				b = 31;
 				break;
-				
+
 			case kTextWhite:
 				r = g = b = 31;
 				break;
-				
+
 			case kTextAlmostWhite:
 				r = g = b = 28;
 				break;
-				
+
 	}
 
 	while( line[current] )
@@ -128,12 +128,12 @@ static MPoint DrawRainbowText( SkittlesFontPtr font, const char *line, MPoint dP
 				break;
 		}
 
-		SurfaceBlitCharacter( font, line[current], &dPoint, r, g, b, 1 );			
-		
+		SurfaceBlitCharacter( font, line[current], &dPoint, r, g, b, 1 );
+
 		wave += 0.2;
 		current++;
 	}
-	
+
 	return dPoint;
 }
 
@@ -145,18 +145,18 @@ void SurfaceGetEdges( SDL_Surface* edgeSurface, const MRect *rect )
 {
 	unsigned char* src[4];
 	int            srcRowBytes, width, height, count;
-	
+
 	src[0] = src[1] = src[2] = src[3] = (unsigned char*) edgeSurface->pixels;
 	srcRowBytes = edgeSurface->pitch;
 
 	width  = rect->right  - rect->left;
-	height = rect->bottom - rect->top; 
+	height = rect->bottom - rect->top;
 
 	src[0] += (srcRowBytes * (rect->top               )) + ((rect->left             ) * 2);
 	src[1] += (srcRowBytes * (rect->top               )) + ((rect->right - kEdgeSize) * 2);
 	src[2] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->left             ) * 2);
 	src[3] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->right - kEdgeSize) * 2);
-	
+
 	for( count=0; count<4; count++ )
 	{
 		for( height=0; height<kEdgeSize; height++ )
@@ -173,39 +173,39 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 	unsigned char* src[4];
 	int srcRowBytes, width, height, count;
 	char edgeMap[4][kEdgeSize][kEdgeSize+1]={  "      --",
-					                           "    -...",
-					                           "   -.xxX",
-					                           "  -.xXXX",
-					                           " -.xXXXX",
-					                           " .xXXXXX",
-					                           "-.xXXXXX",
-					                           "-.XXXXXX",
-					                           "--      ",
-					                           "...-    ",
-					                           "Xxx.-   ",
-					                           "XXXx.-  ",
-					                           "XXXXx.- ",
-					                           "XXXXXx. ",
-					                           "XXXXXx.-",
-					                           "XXXXXX.-",
-					                           "-.XXXXXX",
-					                           "-.xXXXXX",
-					                           " .xXXXXX",
-					                           " -.xXXXX",
-					                           "  -.xXXX",
-					                           "   -.xxX",
-					                           "    -...",
-					                           "      --",
-					                           "XXXXXX.-",
-					                           "XXXXXx.-",
-					                           "XXXXXx. ",
-					                           "XXXXx.- ",
-					                           "XXXx.-  ",
-					                           "Xxx.-   ",
-					                           "...-    ",
-					                           "--      "  };
-	                         	                         
-	
+	                                           "    -...",
+	                                           "   -.xxX",
+	                                           "  -.xXXX",
+	                                           " -.xXXXX",
+	                                           " .xXXXXX",
+	                                           "-.xXXXXX",
+	                                           "-.XXXXXX",
+	                                           "--      ",
+	                                           "...-    ",
+	                                           "Xxx.-   ",
+	                                           "XXXx.-  ",
+	                                           "XXXXx.- ",
+	                                           "XXXXXx. ",
+	                                           "XXXXXx.-",
+	                                           "XXXXXX.-",
+	                                           "-.XXXXXX",
+	                                           "-.xXXXXX",
+	                                           " .xXXXXX",
+	                                           " -.xXXXX",
+	                                           "  -.xXXX",
+	                                           "   -.xxX",
+	                                           "    -...",
+	                                           "      --",
+	                                           "XXXXXX.-",
+	                                           "XXXXXx.-",
+	                                           "XXXXXx. ",
+	                                           "XXXXx.- ",
+	                                           "XXXx.-  ",
+	                                           "Xxx.-   ",
+	                                           "...-    ",
+	                                           "--      "  };
+
+
 	src[0] = src[1] = src[2] = src[3] = (unsigned char*) edgeSurface->pixels;
 	srcRowBytes = edgeSurface->pitch;
 
@@ -213,14 +213,14 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 	src[1] += (srcRowBytes * (rect->top               )) + ((rect->right - kEdgeSize) * 2);
 	src[2] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->left             ) * 2);
 	src[3] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->right - kEdgeSize) * 2);
-	
+
 	// Draw top/bottom border
 	{
 		short *srcT1 = (short*) (src[0]) + kEdgeSize;
 		short *srcB1 = (short*) (src[2] + (srcRowBytes*(kEdgeSize-1))) + kEdgeSize;
 		short *srcT2 = srcT1 + (srcRowBytes/2);
 		short *srcB2 = srcB1 - (srcRowBytes/2);
-		
+
 		for( width = rect->right - rect->left - (kEdgeSize * 2); width > 0; width-- )
 		{
 			*srcT1 = 0; srcT1++;
@@ -229,7 +229,7 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 			*srcB2 = (*srcB2 >> 1) & 0x3DEF; srcB2++;
 		}
 	}
-	
+
 	// Draw left/right border
 	{
 		unsigned char *srcL1 = (src[0] + (srcRowBytes * kEdgeSize));
@@ -237,26 +237,26 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 
 		unsigned char *srcL2 = srcL1 + 2;
 		unsigned char *srcR2 = srcR1 - 2;
-		
+
 		for( height = rect->bottom - rect->top - (kEdgeSize * 2); height > 0; height-- )
 		{
-			*(short*)srcL1 = 0; 
+			*(short*)srcL1 = 0;
 			*(short*)srcR1 = 0;
-			*(short*)srcL2 = (*(short*)srcL2 >> 1) & 0x3DEF; 
-			*(short*)srcR2 = (*(short*)srcR2 >> 1) & 0x3DEF; 
-			
-			srcL1 += srcRowBytes; 
+			*(short*)srcL2 = (*(short*)srcL2 >> 1) & 0x3DEF;
+			*(short*)srcR2 = (*(short*)srcR2 >> 1) & 0x3DEF;
+
+			srcL1 += srcRowBytes;
 			srcR1 += srcRowBytes;
-			srcL2 += srcRowBytes; 
+			srcL2 += srcRowBytes;
 			srcR2 += srcRowBytes;
 		}
 	}
-		
+
 	// Draw curved edges
 	for( count=0; count<4; count++ )
 	{
 		short *srcS = (short*) src[count];
-		
+
 		for( height=0; height<kEdgeSize; height++ )
 		{
 			for( width=0; width<kEdgeSize; width++ )
@@ -288,7 +288,7 @@ static MBoolean SharewareNoticeIsStillWaiting()
 
 enum
 {
-	kOpening = 0, 
+	kOpening = 0,
 	kClosing
 };
 
@@ -314,24 +314,24 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 	                                  { 240 - 119, 320 - 244, 240 + 119, 320 + 244 },
 	                                  { 240 - 119, 320 - 242, 240 + 119, 320 + 242 },
 	                                  { 240 - 120, 320 - 240, 240 + 120, 320 + 240 }  },
-	                                { { 240 - 110, 320 - 220, 240 + 110, 320 + 220 }, 
-	                                  { 240 - 105, 320 - 210, 240 + 105, 320 + 210 }, 
-	                                  { 240 - 100, 320 - 200, 240 + 100, 320 + 200 }, 
-	                                  { 240 - 95,  320 - 190, 240 + 95,  320 + 190 }, 
-	                                  { 240 - 90,  320 - 180, 240 + 90,  320 + 180 }, 
-	                                  { 240 - 85,  320 - 170, 240 + 85,  320 + 170 }, 
-	                                  { 240 - 80,  320 - 160, 240 + 80,  320 + 160 }, 
-	                                  { 240 - 75,  320 - 150, 240 + 75,  320 + 150 }, 
-	                                  { 240 - 70,  320 - 140, 240 + 70,  320 + 140 }, 
-	                                  { 240 - 65,  320 - 130, 240 + 65,  320 + 130 }, 
-	                                  { 240 - 60,  320 - 120, 240 + 60,  320 + 120 }, 
-	                                  { 240 - 55,  320 - 110, 240 + 55,  320 + 110 }, 
-	                                  { 240 - 50,  320 - 100, 240 + 50,  320 + 100 }, 
-	                                  { 240 - 45,  320 - 90,  240 + 45,  320 + 90  }, 
-	                                  { 240 - 40,  320 - 80,  240 + 40,  320 + 80  }, 
-	                                  { 240 - 35,  320 - 70,  240 + 35,  320 + 70  }, 
-	                                  { 240 - 30,  320 - 60,  240 + 30,  320 + 60  }, 
-	                                  { 240 - 25,  320 - 50,  240 + 25,  320 + 50  }, 	                                
+	                                { { 240 - 110, 320 - 220, 240 + 110, 320 + 220 },
+	                                  { 240 - 105, 320 - 210, 240 + 105, 320 + 210 },
+	                                  { 240 - 100, 320 - 200, 240 + 100, 320 + 200 },
+	                                  { 240 - 95,  320 - 190, 240 + 95,  320 + 190 },
+	                                  { 240 - 90,  320 - 180, 240 + 90,  320 + 180 },
+	                                  { 240 - 85,  320 - 170, 240 + 85,  320 + 170 },
+	                                  { 240 - 80,  320 - 160, 240 + 80,  320 + 160 },
+	                                  { 240 - 75,  320 - 150, 240 + 75,  320 + 150 },
+	                                  { 240 - 70,  320 - 140, 240 + 70,  320 + 140 },
+	                                  { 240 - 65,  320 - 130, 240 + 65,  320 + 130 },
+	                                  { 240 - 60,  320 - 120, 240 + 60,  320 + 120 },
+	                                  { 240 - 55,  320 - 110, 240 + 55,  320 + 110 },
+	                                  { 240 - 50,  320 - 100, 240 + 50,  320 + 100 },
+	                                  { 240 - 45,  320 - 90,  240 + 45,  320 + 90  },
+	                                  { 240 - 40,  320 - 80,  240 + 40,  320 + 80  },
+	                                  { 240 - 35,  320 - 70,  240 + 35,  320 + 70  },
+	                                  { 240 - 30,  320 - 60,  240 + 30,  320 + 60  },
+	                                  { 240 - 25,  320 - 50,  240 + 25,  320 + 50  },
 	                                  { 240 - 20,  320 - 40,  240 + 20,  320 + 40  }  }
 	                              };
 
@@ -354,24 +354,24 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 	                                  { 240 - 131, 320 - 244, 240 + 131, 320 + 244 },
 	                                  { 240 - 131, 320 - 242, 240 + 131, 320 + 242 },
 	                                  { 240 - 132, 320 - 240, 240 + 132, 320 + 240 }  },
-	                                { { 240 - 121, 320 - 220, 240 + 121, 320 + 220 }, 
-	                                  { 240 - 115, 320 - 210, 240 + 115, 320 + 210 }, 
-	                                  { 240 - 110, 320 - 200, 240 + 110, 320 + 200 }, 
-	                                  { 240 - 104, 320 - 190, 240 + 104, 320 + 190 }, 
-	                                  { 240 - 99,  320 - 180, 240 + 99,  320 + 180 }, 
-	                                  { 240 - 93,  320 - 170, 240 + 93,  320 + 170 }, 
-	                                  { 240 - 88,  320 - 160, 240 + 88,  320 + 160 }, 
-	                                  { 240 - 82,  320 - 150, 240 + 82,  320 + 150 }, 
-	                                  { 240 - 77,  320 - 140, 240 + 77,  320 + 140 }, 
-	                                  { 240 - 71,  320 - 130, 240 + 71,  320 + 130 }, 
-	                                  { 240 - 66,  320 - 120, 240 + 66,  320 + 120 }, 
-	                                  { 240 - 60,  320 - 110, 240 + 60,  320 + 110 }, 
-	                                  { 240 - 55,  320 - 100, 240 + 55,  320 + 100 }, 
-	                                  { 240 - 49,  320 - 90,  240 + 49,  320 + 90  }, 
-	                                  { 240 - 44,  320 - 80,  240 + 44,  320 + 80  }, 
-	                                  { 240 - 38,  320 - 70,  240 + 38,  320 + 70  }, 
-	                                  { 240 - 33,  320 - 60,  240 + 33,  320 + 60  }, 
-	                                  { 240 - 27,  320 - 50,  240 + 27,  320 + 50  }, 	                                
+	                                { { 240 - 121, 320 - 220, 240 + 121, 320 + 220 },
+	                                  { 240 - 115, 320 - 210, 240 + 115, 320 + 210 },
+	                                  { 240 - 110, 320 - 200, 240 + 110, 320 + 200 },
+	                                  { 240 - 104, 320 - 190, 240 + 104, 320 + 190 },
+	                                  { 240 - 99,  320 - 180, 240 + 99,  320 + 180 },
+	                                  { 240 - 93,  320 - 170, 240 + 93,  320 + 170 },
+	                                  { 240 - 88,  320 - 160, 240 + 88,  320 + 160 },
+	                                  { 240 - 82,  320 - 150, 240 + 82,  320 + 150 },
+	                                  { 240 - 77,  320 - 140, 240 + 77,  320 + 140 },
+	                                  { 240 - 71,  320 - 130, 240 + 71,  320 + 130 },
+	                                  { 240 - 66,  320 - 120, 240 + 66,  320 + 120 },
+	                                  { 240 - 60,  320 - 110, 240 + 60,  320 + 110 },
+	                                  { 240 - 55,  320 - 100, 240 + 55,  320 + 100 },
+	                                  { 240 - 49,  320 - 90,  240 + 49,  320 + 90  },
+	                                  { 240 - 44,  320 - 80,  240 + 44,  320 + 80  },
+	                                  { 240 - 38,  320 - 70,  240 + 38,  320 + 70  },
+	                                  { 240 - 33,  320 - 60,  240 + 33,  320 + 60  },
+	                                  { 240 - 27,  320 - 50,  240 + 27,  320 + 50  },
 	                                  { 240 - 22,  320 - 40,  240 + 22,  320 + 40  }  }
 	                              };
 
@@ -379,7 +379,7 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 	float    colorFrac, nColorFrac;
 	MRect    newRect;
 	SDL_Rect sdlRect;
-	
+
 	if( *target > 18 )
 	{
 		*target = 18;
@@ -391,54 +391,54 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 
 	newRect = larger? largerRect[animationType][*target]: normalRect[animationType][*target];
 	shading = ((animationType == 0) ? (*target * 24 / 18): (24 - (*target * 2 / 3)));
-	
+
 	{
 		float r1 = backColor[colorInt      ].red, g1 = backColor[colorInt      ].green, b1 = backColor[colorInt      ].blue,
 		      r2 = backColor[(colorInt+1)&3].red, g2 = backColor[(colorInt+1)&3].green, b2 = backColor[(colorInt+1)&3].blue,
 		      r3 = backColor[(colorInt+2)&3].red, g3 = backColor[(colorInt+2)&3].green, b3 = backColor[(colorInt+2)&3].blue,
 		      r4 = backColor[(colorInt+3)&3].red, g4 = backColor[(colorInt+3)&3].green, b4 = backColor[(colorInt+3)&3].blue;
-		
-		nColorFrac = 1 - colorFrac;
-		
-		SDLU_AcquireSurface( drawSurface );
-		
-		SurfaceBlitBlendOver(  backSurface,  drawSurface, 
-		                      &newRect,     &newRect,
-  		                       (int)((r1 * nColorFrac) + (r2 * colorFrac)), 
-						       (int)((g1 * nColorFrac) + (g2 * colorFrac)), 
-						       (int)((b1 * nColorFrac) + (b2 * colorFrac)), 
-						       (int)((r2 * nColorFrac) + (r3 * colorFrac)), 
-						       (int)((g2 * nColorFrac) + (g3 * colorFrac)), 
-						       (int)((b2 * nColorFrac) + (b3 * colorFrac)), 
-						       (int)((r4 * nColorFrac) + (r1 * colorFrac)), 
-						       (int)((g4 * nColorFrac) + (g1 * colorFrac)), 
-						       (int)((b4 * nColorFrac) + (b1 * colorFrac)), 
-						       (int)((r3 * nColorFrac) + (r4 * colorFrac)), 
-						       (int)((g3 * nColorFrac) + (g4 * colorFrac)), 
-						       (int)((b3 * nColorFrac) + (b4 * colorFrac)), 
-						       shading );
 
-		if( pauseRect->left < newRect.left ) 
+		nColorFrac = 1 - colorFrac;
+
+		SDLU_AcquireSurface( drawSurface );
+
+		SurfaceBlitBlendOver(  backSurface,  drawSurface,
+		                      &newRect,     &newRect,
+		                      (int)((r1 * nColorFrac) + (r2 * colorFrac)),
+		                      (int)((g1 * nColorFrac) + (g2 * colorFrac)),
+		                      (int)((b1 * nColorFrac) + (b2 * colorFrac)),
+		                      (int)((r2 * nColorFrac) + (r3 * colorFrac)),
+		                      (int)((g2 * nColorFrac) + (g3 * colorFrac)),
+		                      (int)((b2 * nColorFrac) + (b3 * colorFrac)),
+		                      (int)((r4 * nColorFrac) + (r1 * colorFrac)),
+		                      (int)((g4 * nColorFrac) + (g1 * colorFrac)),
+		                      (int)((b4 * nColorFrac) + (b1 * colorFrac)),
+		                      (int)((r3 * nColorFrac) + (r4 * colorFrac)),
+		                      (int)((g3 * nColorFrac) + (g4 * colorFrac)),
+		                      (int)((b3 * nColorFrac) + (b4 * colorFrac)),
+		                       shading );
+
+		if( pauseRect->left < newRect.left )
 		{
 			MRect eraseRect = *pauseRect;
 			pauseRect->left = eraseRect.right = newRect.left;
-			
+
 			SDLU_MRectToSDLRect( &eraseRect, &sdlRect );
 			SDLU_BlitSurface( backSurface, &sdlRect,
 			                  drawSurface, &sdlRect  );
 		}
 
-		if( pauseRect->right > newRect.right ) 
+		if( pauseRect->right > newRect.right )
 		{
 			MRect eraseRect = *pauseRect;
 			pauseRect->right = eraseRect.left = newRect.right;
-			
+
 			SDLU_MRectToSDLRect( &eraseRect, &sdlRect );
 			SDLU_BlitSurface( backSurface, &sdlRect,
 			                  drawSurface, &sdlRect  );
 		}
 
-		if( pauseRect->top < newRect.top ) 
+		if( pauseRect->top < newRect.top )
 		{
 			MRect eraseRect = *pauseRect;
 			pauseRect->top = eraseRect.bottom = newRect.top;
@@ -448,7 +448,7 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 			                  drawSurface, &sdlRect  );
 		}
 
-		if( pauseRect->bottom > newRect.bottom ) 
+		if( pauseRect->bottom > newRect.bottom )
 		{
 			MRect eraseRect = *pauseRect;
 			pauseRect->bottom = eraseRect.top = newRect.bottom;
@@ -460,9 +460,9 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 
 		SDLU_ReleaseSurface( drawSurface );
 	}
-	
+
 	*pauseRect = newRect;
-	
+
 	*colorWrap += colorInc * skip;
 	if( *colorWrap >= 4 ) *colorWrap -= 4;
 
@@ -475,20 +475,20 @@ static void DrawDialogCursor( MRect *pauseRect, int *shade )
 {
 	MPoint p, q;
     shade;
-    
+
 	SDLU_GetMouse( &p );
-	
+
 	if( p.h < (pauseRect->left      ) ) p.h = pauseRect->left;
 	if( p.h > (pauseRect->right  - 5) ) p.h = pauseRect->right  - 5;
 	if( p.v < (pauseRect->top       ) ) p.v = pauseRect->top;
 	if( p.v > (pauseRect->bottom - 5) ) p.v = pauseRect->bottom - 5;
 	q = p;
-	
+
 	SDLU_AcquireSurface( drawSurface );
 
-	SurfaceBlitCharacter( smallFont, '°', &p,  0,  0,  0, 0 );			
-	SurfaceBlitCharacter( smallFont, '¢', &q, 31, 31, 31, 0 );			
-	
+	SurfaceBlitCharacter( smallFont, '?', &p,  0,  0,  0, 0 );
+	SurfaceBlitCharacter( smallFont, '?', &q, 31, 31, 31, 0 );
+
 	SDLU_ReleaseSurface( drawSurface );
 }
 
@@ -501,11 +501,11 @@ static void DrawDialogLogo( MRect *pauseRect, int shade )
 	drawRect.top    = (pauseRect->top + 14);
 	drawRect.bottom = drawRect.top + logoRect.bottom;
 	drawRect.right  = drawRect.left + logoRect.right;
-	
+
 	SDLU_AcquireSurface( drawSurface );
-	
+
 	alpha = (shade > 63)? 31: (shade / 2);
-		
+
 	SurfaceBlitWeightedDualAlpha(  drawSurface,  logoSurface,  logoMaskSurface,  logoAlphaSurface,  drawSurface,
                                   &drawRect,    &logoRect,    &logoRect,        &logoRect,         &drawRect,
                                    alpha );
@@ -515,9 +515,9 @@ static void DrawDialogLogo( MRect *pauseRect, int shade )
 
 
 enum
-{ 
+{
 	kNothing = -1,
-	
+
 // main pause screen (kEndGame is reused in continue and register)
 	kMusic = 0,		kEndGame,
 	kSound,			kPauseGame,
@@ -526,23 +526,23 @@ enum
 	kWarp,       	kSoundTest,
 
 // continue screen
-    kContinue,      
-    
+    kContinue,
+
 // register screen
     kLater,
-    
+
 // controls screen
     k1PLeft,        k2PLeft,
     k1PRight,       k2PRight,
     k1PDrop,        k2PDrop,
     k1PRotate,      k2PRotate,
     kControlsOK,    kControlsReset,
-   
+
 // shareware notice screen
-	kSharewareNoticeNotYet, 
+	kSharewareNoticeNotYet,
 	kSharewareNoticeEnterCode,
 	kSharewareNoticePurchase,
-	
+
 // enter code screen
 	kEnterCodeOK,
 	kEnterCodeNotYet
@@ -553,35 +553,35 @@ static void DrawContinueContents( int *item, int shade )
 	char line[4][50] = { "Do you want to continue?",
 	                     "Yes",
 	                     "No",
-	                     "" };	                 
+	                     "" };
 	MPoint dPoint[4] = { {233, 210}, {280, 220}, {280, 400}, {335, 400} }, hPoint = {255, 320};
 	static int lastCountdown = 0;
 	int index, countdown, fade;
 	int r, g, b;
-	                 
+
 	sprintf( line[3], "%d credit%c", credits, (credits != 1)? 's': ' ' );
 
 	SDLU_AcquireSurface( drawSurface );
 
 	for( index=0; index<4; index++ )
-	{	
-		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade), 
-						 ( (index == 0)                          ||
-						  ((index == 1) && (*item == kContinue)) ||
-						  ((index == 2) && (*item == kEndGame ))    )? kTextBrightRainbow: kTextRainbow );
+	{
+		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade),
+		                ( (index == 0)                          ||
+		                 ((index == 1) && (*item == kContinue)) ||
+		                 ((index == 2) && (*item == kEndGame ))    )? kTextBrightRainbow: kTextRainbow );
 	}
-	
+
 	countdown = shade / 100;
 	if( countdown < 10 )
 	{
 		continueTimeOut = false;
-		
+
 		if( (countdown != 0) && (countdown != lastCountdown) )
 		{
 			PlayMono( kContinueSnd );
 		}
 		lastCountdown = countdown;
-		
+
 		if( countdown < 5 )
 		{
 			r = (countdown * 31) / 5;
@@ -592,33 +592,33 @@ static void DrawContinueContents( int *item, int shade )
 			r = 31;
 			g = ((10 - countdown) * 31) / 5;
 		}
-			
+
 		fade = shade % 100;
 		if( fade > 50 ) fade = 50;
 		r = ((31 * (49 - fade)) + (r * fade)) / 49;
 		g = ((31 * (49 - fade)) + (g * fade)) / 49;
 		b = ((31 * (49 - fade))) / 49;
-		
+
 		countdown = '9' - countdown;
 		hPoint.h -= continueFont->width[countdown] / 2;
 
 		for( shade = 4; shade > 0; shade-- )
 		{
 			MPoint hP = hPoint;
-			
+
 			hP.h += 2 * shade;
 			hP.v += 2 * shade;
 
-			SurfaceBlitWeightedCharacter( continueFont, countdown, &hP, 0, 0, 0, 20 - 4*shade ); 
+			SurfaceBlitWeightedCharacter( continueFont, countdown, &hP, 0, 0, 0, 20 - 4*shade );
 		}
 
-		SurfaceBlitCharacter( continueFont, countdown, &hPoint, r, g, b, 0 ); 
+		SurfaceBlitCharacter( continueFont, countdown, &hPoint, r, g, b, 0 );
 	}
 	else
 	{
 		continueTimeOut = true;
 	}
-	
+
 	SDLU_ReleaseSurface( drawSurface );
 }
 
@@ -626,10 +626,10 @@ static void DrawHiScoreContents( int *item, int shade )
 {
 	MPoint dPoint[3] = { {240, 640}, {260, 640}, {335, 400} }, hPoint = {294, 145};
 	MPoint dashedLinePoint = { 320, 140 };
-	int    index;		
+	int    index;
 	int    nameLength;
 	char  *line[3], *scan;
-	
+
 	item; // is unused
 
 	line[0] = highScoreText;
@@ -641,21 +641,21 @@ static void DrawHiScoreContents( int *item, int shade )
 		scan = line[index];
 		while( *scan )
 			dPoint[index].h -= smallFont->width[*scan++];
-		
+
 		dPoint[index].h /= 2;
-	}	
-		
-	SDLU_AcquireSurface( drawSurface );	
+	}
+
+	SDLU_AcquireSurface( drawSurface );
 
 	while( dashedLinePoint.h < 490 )
 	{
 		SurfaceBlitCharacter( dashedLineFont, '.', &dashedLinePoint, 0, 0, 0, 0 );
 	}
-	
+
 	nameLength = strlen(highScoreName);
 	for( index = 0; index < nameLength; index++ )
 	{
-		SurfaceBlitCharacter( bigFont, highScoreName[index], &hPoint, 31, 31, 31, 1 );			
+		SurfaceBlitCharacter( bigFont, highScoreName[index], &hPoint, 31, 31, 31, 1 );
 		if( hPoint.h >= 475 )
 		{
 			highScoreName[index] = '\0';
@@ -663,38 +663,38 @@ static void DrawHiScoreContents( int *item, int shade )
 		}
 	}
 
-	index = (int)(( 1.0 + sin( MTickCount() / 7.5 ) ) * 15.0);	
-	SurfaceBlitCharacter( bigFont, '|', &hPoint, index, index, 31, 1 );			
+	index = (int)(( 1.0 + sin( MTickCount() / 7.5 ) ) * 15.0);
+	SurfaceBlitCharacter( bigFont, '|', &hPoint, index, index, 31, 1 );
 
 	for( index=0; index<3; index++ )
-	{	
+	{
 		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade), (index != 2)? kTextBrightRainbow: kTextRainbow );
 	}
-	
-	SDLU_ReleaseSurface( drawSurface );	
+
+	SDLU_ReleaseSurface( drawSurface );
 }
 
 static void DrawRegisterContents( int *item, int shade )
 {
-	int index;		
+	int index;
 	MPoint dPoint[4] = { {240, 150}, {260, 160}, {305, 170}, {305, 400} };
 	char line[4][50] = {  "Sorry, you must register Candy Crisis",
 	                      "to gain access to two player mode!",
 	                      "Register Now",
 	                      "Not Yet" };
-	
-	SDLU_AcquireSurface( drawSurface );	
+
+	SDLU_AcquireSurface( drawSurface );
 
 	for( index=0; index<4; index++ )
-	{	
-		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade), 
-						 ( (index == 0)                              ||
-						   (index == 1)                              ||
-						  ((index == 2) && (*item == kRegisterNow )) ||
-						  ((index == 3) && (*item == kLater       ))    )? kTextBrightRainbow: kTextRainbow );
+	{
+		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade),
+		                ( (index == 0)                              ||
+		                  (index == 1)                              ||
+		                 ((index == 2) && (*item == kRegisterNow )) ||
+		                 ((index == 3) && (*item == kLater       ))    )? kTextBrightRainbow: kTextRainbow );
 	}
 
-	SDLU_ReleaseSurface( drawSurface );	
+	SDLU_ReleaseSurface( drawSurface );
 }
 
 static void DrawControlsContents( int *item, int shade )
@@ -704,49 +704,49 @@ static void DrawControlsContents( int *item, int shade )
 	int         index;
 	const char* controlName;
 	int         r, g, b;
-	const char  label[8][20] = { "1P Left",   "2P Left", 
-	                             "1P Right",  "2P Right", 
+	const char  label[8][20] = { "1P Left",   "2P Left",
+	                             "1P Right",  "2P Right",
 	                             "1P Drop",   "2P Drop",
 	                             "1P Rotate", "2P Rotate" };
-	                           
-	                         
-	SDLU_AcquireSurface( drawSurface );	
+
+
+	SDLU_AcquireSurface( drawSurface );
 
 	for( index=0; index<8; index++ )
-	{	
+	{
 		highlight = (index == (*item - k1PLeft));
-		
+
 		dPoint.v = 229 + ((index & ~1) * 13);
 		dPoint.h = (index & 1)? 325: 130;
 		DrawRainbowText( smallFont, label[index], dPoint, (0.25 * index) + (0.075 * shade), highlight? kTextBrightRainbow: kTextRainbow );
-				
+
 		dPoint.v = 245 + ((index & ~1) * 13);
-		dPoint.h = (index & 1)? 420: 225;		
+		dPoint.h = (index & 1)? 420: 225;
 		r = (int)(highlight? 31.0: 0.0);
 		g = b = (int)(highlight? 31.0 - (11.0 * (sin(shade * 0.2) + 1.0)): 0.0);
-		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 ); 
-		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 ); 
-		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 ); 
-		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 ); 
+		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );
+		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );
+		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );
+		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );
 		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );  // 80 pixels across
-		
+
 		controlName = SDL_GetKeyName( playerKeys[index & 1][index >> 1] );
 		if( controlName == NULL ) controlName = "???";
-		
+
 		dPoint.v = 231 + ((index & ~1) * 13);
-		dPoint.h = (index & 1)? 460: 265;		
+		dPoint.h = (index & 1)? 460: 265;
 		dPoint.h -= GetTextWidth( tinyFont, controlName ) / 2;
-		DrawRainbowText( tinyFont, controlName, dPoint, (0.1 * shade), (controlToReplace == index)? kTextBlueGlow: kTextWhite );		
+		DrawRainbowText( tinyFont, controlName, dPoint, (0.1 * shade), (controlToReplace == index)? kTextBlueGlow: kTextWhite );
 	}
 
 	dPoint.h = 200;
 	dPoint.v = 340;
-	DrawRainbowText( smallFont, "£ OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
+	DrawRainbowText( smallFont, "? OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
 
 	dPoint.h = 365;
 	dPoint.v = 340;
-	DrawRainbowText( smallFont, "£ Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
-	
+	DrawRainbowText( smallFont, "? Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
+
 	SDLU_ReleaseSurface( drawSurface );
 }
 
@@ -755,27 +755,27 @@ static void DrawPauseContents( int *item, int shade )
 	MPoint dPoint;
 	int itemCount = IsRegistered()? 6: 7;
 	int index;
-	char *line[7] = { "Á Music",           "£ End Game",
-	                  "Á Sound",           "£ Hide Game",
-	                  "£ Controls",        "£ Resume",
-	                  "£ Register Now"                       };
+	char *line[7] = { "â€¢ Music",           "â€¢ End Game",
+	                  "â€¢ Sound",           "â€¢ Hide Game",
+	                  "â€¢ Controls",        "â€¢ Resume",
+	                  "â€¢ Register Now"                       };
 
-	
-	if( level == kTutorialLevel ) line[1] = "£ Skip Tutorial";
-	
-	if( !musicOn ) line[0] = "ª Music";
-	if( !soundOn ) line[2] = "ª Sound";
 
-	SDLU_AcquireSurface( drawSurface );	
-	
+	if( level == kTutorialLevel ) line[1] = "? Skip Tutorial";
+
+	if( !musicOn ) line[0] = "? Music";
+	if( !soundOn ) line[2] = "? Sound";
+
+	SDLU_AcquireSurface( drawSurface );
+
 	for( index=0; index<itemCount; index++ )
-	{	
+	{
 		dPoint.h = (index & 1)? 340: 180;
 		dPoint.v = 240 + ((index & ~1) * 15);
-		
+
 		DrawRainbowText( smallFont, line[index], dPoint, (0.25 * index) + (0.075 * shade), (*item == index)? kTextBrightRainbow: kTextRainbow );
 	}
-	
+
 	SDLU_ReleaseSurface( drawSurface );
 }
 
@@ -796,31 +796,31 @@ static void DrawSharewareNoticeContents( int *item, int shade )
 	                         "mode, and removes these shareware notices." };
 
 	itemsAreDimmed = SharewareNoticeIsStillWaiting();
-	
-	SDLU_AcquireSurface( drawSurface );	
-	
+
+	SDLU_AcquireSurface( drawSurface );
+
 	dPoint.v = 124;
 	dPoint.h = 140;
 	DrawRainbowText( bigFont, "Candy Crisis is shareware!", dPoint, 0, kTextWhite );
-	
+
 	for( index=0; index<10; index++ )
-	{	
+	{
 		dPoint.v = 165 + (16 * index);
 		dPoint.h = 156;
 		DrawRainbowText( tinyFont, line[index], dPoint, 0, 2 );
 	}
-	
+
 	dPoint.v = 340;
 	dPoint.h = 130;
-	DrawRainbowText( smallFont, "£ Not Yet", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeNotYet? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "? Not Yet", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeNotYet? kTextBlueGlow: kTextWhite) );
 
 	dPoint.v = 340;
 	dPoint.h = 260;
-	DrawRainbowText( smallFont, "£ Purchase", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticePurchase? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "? Purchase", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticePurchase? kTextBlueGlow: kTextWhite) );
 
 	dPoint.v = 340;
 	dPoint.h = 390;
-	DrawRainbowText( smallFont, "£ Enter Code", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeEnterCode? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "? Enter Code", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeEnterCode? kTextBlueGlow: kTextWhite) );
 
 	SDLU_ReleaseSurface( drawSurface );
 }
@@ -833,15 +833,15 @@ static void DrawEnterCodeContents( int *item, int shade )
 	                        "name below. Please make sure it matches your",
 	                        "name exactly as it appears in your registration",
 	                        "email." };
-	                         
-	SDLU_AcquireSurface( drawSurface );	
-	
+
+	SDLU_AcquireSurface( drawSurface );
+
 	dPoint.v = 124;
 	dPoint.h = 240;
 	DrawRainbowText( bigFont, "Enter Code", dPoint, 0, kTextWhite );
-	
+
 	for( index=0; index<4; index++ )
-	{	
+	{
 		dPoint.v = 165 + (16 * index);
 		dPoint.h = 156;
 		DrawRainbowText( tinyFont, line[index], dPoint, 0, kTextAlmostWhite );
@@ -854,16 +854,16 @@ static void DrawEnterCodeContents( int *item, int shade )
 	dPoint.v = 165 + (int)(4.5 * 16);
 	dPoint.h = 150;
 	dPoint = DrawRainbowText( smallFont, nameField, dPoint, 0, kTextWhite );
-	
+
 	if( whichField == nameField )
 	{
 		DrawRainbowText( smallFont, "|", dPoint, (shade * 0.1), kTextBlueGlow );
 	}
-	
+
 	dPoint.v = 165 + (int)(7 * 16);
 	dPoint.h = 156;
 	DrawRainbowText( tinyFont, "Next, enter your registration code.", dPoint, 0, kTextAlmostWhite );
-	
+
 
 	dPoint.v = 165 + (int)(9.75 * 16);
 	dPoint.h = 140;
@@ -877,14 +877,14 @@ static void DrawEnterCodeContents( int *item, int shade )
 	{
 		DrawRainbowText( smallFont, "|", dPoint, (shade * 0.1), kTextBlueGlow );
 	}
-	
+
 	dPoint.v = 340;
 	dPoint.h = 150;
-	DrawRainbowText( smallFont, "£ OK", dPoint, (shade * 0.1), (*item == kEnterCodeOK? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "? OK", dPoint, (shade * 0.1), (*item == kEnterCodeOK? kTextBlueGlow: kTextWhite) );
 
 	dPoint.v = 340;
 	dPoint.h = 380;
-	DrawRainbowText( smallFont, "£ Go Back", dPoint, (shade * 0.1), (*item == kEnterCodeNotYet? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "? Go Back", dPoint, (shade * 0.1), (*item == kEnterCodeNotYet? kTextBlueGlow: kTextWhite) );
 
 	if( batsuAlpha > 0 )
 	{
@@ -892,7 +892,7 @@ static void DrawEnterCodeContents( int *item, int shade )
 		dPoint.h = 320 - 111;
 		SurfaceBlitWeightedCharacter( batsuFont, 'X', &dPoint, 31, 0, 0, batsuAlpha-- );
 	}
-	
+
 	SDLU_ReleaseSurface( drawSurface );
 }
 
@@ -900,27 +900,27 @@ static MBoolean ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 {
 	MRect yes = {280, 220, 300, 260}, no = {280, 400, 300, 440};
 	MPoint p;
-	
-	inSDLKey; // is unused 
-	
+
+	inSDLKey; // is unused
+
 	if( continueTimeOut )
 	{
 		*item = kEndGame;
 		return true;
 	}
-	
+
 	if( inKey == kEscapeKey )
 	{
 		*item = kContinue;
 		return true;
 	}
-	
+
 	SDLU_GetMouse( &p );
 
-	     if( MPointInMRect( p, &yes ) ) *item = kContinue;	
+	     if( MPointInMRect( p, &yes ) ) *item = kContinue;
 	else if( MPointInMRect( p, &no  ) ) *item = kEndGame;
 	else *item = kNothing;
-	
+
 	return( SDLU_Button( ) && (*item != kNothing) );
 }
 
@@ -928,48 +928,48 @@ static MBoolean RegisterSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 {
 	MRect registerNow = {305, 170, 325, 290}, registerLater = {305, 400, 325, 470};
 	MPoint p;
-	
-	inKey, inSDLKey; // is unused 
-		
+
+	inKey, inSDLKey; // is unused
+
 	if( inKey == kEscapeKey )
 	{
 		*item = kLater;
 		return true;
 	}
-	
+
 	SDLU_GetMouse( &p );
 
-	     if( MPointInMRect( p, &registerNow   ) ) *item = kRegisterNow;	
+	     if( MPointInMRect( p, &registerNow   ) ) *item = kRegisterNow;
 	else if( MPointInMRect( p, &registerLater ) ) *item = kLater;
 	else *item = kNothing;
-	
+
 	if( SDLU_Button( ) )
 	{
-		switch( *item ) 
+		switch( *item )
 		{
 			case kRegisterNow:
 				PlayMono( kClick );
 				return true;
-			
+
 			case kLater:
 				PlayMono( kClick );
 				return true;
 		}
 	}
-	
+
 	return false;
 }
 
 static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	int nameLength;
-	
+
 	inSDLKey; // is unused
-	
+
 	nameLength = strlen(highScoreName);
-	
+
 	// return
-	if( inKey == 13 ) 
+	if( inKey == 13 )
 	{
 		if( nameLength > 0 )
 		{
@@ -982,7 +982,7 @@ static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey
 			PlayMono( kClick );
 		}
 	}
-	
+
 	// backspace
 	else if( inKey == 8 )
 	{
@@ -992,7 +992,7 @@ static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey
 			PlayMono( kClick );
 		}
 	}
-	
+
 	// characters
 	else if( bigFont->width[inKey] != 0 )
 	{
@@ -1000,7 +1000,7 @@ static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey
 		highScoreName[ nameLength   ] = '\0';
 		PlayMono( kPlace );
 	}
-	
+
 	*item = kNothing;
 	return false;
 }
@@ -1016,9 +1016,9 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 	MRect           okRect = { 340, 200, 360, 255 };
 	MRect           resetRect = { 340, 365, 360, 450 };
 	int             returnValue = 0;
-	
+
 	inKey; // unused
-	
+
 	*item = kNothing;
 
 	down = SDLU_Button();
@@ -1055,7 +1055,7 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 			if( MPointInMRect( p, &dRect ) )
 			{
 				*item = k1PLeft + index;
-				if( down && !lastDown && !AnyKeyIsPressed() ) 
+				if( down && !lastDown && !AnyKeyIsPressed() )
 				{
 					controlToReplace = (controlToReplace == index)? -1: index;
 				}
@@ -1063,15 +1063,15 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 			}
 		}
 	}
-	
+
 	if( inSDLKey != 0 && controlToReplace != -1 )
 	{
 		playerKeys[controlToReplace & 1][controlToReplace >> 1] = inSDLKey;
 		controlToReplace = -1;
 	}
-	
+
 	lastDown = down;
-	
+
 	return returnValue;
 }
 
@@ -1079,9 +1079,9 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	inSDLKey; // is unused
-	
-	MRect targetRect[] = 
-	{	
+
+	MRect targetRect[] =
+	{
 		{ 240, 180, 260, 320 },
 		{ 240, 340, 260, 480 },
 		{ 270, 180, 290, 320 },
@@ -1089,16 +1089,16 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 		{ 300, 180, 320, 320 },
 		{ 300, 340, 320, 480 },
 		{ 330, 180, 350, 320 },
-	    { 120, 550, 130, 560 }
+		{ 120, 550, 130, 560 }
 	};
 
 	static MBoolean lastDown = false;
 	int trigger;
 	int index;
 	MPoint p;
-	
+
 	SDLU_GetMouse( &p );
-	
+
 	trigger = SDLU_Button();
 	if( inKey == kEscapeKey )
 	{
@@ -1116,13 +1116,13 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 			}
 		}
 	}
-	
+
 	if( trigger )
 	{
 		if( !lastDown )
 		{
 			lastDown = true;
-			
+
 			switch( *item )
 			{
 				case kSound:     PlayMono( kClick ); soundOn = !soundOn; PlayMono( kClick );     return false;
@@ -1130,7 +1130,7 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 				case kEndGame:   PlayMono( kClick );                                             return true;
 				case kResume:    PlayMono( kClick );                                             return true;
 
-				case kPauseGame: 
+				case kPauseGame:
 					PlayMono( kClick );
 					SDL_WM_IconifyWindow();
                     WaitForRegainFocus();
@@ -1140,11 +1140,11 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 				case kRegisterNow:
 					PlayMono( kClick );
 					return true;
-					
-				case kControls:  
+
+				case kControls:
 					PlayMono( kClick );
 					return true;
-				
+
 				case kSecret:
 					if( ControlKeyIsPressed( ) )
 					{
@@ -1165,7 +1165,7 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 	{
 		lastDown = false;
 	}
-	
+
 	return false;
 }
 
@@ -1178,14 +1178,14 @@ static MBoolean SharewareNoticeSelected( int *item, unsigned char inKey, SDLKey 
 	MBoolean button;
 
 	inKey, inSDLKey; // are unused
-	
+
 	*item = kNothing;
-	
+
 	if( !SharewareNoticeIsStillWaiting() )
 	{
 		SDLU_GetMouse( &p );
 		button = SDLU_Button();
-		
+
 		     if( MPointInMRect( p, &notYetRect ) )      *item = kSharewareNoticeNotYet;
 		else if( MPointInMRect( p, &enterCodeRect ) )   *item = kSharewareNoticeEnterCode;
 		else if( MPointInMRect( p, &purchaseRect ) )
@@ -1198,10 +1198,10 @@ static MBoolean SharewareNoticeSelected( int *item, unsigned char inKey, SDLKey 
 				button = false;
 			}
 		}
-		
+
 		return (*item != kNothing) && button;
 	}
-	 
+
 	return false;
 }
 
@@ -1217,17 +1217,17 @@ static MBoolean EnterCodeSelected( int *item, unsigned char inKey, SDLKey inSDLK
 	int    button;
 
 	inSDLKey; // is unused
-	
+
 	// -- Handle keyboard stuff. (Ripped off from high score code.)
 	fieldLength = strlen(whichField);
-	
+
 	// return or tab
-	if( inKey == 13 || inKey == 9 ) 
+	if( inKey == 13 || inKey == 9 )
 	{
 		whichField = (whichField == nameField)? keyField: nameField;
-		PlayMono( kRotate );		
+		PlayMono( kRotate );
 	}
-	
+
 	// backspace
 	else if( inKey == 8 )
 	{
@@ -1237,12 +1237,12 @@ static MBoolean EnterCodeSelected( int *item, unsigned char inKey, SDLKey inSDLK
 			PlayMono( kClick );
 		}
 	}
-	
+
 	// characters
 	else if( (fieldLength < 40) && (smallFont->width[inKey] != 0) )
 	{
 		if( whichField == keyField ) inKey = toupper(inKey);
-		
+
 		whichField[ fieldLength++ ] = inKey;
 		whichField[ fieldLength   ] = '\0';
 		PlayMono( kPlace );
@@ -1253,7 +1253,7 @@ static MBoolean EnterCodeSelected( int *item, unsigned char inKey, SDLKey inSDLK
 
 	*item = kNothing;
 	SDLU_GetMouse( &p );
-	
+
 	     if( MPointInMRect( p, &notYetRect ) )        *item = kEnterCodeNotYet;
 	else if( MPointInMRect( p, &nameRect) && button ) whichField = nameField;
 	else if( MPointInMRect( p, &keyRect) && button )  whichField = keyField;
@@ -1278,7 +1278,7 @@ static MBoolean EnterCodeSelected( int *item, unsigned char inKey, SDLKey inSDLK
 			}
 		}
 	}
-	
+
 	return (*item != kNothing) && button;
 }
 
@@ -1294,7 +1294,7 @@ void SharewareNotice( int forceWait )
 
 
 void HandleDialog( int type )
-{	
+{
 	const float    lighten[4] = { 12.0f, 6.0f, 1.0f, 6.0f };
 	const MRect    boardWorldZRect = {0, 0, kBlobVertSize * (kGridDown-1), kBlobHorizSize * kGridAcross};
 	const MRect    fullRect = { 0, 0, 480, 640 };
@@ -1305,14 +1305,14 @@ void HandleDialog( int type )
 	char           inASCII;
 	SDLKey         inSDLKey;
 	MRect          pauseRect, joinRect;
-	
-	// Clear state 
+
+	// Clear state
 	whichField = nameField;
 	nameField[0] = '\0';
 	keyField[0] = '\0';
 	batsuAlpha = 0;
 	controlToReplace = -1;
-	
+
 	// Remember dialog info
 	dialogType = type;
 	dialogStage = kOpening;
@@ -1325,9 +1325,9 @@ void HandleDialog( int type )
 	dashedLineFont = GetFont( picDashedLineFont );
 	continueFont   = GetFont( picContinueFont );
 	batsuFont      = GetFont( picBatsuFont );
-		
+
 	if( type == kSharewareNoticeDialog || type == kEnterCodeDialog )
-	{	
+	{
 		// People shouldn't enjoy the nag dialogs, so let's not have flashy animated colors.
 		for( count=0; count<4; count++ )
 		{
@@ -1342,9 +1342,9 @@ void HandleDialog( int type )
 		for( count=0; count<4; count++ )
 		{
 			SDL_Color inColor;
-			
+
 			SDLU_GetPixel( boardSurface[0], RandomBefore( boardWorldZRect.right ), RandomBefore( boardWorldZRect.bottom ), &inColor );
-		
+
 			backColor[count].red   = inColor.r * (32.0f / 256.0f);
 			backColor[count].green = inColor.g * (32.0f / 256.0f);
 			backColor[count].blue  = inColor.b * (32.0f / 256.0f);
@@ -1354,7 +1354,7 @@ void HandleDialog( int type )
 			backColor[count].blue  = min( 31.0f, backColor[count].blue  + lighten[count] );
 		}
 	}
-	
+
 	// Get some graphics that we're going to need
 	logoSurface      = LoadPICTAsSurface( picLogo, 16 );
 	logoAlphaSurface = LoadPICTAsSurface( picLogoAlpha, 16 );
@@ -1362,17 +1362,17 @@ void HandleDialog( int type )
 
 	// Get a copy of the current game window contents
 	backSurface      = SDLU_InitSurface( &fullSDLRect, 16 );
-	
+
 	SDLU_BlitSurface( frontSurface, &frontSurface->clip_rect,
 	                  backSurface,  &backSurface->clip_rect );
-		
+
 	drawSurface      = SDLU_InitSurface( &fullSDLRect, 16 );
 
 	SDLU_BlitSurface( backSurface, &backSurface->clip_rect,
 	                  drawSurface, &drawSurface->clip_rect  );
 
 	//
-		
+
 	PlayMono( kWhomp );
 	dialogTimer = MTickCount();
 	dialogTarget = 0;
@@ -1383,7 +1383,7 @@ void HandleDialog( int type )
 	lastPauseRect.bottom = lastPauseRect.right = -9999;
 
 	SDLU_StartWatchingTyping();
-	
+
 	DoFullRepaint = ItsTimeToRedraw;
 
 	while( ((dialogStage != kClosing) || !dialogStageComplete) && !finished )
@@ -1392,7 +1392,7 @@ void HandleDialog( int type )
 
 		// Check mouse and keyboard
 		SDLU_CheckTyping( &inASCII, &inSDLKey );
-		
+
 		if( (dialogStage == kOpening) && dialogStageComplete )
 		{
 			MBoolean (*DialogSelected[kNumDialogs])( int *item, unsigned char inKey, SDLKey inSDLKey ) =
@@ -1405,10 +1405,10 @@ void HandleDialog( int type )
 				SharewareNoticeSelected,
 				EnterCodeSelected
 			};
-			
+
 			if( DialogSelected[dialogType]( &dialogItem, inASCII, inSDLKey ) )
 			{
-				dialogStage = kClosing; 
+				dialogStage = kClosing;
 				dialogTarget = 0;
 			}
 		}
@@ -1441,21 +1441,21 @@ void HandleDialog( int type )
 				SDLU_BlitFrontSurface( backSurface, &fullSDLRect, &fullSDLRect );
 				timeToRedraw = false;
 			}
-			
+
 			// ... and fade in the logo
 
 			dialogShade += skip;
 
 			{
 				const MBoolean dialogHasCandyCrisisLogo[kNumDialogs] = { true, true, true, true, true, false, false };
-				
+
 				if( dialogHasCandyCrisisLogo[dialogType] )
 					DrawDialogLogo( &pauseRect, dialogShade );
 			}
-			
-			// ... and animation is complete so add content			
+
+			// ... and animation is complete so add content
 			DialogDraw[dialogType]( &dialogItem, dialogShade );
-			
+
 			// ... and cursor
 			DrawDialogCursor( &pauseRect, &dialogShade );
 		}
@@ -1478,13 +1478,13 @@ void HandleDialog( int type )
 		else
 		{
 			skip = 1;
-			while( dialogTimer > MTickCount( ) ) 
+			while( dialogTimer > MTickCount( ) )
 			{
-				SDLU_Yield();  
+				SDLU_Yield();
 			}
 		}
 	}
-	
+
 	DoFullRepaint = NoPaint;
 
 	SDLU_StopWatchingTyping();
@@ -1498,27 +1498,27 @@ void HandleDialog( int type )
 	SDL_FreeSurface( logoSurface );
 	SDL_FreeSurface( logoAlphaSurface );
 	SDL_FreeSurface( logoMaskSurface );
-			
+
 	switch( dialogItem )
 	{
 		case kRegisterNow:
 			SharewareNotice( 0 );
 			RefreshAll();
 			break;
-		
+
 		case kSharewareNoticeEnterCode:
 			HandleDialog( kEnterCodeDialog );
 			break;
-			
+
 		case kEnterCodeNotYet:
 			HandleDialog( kSharewareNoticeDialog );
 			break;
-			
+
 		case kControls:
 			HandleDialog( kControlsDialog );
 			HandleDialog( kPauseDialog );
 			break;
-		
+
 		case kEndGame:
 			ChooseMusic( -1 );
 			AddHiscore( score[0] );
@@ -1530,23 +1530,23 @@ void HandleDialog( int type )
 			{
 				QuickFadeOut(NULL);
 			}
-			
+
 			showStartMenu = true;
 			break;
-		
+
 		case kContinue:
 			displayedScore[0] = score[0] = roundStartScore[0];
 			ShowScore( 0 );
 			BeginRound( true );
 			break;
-			
+
 		case kWarp:
 		{
 			int newLevel = level;
-			
+
 			InitGame( OptionKeyIsPressed()? kAIControl: kPlayerControl, kAIControl ); // this clears "level" ...
 			level = newLevel;                                                         // so we need to set "level" afterwards
-			BeginRound( true );	
+			BeginRound( true );
 			break;
 		}
 	}

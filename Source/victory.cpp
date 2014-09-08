@@ -65,16 +65,16 @@ void EndRound( int player )
 void BeginVictory( int player )
 {
 	int count;
-	
+
 	endTime = GameTickCount( );
 	winTime = GameTickCount( );
 	winStage = 0;
-	
-	role[player] = kWinning;	
+
+	role[player] = kWinning;
 	emotions[player] = kEmotionHappy;
-	
+
 	EraseSpriteBlobs( player );
-	
+
 	for( count=0; count<kGridAcross; count++ )
 	{
 		rowBounce[player][count] = 99;
@@ -92,15 +92,15 @@ void Lose( int player )
 	int       gameTime = GameTickCount();
 	int       skip = 1;
 	MRect     boardRect;
-	
+
 	if( gameTime < loseTime )
 		return;
-	
+
 	if( gameTime > loseTime )
 	{
 		skip = 2;
 	}
-		
+
 	loseTime  += skip;
 	loseStage += skip;
 
@@ -135,7 +135,7 @@ void Lose( int player )
 			{
 				AddHiscore( score[player] );
 				ShowGameOverScreen( );
-				
+
 				showStartMenu = true;
 			}
 		}
@@ -152,7 +152,7 @@ void DropLosers( int player, int skip )
 	int beginDrop[] = { 28, 14, 0, 7, 21, 35 };
 	float thisDrop;
 	MRect myRect;
-	
+
 	SDLU_AcquireSurface( playerSpriteSurface[player] );
 
 	for( x=0; x<kGridAcross; x++ )
@@ -160,7 +160,7 @@ void DropLosers( int player, int skip )
 		if( loseStage >= beginDrop[x] )
 		{
 			thisDrop = last[x] + ( (float)(skip) * ( 0.7 + last[x] / 12.0 ) );
-			
+
 			CalcBlobRect( x, 0, &myRect );
 			myRect.top = (int) last[x];
 			myRect.bottom = kGridDown * kBlobVertSize;
@@ -171,11 +171,11 @@ void DropLosers( int player, int skip )
 			{
 				myRect.top = (int) thisDrop;
 				myRect.bottom = myRect.top + kBlobVertSize;
-				
+
 				y=0;
 				while( myRect.top < (kGridDown*kBlobVertSize) )
 				{
-					if( grid[player][x][y] >= kFirstBlob && 
+					if( grid[player][x][y] >= kFirstBlob &&
 						grid[player][x][y] <= kLastBlob )
 					{
 						suck = suction[player][x][y] & (kUpDown);
@@ -185,12 +185,12 @@ void DropLosers( int player, int skip )
 					else if( grid[player][x][y] == kGray )
 					{
 						SurfaceDrawAlpha( &myRect, kGray, kLight, kGrayNoBlink );
-					} 
-					
+					}
+
 					OffsetMRect( &myRect, 0, kBlobVertSize );
 					y++;
 				}
-				
+
 				last[x] = thisDrop;
 			}
 		}
@@ -202,15 +202,15 @@ void DropLosers( int player, int skip )
 void Win( int player )
 {
 	int x, y;
-	
+
 	if( GameTickCount() >= winTime )
-	{			
+	{
 		if( winStage < (kGridDown * kGridAcross) )
 		{
 			y = (kGridDown-1) - (winStage / kGridAcross);
 			x = (winStage % kGridAcross);
 			if( y & 2 ) x = (kGridAcross-1) - x;
-						
+
 			if( grid[player][x][y] == kGray )
 			{
 				suction[player][x][y] = kGrayBlink1;
@@ -232,13 +232,13 @@ void Win( int player )
 		{
 			DrawTimerBonus( player );
 		}
-		
+
 		winTime++;
 		winStage++;
 	}
-	
+
 	if( winStage < 140 )
-	{	
+	{
 		KillBlobs( player );
 	}
 
@@ -255,27 +255,27 @@ void Win( int player )
 void DrawTimerCount( int player )
 {
 	MRect playerRect;
-	
+
 	SDLU_AcquireSurface( playerSurface[player] );
 
 	{
-		MPoint dPoint  = { (kBlobVertSize * 3), 15 };		
+		MPoint dPoint  = { (kBlobVertSize * 3), 15 };
 
 		SurfaceBlitCharacter( victoryFont, 'A', &dPoint,  31, 31, 0, 1  );
-	}	
+	}
 
 	{
 		MPoint dPoint  = { (kBlobVertSize * 4), kBlobHorizSize };
 		char seconds[20];
 		char *scan = seconds;
-		
+
 		sprintf( seconds, "%d", (endTime - startTime) / 60 );
 		while( *scan )
 		{
 			SurfaceBlitCharacter( zapFont, *scan++, &dPoint, 31, 31, 31, 1  );
 			dPoint.h--;
 		}
-		
+
 		dPoint.h += 6;
 		SurfaceBlitCharacter( zapFont, 'S', &dPoint,  31, 31, 31, 1  );
 	}
@@ -283,10 +283,10 @@ void DrawTimerCount( int player )
 	playerRect.top    = playerRect.left = 0;
 	playerRect.bottom = playerSurface[player]->h;
 	playerRect.right  = playerSurface[player]->w;
-	
+
 	CleanSpriteArea( player, &playerRect );
 	PlayStereo( player, kSplop );
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
 }
 
@@ -294,15 +294,15 @@ void DrawTimerBonus( int player )
 {
 	MRect playerRect;
 	int timer, bonus;
-	
+
 	SDLU_AcquireSurface( playerSurface[player] );
-	
+
 	{
 		MPoint dPoint  = { (kBlobVertSize * 6),     15     };
 
 		SurfaceBlitCharacter( victoryFont, 'B', &dPoint,  31, 31, 0, 1  );
 	}
-	
+
 	timer = (endTime - startTime) / 60;
 	     if( timer <= 10 ) bonus = 30000;
 	else if( timer <= 20 ) bonus = 10000;
@@ -313,33 +313,33 @@ void DrawTimerBonus( int player )
 	else if( timer <=100 ) bonus =  1000;
 	else if( timer <=120 ) bonus =   500;
 	else                   bonus =     0;
-	
+
 	if( players == 1 ) bonus *= level;
-	
+
 	score[player] += bonus;
-	
+
 	{
 		MPoint dPoint  = { (kBlobVertSize * 7), kBlobHorizSize };
 		char points[20];
 		char *scan = points;
-		
+
 		sprintf( points, "%d", bonus );
 		while( *scan )
 		{
 			SurfaceBlitCharacter( zapFont, *scan++, &dPoint, 31, 31, 31, 1  );
 			dPoint.h--;
 		}
-		
+
 		dPoint.h += 6;
 		SurfaceBlitCharacter( zapFont, 'P', &dPoint,  31, 31, 31, 1  );
 	}
-	
+
 	playerRect.top    = playerRect.left = 0;
 	playerRect.bottom = playerSurface[player]->h;
 	playerRect.right  = playerSurface[player]->w;
 
 	CleanSpriteArea( player, &playerRect );
 	PlayStereo( player, kSplop );
-	
+
 	SDLU_ReleaseSurface( playerSurface[player] );
 }

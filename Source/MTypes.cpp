@@ -11,13 +11,13 @@
 
 
 static inline short min( short a, short b )
-{	
+{
 	return (a < b)? a: b;
 }
 
 
 static inline short max( short a, short b )
-{	
+{
 	return (a > b)? a: b;
 }
 

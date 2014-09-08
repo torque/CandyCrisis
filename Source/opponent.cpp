@@ -32,25 +32,25 @@ void InitOpponent( void )
 	MRect    littleRect = {0, 0, 64, 64}, bigRect = {0, 0, 64, 64*(kOppFrames*3) };
 	SDL_Rect sdlRect;
 	double   index, value;
-	
+
 	opponentDrawSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &littleRect, &sdlRect ), 16 );
 	opponentSurface     = SDLU_InitSurface( SDLU_MRectToSDLRect( &bigRect, &sdlRect ), 16 );
 
 	bigRect.bottom *= kGlows + 1;
 	opponentMaskSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &bigRect, &sdlRect ), 1 );
-	
+
 	opponentWindowZRect.top = opponentWindowZRect.left = 0;
 	opponentWindowZRect.bottom = opponentWindowZRect.right = 64;
 	opponentWindowRect = opponentWindowZRect;
 	CenterRectOnScreen( &opponentWindowRect, 0.5, 0.5 );
-		
+
 	opponentMood = 0;
-	
+
 	for( index=0; index<kGlowArraySize; index++ )
 	{
 		value = sin( index*pi/kGlowArraySize );
 		value *= value;
-		
+
 		heavyGlowArray[(int)index] = (int)(value * 24.0);
 		glowArray     [(int)index] = (int)(value * 16.0);
 		lightGlowArray[(int)index] = (int)(value * 12.0);
@@ -70,7 +70,7 @@ void BeginOpponent( int which )
 		glowTime[count] = panicTime;
 		glowFrame[count] = 0;
 	}
-	
+
 	opponentMood = 0;
 	emotions[0] = emotions[1] = kEmotionNeutral;
 }
@@ -82,7 +82,7 @@ void DrawFrozenOpponent( void )
 
 	OffsetMRect( &myRect, opponentFrame * 64, 0 );
 
-	SDLU_BlitFrontSurface( opponentSurface, 
+	SDLU_BlitFrontSurface( opponentSurface,
 	                       SDLU_MRectToSDLRect( &myRect, &sourceSDLRect ),
 	                       SDLU_MRectToSDLRect( &opponentWindowRect, &destSDLRect ) );
 }
@@ -101,7 +101,7 @@ void OpponentChatter( MBoolean on )
 			opponentMood = 5;
 			opponentTime = GameTickCount();
 			break;
-			
+
 		case false:
 			opponentMood = 0;
 			opponentTime = GameTickCount();
@@ -114,7 +114,7 @@ void UpdateOpponent( void )
 	MRect    myRect = {0,0,64,64}, dstRect = {0,0,64,64}, maskRect;
 	int      emotiMap[] = {0, 1, 2, 1}, draw = false, count;
 	SDL_Rect srcSDLRect, dstSDLRect;
-	
+
 	if( GameTickCount( ) > opponentTime )
 	{
 		switch( opponentMood )
@@ -124,7 +124,7 @@ void UpdateOpponent( void )
 				opponentMood = RandomBefore(2) + 1;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames);
 				break;
-			
+
 			case 1:					// Shifty Eyes
 				opponentTime += 40 + RandomBefore(60);
 				opponentMood = 0;
@@ -136,19 +136,19 @@ void UpdateOpponent( void )
 				opponentMood = 3;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + 3;
 				break;
-			
+
 			case 3:					// Blinks (more)
 				opponentTime += 3;
 				opponentMood = 4;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + 4;
 				break;
-			
+
 			case 4: 				// Blinks (more)
 				opponentTime += 3;
 				opponentMood = 0;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + 3;
 				break;
-			
+
 			case 5:                 // Chatter (only good for tutorial)
 				opponentTime += 8;
 				opponentMood = 6;
@@ -160,21 +160,21 @@ void UpdateOpponent( void )
 				opponentMood = 5;
 				opponentFrame = 6;
 				break;
-			
+
 			case 7:					// Pissed (when hit with punishments)
 				opponentTime += 60;
 				opponentFrame = 7;
 				opponentMood = 0;
 				break;
 		}
-		
+
 		draw = true;
 	}
-	
+
 	if( GameTickCount( ) > panicTime )
 	{
 		panicTime += 2;
-		
+
 		if( emotions[1] == kEmotionPanic )
 		{
 			if( ++panicFrame >= kGlowArraySize ) panicFrame = 0;
@@ -185,13 +185,13 @@ void UpdateOpponent( void )
 			panicFrame = 0;
 		}
 	}
-	
+
 	for( count=0; count<kGlows; count++ )
 	{
 		if( GameTickCount( ) > glowTime[count] )
 		{
 			glowTime[count] += character[1].glow[count].time;
-			
+
 			if( character[1].glow[count].color )
 			{
 				if( ++glowFrame[count] >= kGlowArraySize ) glowFrame[count] = 0;
@@ -203,16 +203,16 @@ void UpdateOpponent( void )
 			}
 		}
 	}
-	
+
 	if( draw )
 	{
 		OffsetMRect( &myRect, 64*opponentFrame, 0 );
-		
+
 		SDLU_AcquireSurface( opponentDrawSurface );
-		
+
 		SDLU_BlitSurface( opponentSurface,     SDLU_MRectToSDLRect( &myRect, &srcSDLRect ),
 		                  opponentDrawSurface, SDLU_MRectToSDLRect( &dstRect, &dstSDLRect )  );
-		
+
 		maskRect = myRect;
 		for( count=0; count<kGlows; count++ )
 		{
@@ -223,34 +223,34 @@ void UpdateOpponent( void )
 				if( character[1].glow[count].color & 0x8000 )
 				{
 					SurfaceBlitColor(  opponentMaskSurface,  opponentDrawSurface,
-					                  &maskRect,            &dstRect, 
-					                   (character[1].glow[count].color & 0x7C00) >> 10,
-									   (character[1].glow[count].color & 0x03E0) >> 5,
-									   (character[1].glow[count].color & 0x001F),
-									   heavyGlowArray[glowFrame[count]] );
+					                  &maskRect,            &dstRect,
+					                  (character[1].glow[count].color & 0x7C00) >> 10,
+					                  (character[1].glow[count].color & 0x03E0) >> 5,
+					                  (character[1].glow[count].color & 0x001F),
+					                   heavyGlowArray[glowFrame[count]] );
 				}
 				else
 				{
 					SurfaceBlitColor(  opponentMaskSurface,  opponentDrawSurface,
-					                  &maskRect,            &dstRect, 
-					                   (character[1].glow[count].color & 0x7C00) >> 10,
-									   (character[1].glow[count].color & 0x03E0) >> 5,
-									   (character[1].glow[count].color & 0x001F),
-									   lightGlowArray[glowFrame[count]] );
+					                  &maskRect,            &dstRect,
+					                  (character[1].glow[count].color & 0x7C00) >> 10,
+					                  (character[1].glow[count].color & 0x03E0) >> 5,
+					                  (character[1].glow[count].color & 0x001F),
+					                   lightGlowArray[glowFrame[count]] );
 				}
 			}
 		}
-		
+
 		if( panicFrame )
 		{
 			SurfaceBlitColor(  opponentMaskSurface,  opponentDrawSurface,
-			                  &myRect,              &dstRect, 
+			                  &myRect,              &dstRect,
 			                   31, 31, 22, glowArray[panicFrame] );
 		}
-		
+
 		SDLU_ReleaseSurface( opponentDrawSurface );
-		
-		SDLU_BlitFrontSurface( opponentDrawSurface, 
+
+		SDLU_BlitFrontSurface( opponentDrawSurface,
 		                       SDLU_MRectToSDLRect( &opponentWindowZRect, &srcSDLRect ),
 		                       SDLU_MRectToSDLRect( &opponentWindowRect,  &dstSDLRect )  );
 	}

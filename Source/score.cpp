@@ -22,10 +22,10 @@ SDL_Surface* numberMaskSurface;
 MRect scoreWindowZRect, scoreWindowRect[2];
 MBoolean scoreWindowVisible[2] = {true, true};
 long roundStartScore[2], score[2], displayedScore[2], scoreTime[2];
-const char characterList[] = 
+const char characterList[] =
 { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
   'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-  'U', 'V', 'W', 'X', 'Y', 'Z', '.', '0', '1', '2', 
+  'U', 'V', 'W', 'X', 'Y', 'Z', '.', '0', '1', '2',
   '3', '4', '5', '6', '7', '8', '9', '!', '"', '#',
   '$' };
 
@@ -34,21 +34,21 @@ void InitScore( void )
 {
 	const double windowLoc[ ] = { 0.16, 0.84 };
 	SDL_Rect     sdlRect;
-	
+
 	scoreWindowZRect.top = scoreWindowZRect.left = 0;
 	scoreWindowZRect.bottom = 32; scoreWindowZRect.right = 144;
-	
+
 	scoreWindowRect[0] = scoreWindowRect[1] = scoreWindowZRect;
 	CenterRectOnScreen( &scoreWindowRect[0], windowLoc[0], 0.89 );
 	CenterRectOnScreen( &scoreWindowRect[1], windowLoc[1], 0.89 );
-	
+
 	scoreSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &scoreWindowZRect, &sdlRect ), 16 );
 	DrawPICTInSurface( scoreSurface, picBoard );
-	
+
 	numberSurface = LoadPICTAsSurface( picNumber, 16 );
 
 	numberMaskSurface = LoadPICTAsSurface( picNumberMask, 1 );
-	
+
 	displayedScore[0] = displayedScore[1] = 0;
 	score[0]          = score[1]          = 0;
 	scoreTime[0]      = scoreTime[1]      = 0;
@@ -57,9 +57,9 @@ void InitScore( void )
 void UpdateScore( int player )
 {
 	if( GameTickCount( ) >= scoreTime[player] )
-	{		
+	{
 		scoreTime[player] = GameTickCount() + 1;
-		
+
 		if( displayedScore[player] < score[player] )
 		{
 			if( (score[player] - displayedScore[player]) > 5000 )
@@ -74,10 +74,10 @@ void UpdateScore( int player )
 			{
 				displayedScore[player] += 25;
 			}
-			
+
 			if( displayedScore[player] > score[player] )
 				displayedScore[player] = score[player];
-			
+
 			ShowScore( player );
 		}
 	}
@@ -89,21 +89,21 @@ void ShowScore( int player )
 	MRect      myRect;
 	char       myString[256];
 	int        count;
-	
+
 	if( !scoreWindowVisible[player] ) return;
-	
+
 	if( control[player] == kNobodyControl )
 	{
 	}
 	else
 	{
 		sprintf( myString, "%d", displayedScore[player] );
-				
+
 		SDLU_AcquireSurface( scoreSurface );
-		
+
 		SDLU_BlitSurface( boardSurface[player], &scoreSurface->clip_rect,
-				 		  scoreSurface,         &scoreSurface->clip_rect   );
-		
+		                  scoreSurface,         &scoreSurface->clip_rect   );
+
 		myRect.top = 0;
 		myRect.left = 2;
 		myRect.bottom = kNumberVertSize;
@@ -120,10 +120,10 @@ void ShowScore( int player )
 			DrawCharacter( myString[count], &myRect );
 			OffsetMRect( &myRect, -kNumberHorizSize - 1, 0 );
 		}
-		
+
 		SDLU_ReleaseSurface( scoreSurface );
-		
-		SDLU_BlitFrontSurface( scoreSurface, 
+
+		SDLU_BlitFrontSurface( scoreSurface,
 		                       SDLU_MRectToSDLRect( &scoreWindowZRect, &sourceSDLRect ),
 		                       SDLU_MRectToSDLRect( &scoreWindowRect[player], &destSDLRect ) );
 	}
@@ -133,24 +133,24 @@ void DrawCharacter( char which, const MRect *myRect )
 {
 	MRect   srcRect;
 	char    count, result;
-	
+
 	result = -1;
 	for( count = 0; count < kNumberAmount; count++ )
 	{
-		if( characterList[count] == which ) 
+		if( characterList[count] == which )
 		{
 			result = count;
 			break;
 		}
 	}
-	
+
 	if( result == -1 ) return;
-	
+
 	srcRect.top    = 0;
 	srcRect.left   = result * kNumberHorizSize;
 	srcRect.bottom = kNumberVertSize;
 	srcRect.right  = srcRect.left + kNumberHorizSize;
-	
+
 	SurfaceBlitMask(  numberSurface,  numberMaskSurface,  SDLU_GetCurrentSurface(),
-			         &srcRect,       &srcRect,            myRect );
+	                 &srcRect,       &srcRect,            myRect );
 }

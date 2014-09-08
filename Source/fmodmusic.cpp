@@ -61,7 +61,7 @@ void ResumeMusic( void )
 
 void ChooseMusic( short which )
 {
-	if( musicSelection >= 0 && musicSelection <= kSongs )	
+	if( musicSelection >= 0 && musicSelection <= kSongs )
 	{
 		FMUSIC_StopSong( musicModule );
 		FMUSIC_FreeSong( musicModule );
@@ -70,7 +70,7 @@ void ChooseMusic( short which )
 
 	if( which >= 0 && which <= kSongs )
 	{
-		musicModule = FMUSIC_LoadSong( QuickResourceName( "mod", which+128, "" ) );		
+		musicModule = FMUSIC_LoadSong( QuickResourceName( "mod", which+128, "" ) );
 		if( musicModule != NULL )
 		{
 			FMUSIC_SetMasterVolume( musicModule, musicOn? 192: 0 );

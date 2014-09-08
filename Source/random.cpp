@@ -22,12 +22,12 @@ static int internalRandom() // uses a generic rand() algorithm
 void InitRandom( int inNumPieces )
 {
 	int count, swap, swapWith;
-	
+
 	numPieces = inNumPieces;
 	randomSeed[0] = randomSeed[1] = SDL_GetTicks();
 	pieceCount[0] = pieceCount[1] = 0;
 	grenadeTimer[0] = grenadeTimer[1] = 40;
-	
+
 	for( count=0; count<kBlobTypes; count++ )
 	{
 		pieceMap[count] = count+1;
@@ -51,13 +51,13 @@ int GetPiece( int player )
 {
 	int result;
 	unsigned long realSeed;
-	
+
 	realSeed = internalRandomSeed;
-	
+
 	internalRandomSeed = randomSeed[player];
 	result = pieceMap[RandomBefore(numPieces)];
 	randomSeed[player] = internalRandomSeed;
-	
+
 	internalRandomSeed = realSeed;
 
 	return result;
@@ -67,13 +67,13 @@ int GetMagic( int player )
 {
 	int result;
 	long realSeed;
-	
+
 	realSeed = internalRandomSeed;
-	
+
 	internalRandomSeed = randomSeed[player];
 	result = (RandomBefore(19) == 0)? true: false;
 	randomSeed[player] = internalRandomSeed;
-	
+
 	internalRandomSeed = realSeed;
 
 	return result;
@@ -98,13 +98,13 @@ static inline int RandomRange( double min, double max )
 	const double kMinRand = 0.0;
 	const double kMaxRand = 32767.0;
 	double x;
-	
+
 	x = (internalRandom() - kMinRand) / (kMaxRand - kMinRand + 1.0);
 	return (int) (x * (max + 1.0 - min) + min);
 }
 
 int RandomBefore( int what )
-{	
+{
 	return RandomRange( 0.0, what-1 );
 }
 

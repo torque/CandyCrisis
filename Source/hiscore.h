@@ -10,7 +10,7 @@ typedef struct
 	char name[kNameLength];
 } Combo;
 
-typedef struct 
+typedef struct
 {
 	char name[kNameLength];
 	long score;

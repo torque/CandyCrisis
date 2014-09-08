@@ -53,14 +53,14 @@ static int splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats]
 static MRect splatBlob[kNumSplats];
 static int glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
 static MRect titleRect[kTitleItems] = {
-		{ 155, 203, 207, 426 }, // tutorial
-		{ 225, 179, 281, 451 }, // 1p
-		{ 297, 182, 352, 454 }, // 2p
-		{ 358, 183, 428, 458 }, // solitaire
-		{ 429, 280, 478, 390 }, // high scores
-		{ 433, 390, 477, 446 }, // quit
-		{ 430, 187, 479, 280 }, // controls
-		                };
+	{ 155, 203, 207, 426 }, // tutorial
+	{ 225, 179, 281, 451 }, // 1p
+	{ 297, 182, 352, 454 }, // 2p
+	{ 358, 183, 428, 458 }, // solitaire
+	{ 429, 280, 478, 390 }, // high scores
+	{ 433, 390, 477, 446 }, // quit
+	{ 430, 187, 479, 280 }, // controls
+};
 
 const int kCursorWidth  = 32;
 const int kCursorHeight = 32;
@@ -71,16 +71,16 @@ static void InsertCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* s
 	SDL_Rect        cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	SDL_Rect        cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	MPoint          mouseHereToo = mouseHere;
-	
+
 	cursorFrontSDLRect.x = mouseHere.h;
 	cursorFrontSDLRect.y = mouseHere.v;
-	
+
 	SDLU_BlitSurface( surface, &cursorFrontSDLRect,
 	                  scratch, &cursorBackSDLRect   );
-	
+
 	SDLU_AcquireSurface( surface );
-	SurfaceBlitCharacter( cursorFont, '°', &mouseHere,    0,  0,  0, 0 );			
-	SurfaceBlitCharacter( cursorFont, '¢', &mouseHereToo, 31, 31, 31, 0 );			
+	SurfaceBlitCharacter( cursorFont, '°', &mouseHere,    0,  0,  0, 0 );
+	SurfaceBlitCharacter( cursorFont, '¢', &mouseHereToo, 31, 31, 31, 0 );
 	SDLU_ReleaseSurface( surface );
 }
 
@@ -89,10 +89,10 @@ static void RemoveCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* s
 	SDL_Rect      cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	SDL_Rect      cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	MPoint        mouseHereToo = mouseHere;
-	
+
 	cursorFrontSDLRect.x = mouseHere.h;
 	cursorFrontSDLRect.y = mouseHere.v;
-	
+
 	SDLU_BlitSurface( scratch, &cursorBackSDLRect,
 	                  surface, &cursorFrontSDLRect );
 }
@@ -128,33 +128,33 @@ void GameStartMenu( void )
 	SkittlesFontPtr smallFont = GetFont( picFont );
 	SkittlesFontPtr tinyFont = GetFont( picTinyFont );
 	SDL_Rect        meterRect[2] = { { 30, 360, 110, 20 }, { 530, 360, 110, 20 } };
- 
+
 	const int       kLeftSide = 0, kRightSide = 1, kGlow = 2, kCursor = 3;
-	
+
 redo:
 
 	combo[0] = combo[1] = 0;
 	comboBright[0] = comboBright[1] = 0;
 	missBright[0] = missBright[1] = 0;
-		
+
 	skip = 1;
 	selected = -1;
 	mouse.h = mouse.v = 0;
-	
+
 	if( finished ) return;
-	
+
 	if( musicSelection != 13 ) ChooseMusic( 13 );
-	
+
 	for( count=0; count<kTitleItems; count++ )
 	{
 		titleGlow[count] = 24;
 	}
-	
+
 	for( count=0; count<kNumSplats; count++ )
 	{
 		splatState[count] = kIdleSplat;
 	}
-	
+
 	// make background surface
 	gameStartSurface     = LoadPICTAsSurface( picGameStart, 16 );
 	black = SDL_MapRGB( gameStartSurface->format, 0, 0, 0 );
@@ -162,7 +162,7 @@ redo:
 	// make cursor backing store
 	cursorBackSurface    = SDLU_InitSurface( &cursorBackSDLRect, 16 );
 	SDL_FillRect( cursorBackSurface, &cursorBackSDLRect, black );
-	
+
 	// draw user name with a cool blue halo
 	if( IsRegistered() )
 	{
@@ -172,53 +172,53 @@ redo:
 	{
 		sprintf( registeredString, "U N R E G I S T E R E D" );
 	}
-	
+
 	dPoint.v = 131;
 	dPoint.h = 320 - (GetTextWidth( smallFont, registeredString ) / 2);
 	sPoint[0].v = dPoint.v + 1;	sPoint[0].h = dPoint.h + 1;
 	sPoint[1].v = dPoint.v - 1;	sPoint[1].h = dPoint.h - 1;
 	sPoint[2].v = dPoint.v - 1;	sPoint[2].h = dPoint.h + 1;
 	sPoint[3].v = dPoint.v + 1;	sPoint[3].h = dPoint.h - 1;
- 
+
 	SDLU_AcquireSurface( gameStartSurface );
 	for( scan = registeredString; *scan; scan++ )
-	{		
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[0], 0, 0, 25, 0 );			
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[1], 0, 0, 25, 0 );			
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[2], 0, 0, 25, 0 );			
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[3], 0, 0, 25, 0 );			
-		SurfaceBlitCharacter( smallFont, *scan, &dPoint, 30, 30, 30, 0 );			
+	{
+		SurfaceBlitCharacter( smallFont, *scan, &sPoint[0], 0, 0, 25, 0 );
+		SurfaceBlitCharacter( smallFont, *scan, &sPoint[1], 0, 0, 25, 0 );
+		SurfaceBlitCharacter( smallFont, *scan, &sPoint[2], 0, 0, 25, 0 );
+		SurfaceBlitCharacter( smallFont, *scan, &sPoint[3], 0, 0, 25, 0 );
+		SurfaceBlitCharacter( smallFont, *scan, &dPoint, 30, 30, 30, 0 );
 	}
 	SDLU_ReleaseSurface( gameStartSurface );
-	
+
 	// make drawing surface
 	gameStartDrawSurface = SDLU_InitSurface( &backdropSDLRect, 16 );
 	SDLU_BlitSurface( gameStartSurface,     &gameStartSurface->clip_rect,
-					  gameStartDrawSurface, &gameStartDrawSurface->clip_rect );
-	
+	                  gameStartDrawSurface, &gameStartDrawSurface->clip_rect );
+
 	// darken menu items
 	for( count=0; count<kTitleItems; count++ )
 	{
-		SurfaceBlitColorOver(  gameStartSurface,  gameStartDrawSurface, 
-		                      &titleRect[count], &titleRect[count], 
+		SurfaceBlitColorOver(  gameStartSurface,  gameStartDrawSurface,
+		                      &titleRect[count], &titleRect[count],
 		                       0, 0, 0, titleGlow[count] );
 	}
-	
+
 	SDLU_BlitFrontSurface( gameStartDrawSurface, &backdropSDLRect, &backdropSDLRect );
 
 	WaitForRelease();
 
 	QuickFadeIn( NULL );
-	
+
 	DoFullRepaint = GameStartMenuRepaint;
 
 	startMenuTime = MTickCount( );
 	while( ( selected == -1 || !SDLU_Button() ) && !finished )
-	{	
+	{
 		startMenuTime += skip;
 
-		// Add a new falling blob 
-		if( glowUpdate == 0 ) 
+		// Add a new falling blob
+		if( glowUpdate == 0 )
 		{
 			for( blob=0; blob<kNumSplats; blob++ )
 			{
@@ -231,33 +231,33 @@ redo:
 					splatBlob[blob].right = splatBlob[blob].left + kBlobHorizSize;
 					splatColor[blob] = ((startMenuTime >> 2) % kBlobTypes) + 1;
 					splatState[blob] = kFallingSplat;
-					
+
 					break;
 				}
 			}
 		}
-	
+
 		// Erase and redraw falling blobs and chunks
 
 		SDLU_AcquireSurface( gameStartDrawSurface );
-	
+
 		// Take the cursor out of the scene
 		RemoveCursor( mouse, cursorBackSurface, gameStartDrawSurface );
 		drawRect[kCursor].top    = mouse.v;
 		drawRect[kCursor].left   = mouse.h;
 		drawRect[kCursor].bottom = mouse.v + kCursorHeight;
 		drawRect[kCursor].right  = mouse.h + kCursorWidth;
-		
+
 		// is this a hack? maybe. but it works!
-		drawRect[kLeftSide].top    = drawRect[kRightSide].top    = drawRect[kGlow].top    = 
+		drawRect[kLeftSide].top    = drawRect[kRightSide].top    = drawRect[kGlow].top    =
 		drawRect[kLeftSide].left   = drawRect[kRightSide].left   = drawRect[kGlow].left   = 9999;
 		drawRect[kLeftSide].bottom = drawRect[kRightSide].bottom = drawRect[kGlow].bottom =
 		drawRect[kLeftSide].right  = drawRect[kRightSide].right  = drawRect[kGlow].right  = -9999;
-	
-		// Get cursor position		
+
+		// Get cursor position
 		SDLU_GetMouse( &mouse );
         if( mouse.v > 460 ) mouse.v = 460;
-        
+
 		// Erase falling blobs
 		for( blob=0; blob<kNumSplats; blob++ )
 		{
@@ -265,7 +265,7 @@ redo:
 			{
 				SDL_FillRect( gameStartDrawSurface, SDLU_MRectToSDLRect( &splatBlob[blob], &destSDLRect ), black );
 				UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
-				
+
 				OffsetMRect( &splatBlob[blob], 0, startSkip * (6 + (splatBlob[blob].bottom / 20)) );
 			}
 			else if( splatState[blob] >= kIncrementPerFrame )
@@ -280,62 +280,62 @@ redo:
 						UnionMRect( &drawRect[splatSide[blob]], &chunkRect, &drawRect[splatSide[blob]] );
 					}
 				}
-				
+
 				SDL_FillRect( gameStartDrawSurface, SDLU_MRectToSDLRect( &splatBlob[blob], &destSDLRect ), black );
 				UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 			}
 		}
-	
+
 		// Draw combo meters (GEEK!!!!!)
-        
+
 		for( count=0; count<2; count++ )
 		{
 			int bright = comboBright[count];
 			int mBright = missBright[count];
-            if( bright || mBright )
+			if( bright || mBright )
 			{
-                SDL_FillRect( gameStartDrawSurface, &meterRect[count], black );
-                UnionMRect( &drawRect[count], SDLU_SDLRectToMRect( &meterRect[count], &tempRect ), &drawRect[count] );
-                
-                if( mBright > 1 )
-                {
-                  dPoint.v = meterRect[count].y;
-                  dPoint.h = meterRect[count].x + 10;
-                  SurfaceBlitCharacter( smallFont, 'M', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
-                  SurfaceBlitCharacter( smallFont, 'I', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
-                  SurfaceBlitCharacter( smallFont, 'S', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
-                  SurfaceBlitCharacter( smallFont, 'S', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
-                  missBright[count]--;
-                }
-                else if( (combo[count] >= 10) && (bright > 1) )
-                {
-				  char  number[16] = { 0 };
-				  char* scan;
-				  sprintf( number, "%d", combo[count] );
+				SDL_FillRect( gameStartDrawSurface, &meterRect[count], black );
+				UnionMRect( &drawRect[count], SDLU_SDLRectToMRect( &meterRect[count], &tempRect ), &drawRect[count] );
 
-                  dPoint.v = meterRect[count].y + 3;
-                  dPoint.h = meterRect[count].x;
-     
-				  SurfaceBlitCharacter( tinyFont, 'C', &dPoint, bright, bright, bright, 1 );
-				  SurfaceBlitCharacter( tinyFont, 'O', &dPoint, bright, bright, bright, 1 );
-				  SurfaceBlitCharacter( tinyFont, 'M', &dPoint, bright, bright, bright, 1 );
-				  SurfaceBlitCharacter( tinyFont, 'B', &dPoint, bright, bright, bright, 1 );
-				  SurfaceBlitCharacter( tinyFont, 'O', &dPoint, bright, bright, bright, 1 );
-				  SurfaceBlitCharacter( tinyFont, ' ', &dPoint, bright, bright, bright, 1 );
-				  dPoint.v -= 3;
-				
-				  for( scan = number; *scan; scan++ )
-				  {
-				 	SurfaceBlitCharacter( smallFont, *scan, &dPoint, bright>>2, bright>>2, bright, 1 );
-			      }
-                  
-                  comboBright[count] -= 2;
+				if( mBright > 1 )
+				{
+					dPoint.v = meterRect[count].y;
+					dPoint.h = meterRect[count].x + 10;
+					SurfaceBlitCharacter( smallFont, 'M', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
+					SurfaceBlitCharacter( smallFont, 'I', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
+					SurfaceBlitCharacter( smallFont, 'S', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
+					SurfaceBlitCharacter( smallFont, 'S', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
+					missBright[count]--;
 				}
-                else 
-                {
-                  comboBright[count] = 0;
-                }
-   			}
+				else if( (combo[count] >= 10) && (bright > 1) )
+				{
+					char  number[16] = { 0 };
+					char* scan;
+					sprintf( number, "%d", combo[count] );
+
+					dPoint.v = meterRect[count].y + 3;
+					dPoint.h = meterRect[count].x;
+
+					SurfaceBlitCharacter( tinyFont, 'C', &dPoint, bright, bright, bright, 1 );
+					SurfaceBlitCharacter( tinyFont, 'O', &dPoint, bright, bright, bright, 1 );
+					SurfaceBlitCharacter( tinyFont, 'M', &dPoint, bright, bright, bright, 1 );
+					SurfaceBlitCharacter( tinyFont, 'B', &dPoint, bright, bright, bright, 1 );
+					SurfaceBlitCharacter( tinyFont, 'O', &dPoint, bright, bright, bright, 1 );
+					SurfaceBlitCharacter( tinyFont, ' ', &dPoint, bright, bright, bright, 1 );
+					dPoint.v -= 3;
+
+					for( scan = number; *scan; scan++ )
+					{
+						SurfaceBlitCharacter( smallFont, *scan, &dPoint, bright>>2, bright>>2, bright, 1 );
+					}
+
+					comboBright[count] -= 2;
+				}
+				else
+				{
+					comboBright[count] = 0;
+				}
+			}
 		}
 
 		// Redraw falling blobs
@@ -343,25 +343,26 @@ redo:
 		{
 			if( splatState[blob] == kFallingSplat )
 			{
-				if( splatBlob[blob].bottom >= 480 ) 
+				if( splatBlob[blob].bottom >= 480 )
 				{
 					splatBlob[blob].top = 480 - kBlobVertSize;
 					splatBlob[blob].bottom = 480;
 					splatState[blob] = 1;
-					
-                    // Process combos
+
+					// Process combos
 					if( mouse.v > 420 &&
-					    mouse.h >= (splatBlob[blob].left - 30) &&
-					    mouse.h <= (splatBlob[blob].right + 10)    )
+						mouse.h >= (splatBlob[blob].left - 30) &&
+						mouse.h <= (splatBlob[blob].right + 10)    )
 					{
 						combo[splatSide[blob]]++;
 						comboBright[splatSide[blob]] = 31;
 					}
 					else
 					{
-                        if( combo[splatSide[blob]] >= 10 ) missBright[splatSide[blob]] = 31;
+						if( combo[splatSide[blob]] >= 10 )
+							missBright[splatSide[blob]] = 31;
 						combo[splatSide[blob]] = 0;
-                        comboBright[splatSide[blob]] = 0;                        
+						comboBright[splatSide[blob]] = 0;
 					}
 				}
 				else
@@ -370,10 +371,10 @@ redo:
 					UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 				}
 			}
-			
+
 			if( splatState[blob] >= 0 && splatState[blob] <= kZapFrames )
 			{
-				if( splatState[blob] <= (kZapFrames - kIncrementPerFrame) ) 
+				if( splatState[blob] <= (kZapFrames - kIncrementPerFrame) )
 				{
 					for( splat=-3; splat<=3; splat++ )
 					{
@@ -385,21 +386,21 @@ redo:
 							UnionMRect( &drawRect[splatSide[blob]], &chunkRect, &drawRect[splatSide[blob]] );
 						}
 					}
-					
+
 					SurfaceDrawSprite( &splatBlob[blob], splatColor[blob], chunkType );
 					UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 				}
-				
+
 				splatState[blob] += kIncrementPerFrame;
 				if( splatState[blob] > kZapFrames ) splatState[blob] = kIdleSplat;
 			}
 		}
-				
-		SDLU_ReleaseSurface( gameStartDrawSurface );		
-		
+
+		SDLU_ReleaseSurface( gameStartDrawSurface );
+
 		// Find mouse coords
-		
-		selected = -1;			
+
+		selected = -1;
 		for( count=0; count<kTitleItems; count++ )
 		{
 			if( MPointInMRect( mouse, &titleRect[count] ) )
@@ -412,21 +413,21 @@ redo:
 		// update glows
 		do
 		{
-            glowUpdate = (glowUpdate + 1) % 7;
+			glowUpdate = (glowUpdate + 1) % 7;
 
 			oldGlow = titleGlow[glowUpdate];
-			
+
 			if( selected == glowUpdate )
 			{
 				titleGlow[glowUpdate] -= (4 * startSkip);
 				if( titleGlow[glowUpdate] < 0 ) titleGlow[glowUpdate] = 0;
 			}
-			else 
+			else
 			{
 				titleGlow[glowUpdate] += (4 * startSkip);
 				if( titleGlow[glowUpdate] > 24 ) titleGlow[glowUpdate] = 24;
 			}
-			
+
 			if( titleGlow[glowUpdate] != oldGlow )
 			{
 				SurfaceBlitColorOver(  gameStartSurface,       gameStartDrawSurface,
@@ -437,7 +438,8 @@ redo:
 			}
 
 			// do 5, 6, and 7 all at once because they're small
-		    if( glowUpdate == 4 || glowUpdate == 5 ) continue;
+			if( glowUpdate == 4 || glowUpdate == 5 )
+				continue;
 		}
 		while( 0 );
 
@@ -448,7 +450,7 @@ redo:
 		drawRect[kCursor].bottom = max( drawRect[kCursor].bottom, mouse.v + kCursorHeight );
 		drawRect[kCursor].right  = max( drawRect[kCursor].right,  mouse.h + kCursorWidth );
 
-		// Copy down everything		
+		// Copy down everything
 		if( shouldFullRepaint )
 		{
 			SDLU_BlitFrontSurface( gameStartDrawSurface, &gameStartDrawSurface->clip_rect, &gameStartDrawSurface->clip_rect );
@@ -457,15 +459,15 @@ redo:
 		else
 		{
 			for( count=0; count<4; count++ )
-			{		
+			{
 				if( drawRect[count].left < drawRect[count].right )
 				{
-					SDLU_MRectToSDLRect( &drawRect[count], &destSDLRect );			
+					SDLU_MRectToSDLRect( &drawRect[count], &destSDLRect );
 					SDLU_BlitFrontSurface( gameStartDrawSurface, &destSDLRect, &destSDLRect );
 				}
 			}
 		}
-				
+
 		// Skip frames? Or delay?
 		if( startMenuTime <= MTickCount( ) )
 		{
@@ -475,8 +477,8 @@ redo:
 		else
 		{
 			skip = 1;
-			while( startMenuTime > MTickCount( ) ) 
-			{   
+			while( startMenuTime > MTickCount( ) )
+			{
                 SDLU_Yield();
 			}
 		}
@@ -484,65 +486,65 @@ redo:
 
 	DoFullRepaint = NoPaint;
 
-	if( finished ) 
+	if( finished )
 	{
 		selected = 5; // quit
 	}
-	
+
 	switch( selected )
 	{
-		case 0: 
-		case 1: 
+		case 0:
+		case 1:
 		case 2:
 		case 3:
-			PlayMono( kChime ); 
+			PlayMono( kChime );
 			break;
 	}
 
 	SDL_FreeSurface( gameStartSurface );
 	SDL_FreeSurface( gameStartDrawSurface );
 	SDL_FreeSurface( cursorBackSurface );
-	
+
 	QuickFadeOut( NULL );
 
 	switch( selected )
 	{
-		case 0: 
+		case 0:
 			InitGame( kAutoControl, kNobodyControl );
 			level = kTutorialLevel;
 			BeginRound( true );
 			InitTutorial( );
 			QuickFadeIn( NULL );
-			break;				
+			break;
 
 		case 1:
 		case 2:
 		case 3:
 			{
 				int player2[] = { 0, kAIControl, kPlayerControl, kNobodyControl };
-				
+
 				InitGame( kPlayerControl, player2[selected] );
 				BeginRound( true );
 				QuickFadeIn( NULL );
 				break;
 			}
-		
-		case 4: 
+
+		case 4:
 			ShowHiscore();
 			ShowBestCombo();
 			break;
-			
+
 		case 5:
 			finished = true;
 			break;
-		
+
 		case 6:
 			currentID = RandomBefore( IsRegistered()? kLevels: kSharewareLevels ) * 100;
-	
-			DrawPICTInSurface( boardSurface[0], picBoard + currentID );	
+
+			DrawPICTInSurface( boardSurface[0], picBoard + currentID );
 			DrawPICTInSurface( frontSurface, picBackdrop + currentID );
-			SDL_Flip( frontSurface );		
-	
+			SDL_Flip( frontSurface );
+
 			QuickFadeIn( NULL );
 			HandleDialog( kControlsDialog );
 			QuickFadeOut( NULL );
@@ -553,7 +555,7 @@ redo:
 void ShowGameOverScreen( void )
 {
 	unsigned long timer = MTickCount() + (60*3);
-	
+
 	QuickFadeOut(NULL);
 
 	DrawPICTInSurface( frontSurface, picGameOver );
@@ -572,8 +574,8 @@ void ShowGameOverScreen( void )
 void InitStage( void )
 {
 	stageWindowZRect.top = stageWindowZRect.left = 0;
-	stageWindowZRect.bottom = 32; stageWindowZRect.right = 64; 
-	
+	stageWindowZRect.bottom = 32; stageWindowZRect.right = 64;
+
 	stageWindowRect = stageWindowZRect;
 	CenterRectOnScreen( &stageWindowRect, 0.5, 0.65 );
 }
@@ -583,29 +585,29 @@ void DrawStage( void )
 	SDL_Surface* levelSurface;
 	SDL_Rect     sourceSDLRect, destSDLRect;
 	MRect        numberRect = { 0, kNumberHorizSize/8, kNumberVertSize, kNumberHorizSize*9/8 };
-			
+
 	switch( players )
 	{
 		case 0:
 		case 2:
 			break;
-			
+
 		case 1:
 			SDLU_MRectToSDLRect( &stageWindowZRect, &sourceSDLRect );
 			SDLU_MRectToSDLRect( &stageWindowRect,  &destSDLRect );
-			
+
 			levelSurface = SDLU_InitSurface( &sourceSDLRect, 16 );
 
 			SDLU_AcquireSurface( levelSurface );
-			
+
 			SDLU_BlitSurface( boardSurface[0], &sourceSDLRect,
-							  levelSurface,    &sourceSDLRect   );
-			
+			                  levelSurface,    &sourceSDLRect   );
+
 			if( level < 10 )
 			{
 				OffsetMRect( &numberRect, kNumberHorizSize*3/8, 0 );
 			}
-			
+
 			DrawCharacter( kCharacterStage,   &numberRect );
 			OffsetMRect( &numberRect, kNumberHorizSize, 0 );
 			DrawCharacter( kCharacterStage+1, &numberRect );
@@ -624,9 +626,9 @@ void DrawStage( void )
 			}
 
 			SDLU_BlitFrontSurface( levelSurface, &sourceSDLRect, &destSDLRect );
-			
+
 			SDL_FreeSurface( levelSurface );
-						
+
 			break;
 	}
 }
@@ -637,7 +639,7 @@ void InitGame( int player1, int player2 )
 	nextWindowVisible[0] = true;
 	scoreWindowVisible[0] = true;
 	grayMonitorVisible[0] = true;
-	
+
 	if( player2 == kNobodyControl )
 	{
 		playerWindowVisible[1] = false;
@@ -649,9 +651,9 @@ void InitGame( int player1, int player2 )
 		CenterRectOnScreen( &scoreWindowRect[0],  0.5, 0.89 );
 		CenterRectOnScreen( &grayMonitorRect[0],  0.5, 0.11 );
 		CenterRectOnScreen( &nextWindowRect[0],   0.3, 0.25 );
-		
-		CenterRectOnScreen( &stageWindowRect,	  0.3, 0.65 );		
-		CenterRectOnScreen( &opponentWindowRect,  0.3, 0.5 );		
+
+		CenterRectOnScreen( &stageWindowRect,	  0.3, 0.65 );
+		CenterRectOnScreen( &opponentWindowRect,  0.3, 0.5 );
 	}
 	else
 	{
@@ -670,25 +672,25 @@ void InitGame( int player1, int player2 )
 		CenterRectOnScreen( &grayMonitorRect[1],  kRightPlayerWindowCenter, 0.11 );
 		CenterRectOnScreen( &nextWindowRect[1],   0.54, 0.25 );
 
-		CenterRectOnScreen( &stageWindowRect,    0.5, 0.65 );		
-		CenterRectOnScreen( &opponentWindowRect, 0.5, 0.5 );		
+		CenterRectOnScreen( &stageWindowRect,    0.5, 0.65 );
+		CenterRectOnScreen( &opponentWindowRect, 0.5, 0.5 );
 	}
-	
+
 	nextWindowVisible[0] = ( player1 == kAutoControl )? false: true;
-	
+
 	players = (player1 == kPlayerControl) + (player2 == kPlayerControl);
-	
+
 	if( players < 2 )
 	{
 		difficulty[0] = difficulty[1] = kHardLevel;
 	}
-	
+
 	control[0] = player1;
 	control[1] = player2;
-	
-	score[0] = score[1] = displayedScore[0] = displayedScore[1] = 0;	
+
+	score[0] = score[1] = displayedScore[0] = displayedScore[1] = 0;
 	roundStartScore[0] = roundStartScore[1] = 0;
-	
+
 	level = 1;
 	credits = (player2 == kNobodyControl)? 1: 5;
 }
@@ -712,12 +714,12 @@ MBoolean InitCharacter( int player, int level )
 		{ -1 }, // skip
 		{ 13, 24, 1, { 11, 11, 11, 11, 11, 11 }, 10, 5, 0, 30, { 0, 0, 0, 0 }, true }
 	};
-		
+
 	if( !IsRegistered() )
 	{
 		int levelCap = kSharewareLevels;
 		if( control[1] == kNobodyControl ) levelCap = kSharewareSolitaireLevels;
-		
+
 		if( level > levelCap && level != kTutorialLevel ) return false;
 	}
 
@@ -728,40 +730,40 @@ MBoolean InitCharacter( int player, int level )
 void PrepareStageGraphics( int type )
 {
 	int player;
-	                            
+
 	MRect blobBoard = { 0, 0, kGridDown * kBlobVertSize, kGridAcross * kBlobHorizSize };
-	
+
 	backgroundID = type * 100;
-	
-	DrawPICTInSurface( boardSurface[0], picBoard + backgroundID );	
-	
+
+	DrawPICTInSurface( boardSurface[0], picBoard + backgroundID );
+
 	// NOTE: Many levels have no right-side board, so we copy the left
 	// side over to the right side. This way, if DrawPICTInSurface flunks,
 	// we still have a valid picture.
-	
+
 	SDLU_BlitSurface( boardSurface[0], &boardSurface[0]->clip_rect,
 	                  boardSurface[1], &boardSurface[1]->clip_rect  );
-	
-	DrawPICTInSurface( boardSurface[1], picBoardRight + backgroundID );	
+
+	DrawPICTInSurface( boardSurface[1], picBoardRight + backgroundID );
 
 	DrawPICTInSurface( backdropSurface, picBackdrop + backgroundID );
 
 	DrawPICTInSurface( nextSurface, picNext + backgroundID );
-	
+
 	for( player=0; player<=1; player++ )
 	{
 		SDLU_AcquireSurface( playerSurface[player] );
 		SurfaceDrawBoard( player, &blobBoard );
 		SDLU_ReleaseSurface( playerSurface[player] );
-		
+
 		CleanSpriteArea( player, &blobBoard );
 	}
-	
+
 	BeginOpponent( type );
 
 	RedrawBoardContents( 0 );
 	RedrawBoardContents( 1 );
-	
+
 	RefreshAll( );
 
 	backdropTicks = MTickCount( );
@@ -771,10 +773,10 @@ void PrepareStageGraphics( int type )
 void BeginRound( MBoolean changeMusic )
 {
 	int player, count, count2;
-	
+
 	InitGrays( );
 	InitPotentialCombos( );
-	
+
 	switch( players )
 	{
 		case 0:
@@ -790,7 +792,7 @@ void BeginRound( MBoolean changeMusic )
 				TotalVictory( );
 				return;
 			}
-			
+
 			if( control[1] == kNobodyControl )
 			{
 				InitRandom( 3 );
@@ -800,29 +802,29 @@ void BeginRound( MBoolean changeMusic )
 				InitRandom( 5 );
 			}
 			break;
-			
+
 		case 2:
-			score[0] = score[1] = roundStartScore[0] = roundStartScore[1] = displayedScore[0] = displayedScore[1] = 0;	
+			score[0] = score[1] = roundStartScore[0] = roundStartScore[1] = displayedScore[0] = displayedScore[1] = 0;
 
 			InitRandom( 5 );
 
 			SelectRandomLevel( );
 			InitCharacter( 0, level );
-			
+
 			SelectRandomLevel( );
 			InitCharacter( 1, level );
-			
+
 			character[0].hints = (difficulty[0] == kEasyLevel) || (difficulty[0] == kMediumLevel);
 			character[1].hints = (difficulty[1] == kEasyLevel) || (difficulty[1] == kMediumLevel);
 			break;
 	}
-	
+
 	for( player=0; player<=1; player++ )
 	{
 		for( count=0; count<kGridAcross; count++ )
 		{
 			grays[player][count] = 0;
-			
+
 			for( count2=0; count2<kGridDown; count2++ )
 			{
 				grid[player][count][count2] = kEmpty;
@@ -831,21 +833,21 @@ void BeginRound( MBoolean changeMusic )
 				glow[player][count][count2] = false;
 			}
 		}
-		
+
 		nextA[player] = GetPiece( player );
 		nextB[player] = GetPiece( player );
 		nextM[player] = false;
 		nextG[player] = false;
-		
+
 		halfway[player] = false;
-		
+
 		unallocatedGrays[player] = 0;
 		anim[player] = 0;
 		lockGrays[player] = 0;
 		roundStartScore[player] = score[player];
-		
+
 		RedrawBoardContents(player);
-		
+
 		if( control[player] != kNobodyControl )
 		{
 			role[player] = kWaitForRetrieval;
@@ -855,20 +857,20 @@ void BeginRound( MBoolean changeMusic )
 			role[player] = kIdlePlayer;
 		}
 	}
-	
+
 	PrepareStageGraphics( character[1].picture );
 	if( changeMusic ) ChooseMusic( character[1].music );
-	
-	blobTime[0]     = blobTime[1]     = 
-	boredTime[0]    = boredTime[1]    = 
+
+	blobTime[0]     = blobTime[1]     =
+	boredTime[0]    = boredTime[1]    =
 	hintTime[0]     = hintTime[1]     =
 	timeAI[0]       = timeAI[1]       =
-	fadeCharTime[0] = fadeCharTime[1] = 
+	fadeCharTime[0] = fadeCharTime[1] =
 	messageTime     = startTime       =
 	blinkTime[0]    = blinkTime[1]    = GameTickCount( );
-	
+
 	blinkTime[1] += 60;
-	
+
 	if( players == 2 )
 		InitDifficulty( );
 }
@@ -890,7 +892,7 @@ void InitDifficulty( )
 	const int selectionRow = 5;
 	int count;
 	MRect blobRect;
-	
+
 	for( player=0; player<=1; player++ )
 	{
 		// Set up variables
@@ -904,7 +906,7 @@ void InitDifficulty( )
 			case kHardLevel:      blobX[player] = 3; break;
 			case kUltraLevel:     blobX[player] = 4; break;
 		}
-		
+
 		blobY[player] = selectionRow;
 		blobR[player] = upRotate;
 		blobTime[player] = GameTickCount( ) + (60*8);
@@ -912,20 +914,20 @@ void InitDifficulty( )
 		shadowDepth[player] = kBlobShadowDepth;
 		magic[player] = false;
 		grenade[player] = false;
-		
+
 		DrawPICTInSurface( boardSurface[player], picSelectDifficulty + backgroundID );
-		
+
 		SDLU_AcquireSurface( playerSurface[player] );
 
 		SurfaceDrawBoard( player, &blobBoard );
-		
+
 		grid[player][0][selectionRow] = kGray;
 		suction[player][0][selectionRow] = kEasyGray;
 		charred[player][0][selectionRow] = kNoCharring;
 		CalcBlobRect( 0, selectionRow, &blobRect );
 		SurfaceDrawBlob( player, &blobRect, kGray, kEasyGray, kNoCharring );
-		
-		grid[player][kGridAcross-1][selectionRow] = kGray;	
+
+		grid[player][kGridAcross-1][selectionRow] = kGray;
 		suction[player][kGridAcross-1][selectionRow] = kHardGray;
 		charred[player][kGridAcross-1][selectionRow] = kNoCharring;
 		CalcBlobRect( kGridAcross-1, selectionRow, &blobRect );
@@ -939,9 +941,9 @@ void InitDifficulty( )
 			DrawCharacter( count + '0', &blobRect );
 			OffsetMRect( &blobRect, kBlobHorizSize, 0 );
 		}
-		
+
 		SDLU_ReleaseSurface( playerSurface[player] );
-		
+
 		DrawSpriteBlobs( player, kNoSuction );
 		CleanSpriteArea( player, &blobBoard );
 	}
@@ -955,9 +957,9 @@ void ChooseDifficulty( int player )
 	const int fallingSpeed[kGridAcross] = {0, 15, 9, 7, 4, 0};
 	const int startGrays[kGridAcross] = {0, 0,  0, 10, 20, 0};
 	const int difficultyFrame[] = { kNoSuction, blobBlinkAnimation, blobBlinkAnimation,
-									  blobJiggleAnimation, blobCryAnimation, kNoSuction };
+	                                blobJiggleAnimation, blobCryAnimation, kNoSuction };
 	int oldX = blobX[player];
-	
+
 	if( !IsRegistered( ) )
 	{
 		if( player == 0 )
@@ -965,14 +967,14 @@ void ChooseDifficulty( int player )
 			HandleDialog( kRegisterDialog );
 			QuickFadeOut( NULL );
 			showStartMenu = true;
-		}	
+		}
 
-		return;	
+		return;
 	}
-	
+
 	PlayerControl( player );
 	if( blobX[player] != oldX ) anim[player] = 0;
-	
+
 	UpdateTweak( player, difficultyFrame[blobX[player]] );
 
 	if( GameTickCount( ) >= blobTime[player] )
@@ -985,39 +987,39 @@ void ChooseDifficulty( int player )
 		{
 			DrawPICTInSurface( boardSurface[player], picBoard + backgroundID );
 		}
-		
+
 		SDLU_AcquireSurface( playerSurface[player] );
 		SurfaceDrawBoard( player, &blobBoard );
 		SDLU_ReleaseSurface( playerSurface[player] );
-		
+
 		CleanSpriteArea( player, &blobBoard );
-	
+
 		grid[player][0][selectionRow] = kEmpty;
 		grid[player][5][selectionRow] = kEmpty;
-												
+
 		suction[player][0][selectionRow] = kNoSuction;
 		suction[player][5][selectionRow] = kNoSuction;
-		
+
 		difficulty[player]          = difficultyMap[ blobX[player] ];
 		character[player].dropSpeed = fallingSpeed[ blobX[player] ];
 		unallocatedGrays[player] = lockGrays[player] = startGrays[blobX[player]];
 		character[player].hints     = (startGrays[blobX[player]] == 0);
 		role[player] = kWaitingToStart;
-		
+
 		PlayStereoFrequency( player, kPause, player );
 	}
 }
 
-const char *gameCredits[][6] = 
+const char *gameCredits[][6] =
 {
 	{ "Programming", "John Stiles", "", "", "", "" },
 	{ "Artwork", "Kate Davis", "Leanne Stiles", "Arnauld de la Grandiere", "Bob Frasure", "Ryan Bliss" },
 	{ "Music", "Leanne Stiles", "fmod", "Lizardking", "Armadon, Explizit", "Leviathan, Nemesis" },
-	{ "Music", "Jester, Pygmy", "Siren", "Sirrus", "Scaven, FC", "Spring" }, 		  
+	{ "Music", "Jester, Pygmy", "Siren", "Sirrus", "Scaven, FC", "Spring" },
 	{ "Music", "Timewalker", "Jason, Silents", "Chromatic Dragon", "Ng Pei Sin", "" },
 	{ "Open Source", "gcc, mingw", "SDL", "libpng", "IJG", "zlib" },
-	{ "Special Thanks", "Sam Lantinga", "Carey Lening", "modarchive.com", "digitalblasphemy.com", "" },	  
-	{ "Please Register!", "The full version of", "Candy Crisis features", "twelve stages and also", "includes two player", "mode." } 		  
+	{ "Special Thanks", "Sam Lantinga", "Carey Lening", "modarchive.com", "digitalblasphemy.com", "" },
+	{ "Please Register!", "The full version of", "Candy Crisis features", "twelve stages and also", "includes two player", "mode." }
 };
 
 
@@ -1035,49 +1037,49 @@ void SharewareVictory( void )
 	int             delay = 2;
 	const char*     text;
 	int             thisFade;
-	const char fade[120] =   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //0
-				               1, 2, 3, 4, 5, 6, 7, 8, 9,10, //1
-				              11,12,13,14,15,16,17,18,19,20, //2
-				              20,20,20,20,20,20,20,20,20,20, //3
-				              20,20,20,20,20,20,20,20,20,20, //4
-				              20,20,20,20,20,20,20,20,20,20, //5
-				              20,20,20,20,20,20,20,20,20,20, //6
-				              20,20,20,20,20,20,20,20,20,20, //7
-				              20,20,20,20,20,20,20,20,20,20, //8
-							  20,19,18,17,16,15,14,13,12,11, //9
-							  10, 9, 8, 7, 6, 5, 4, 3, 2, 1, //10
-							   0, 0, 0, 0, 0, 0, 0, 0, 0, 0  //11
-						     };
-	              
+	const char fade[120] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //0
+	                         1, 2, 3, 4, 5, 6, 7, 8, 9,10, //1
+	                        11,12,13,14,15,16,17,18,19,20, //2
+	                        20,20,20,20,20,20,20,20,20,20, //3
+	                        20,20,20,20,20,20,20,20,20,20, //4
+	                        20,20,20,20,20,20,20,20,20,20, //5
+	                        20,20,20,20,20,20,20,20,20,20, //6
+	                        20,20,20,20,20,20,20,20,20,20, //7
+	                        20,20,20,20,20,20,20,20,20,20, //8
+	                        20,19,18,17,16,15,14,13,12,11, //9
+	                        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, //10
+	                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0  //11
+	                       };
+
 	titleFont = GetFont( picFont );
 	textFont = GetFont( picTinyFont );
-	
+
 	SDLU_MRectToSDLRect( &creditSrcRect, &creditSrcSDLRect );
 	SDLU_MRectToSDLRect( &bufferSrcRect, &bufferSrcSDLRect );
 	SDLU_MRectToSDLRect( &bufferDstRect, &bufferDstSDLRect );
-	
+
 	DrawPICTInSurface( frontSurface, picSharewareVictory );
 	SDL_Flip( frontSurface );
-	
+
 	backBuffer = SDLU_InitSurface( &bufferDstSDLRect, 16 );
-	
+
 	SDLU_BlitSurface( frontSurface, &bufferSrcSDLRect,
 	                  backBuffer,   &bufferDstSDLRect   );
 
 	frontBuffer = SDLU_InitSurface( &bufferDstSDLRect, 16 );
-	
-	QuickFadeIn( NULL );	
 
-	ChooseMusic( 12 ); 
-	
+	QuickFadeIn( NULL );
+
+	ChooseMusic( 12 );
+
 	ticks = MTickCount();
 	for( scroll=0; scroll<1500; scroll++ )
 	{
-		SDLU_AcquireSurface( frontBuffer );	
-		
+		SDLU_AcquireSurface( frontBuffer );
+
 		SDLU_BlitSurface( backBuffer,   &bufferDstSDLRect,
 		                  frontBuffer,  &bufferDstSDLRect  );
-		
+
 		ticks += 3;
 		lPoint = dPoint;
 		for( y=0; y<8; y++ )
@@ -1087,21 +1089,21 @@ void SharewareVictory( void )
 				cPoint.v = lPoint.v + 25;
 				cPoint.h = lPoint.h;
 				if( cPoint.v > 480 ) break;
-				
+
 				if( cPoint.v > 0 )
 				{
 					text = gameCredits[y][0];
 					thisFade = fade[cPoint.v >> 2];
-					
+
 					while( *text )
 					{
 						SurfaceBlitWeightedCharacter( titleFont, *text++, &cPoint, 31, 31, 0, thisFade );
 					}
 				}
-				
+
 				lPoint.v += 50;
 			}
-			
+
 			for( x=1; x<6; x++ )
 			{
 				if( gameCredits[y][x][0] )
@@ -1114,7 +1116,7 @@ void SharewareVictory( void )
 					{
 						text = gameCredits[y][x];
 						thisFade = fade[cPoint.v >> 2];
-						
+
 						while( *text )
 						{
 							SurfaceBlitWeightedCharacter( textFont, *text++, &cPoint, 31, 31, 0, thisFade );
@@ -1125,7 +1127,7 @@ void SharewareVictory( void )
 				}
 			}
 		}
-		
+
 		SDLU_ReleaseSurface( frontBuffer );
 
 		dPoint.v--;
@@ -1134,12 +1136,12 @@ void SharewareVictory( void )
 
 		do
 		{
-			if( SDLU_Button() ) goto out;	
-            SDLU_Yield();	
+			if( SDLU_Button() ) goto out;
+            SDLU_Yield();
 		}
 		while( ticks >= MTickCount() );
 	}
-	
+
 	do
 	{
         SDLU_Yield();
@@ -1147,8 +1149,8 @@ void SharewareVictory( void )
 	while( !AnyKeyIsPressed( ) && !SDLU_Button() );
 
 out:
-	QuickFadeOut( NULL );	
-	
+	QuickFadeOut( NULL );
+
 	SDL_FreeSurface( backBuffer );
 	SDL_FreeSurface( frontBuffer );
 }
@@ -1158,7 +1160,7 @@ void RegisteredVictory( void )
 	SkittlesFontPtr textFont, titleFont, bubbleFont;
 	SDL_Surface*    backBuffer;
 	SDL_Surface*    frontBuffer;
-	MPoint          dPoint[] = { { 230, 340 }, { 230, 30 }, { 230, 30 }, { 30, 30 }, { 30, 340 }, { 230, 340 }, { 230, 30 } }; 
+	MPoint          dPoint[] = { { 230, 340 }, { 230, 30 }, { 230, 30 }, { 30, 30 }, { 30, 340 }, { 230, 340 }, { 230, 30 } };
 	MPoint          bubblePoint, textPoint, shadowPoint;
 	MPoint          setPoint[7][6];
 	MPoint          msgSetPoint[7][2];
@@ -1183,12 +1185,12 @@ void RegisteredVictory( void )
 		{ "", "" },
 		{ "Thanks for playing Candy Crisis!", "" },
 	};
-	
+
 	textFont = GetFont( picFont );
 	titleFont = GetFont( picHiScoreFont );
 	bubbleFont = GetFont( picBubbleFont );
-	
-	ChooseMusic( 14 ); 
+
+	ChooseMusic( 14 );
 
 	for( picture=0; picture<7; picture++ )
 	{
@@ -1197,7 +1199,7 @@ void RegisteredVictory( void )
 			msgSetPoint[picture][line].v = ((dPoint[picture].v == 230)? 100: 400) + (line * 30);
 			msgSetPoint[picture][line].h = 320 - (GetTextWidth( titleFont, messages[picture][line] ) / 2);
 		}
-		
+
 		for( line=0; line<6; line++ )
 		{
 			SkittlesFontPtr font;
@@ -1205,12 +1207,12 @@ void RegisteredVictory( void )
 			if( line == 0 )
 			{
 				font = titleFont;
-				textPoint.v = 45;				
+				textPoint.v = 45;
 			}
 			else
 			{
 				font = textFont;
-				textPoint.v = 65 + (spacing[picture] * line);				
+				textPoint.v = 65 + (spacing[picture] * line);
 			}
 
 			textPoint.h = (bubbleFont->width['*'] - GetTextWidth( font, gameCredits[picture][line] )) / 2;
@@ -1218,37 +1220,37 @@ void RegisteredVictory( void )
 			setPoint[picture][line].v = dPoint[picture].v + textPoint.v;
 			setPoint[picture][line].h = dPoint[picture].h + textPoint.h;
 		}
-		
+
 		minimum = 640;
 		for( line=1; line<6; line++ )
 		{
 			if( setPoint[picture][line].h < minimum ) minimum = setPoint[picture][line].h;
 		}
-		
+
 		for( line=1; line<6; line++ )
 		{
 			setPoint[picture][line].h = minimum;
-		}		
+		}
 	}
-	
+
 	backBuffer  = SDLU_InitSurface( &backBufferSDLRect,  16 );
 	frontBuffer = SDLU_InitSurface( &fullSDLRect, 16 );
-	
+
 	for( picture = 0; picture<7; picture++ )
 	{
 		scrollSDLRect = ( scrollDir[picture] > 0 )? highSDLRect: lowSDLRect;
-		
+
 		DrawPICTInSurface( backBuffer, picture + picVictory1 );
 
 		SDLU_BlitFrontSurface( backBuffer, &scrollSDLRect, &fullSDLRect );
-		
+
 		QuickFadeIn( NULL );
-		
+
 		ticks = MTickCount();
 		for( vertScroll = 0; vertScroll < 250; vertScroll++ )
 		{
 			SDLU_AcquireSurface( frontBuffer );
-					
+
 			SDLU_BlitSurface( backBuffer,  &scrollSDLRect,
 			                  frontBuffer, &fullSDLRect );
 
@@ -1258,70 +1260,70 @@ void RegisteredVictory( void )
 				textPoint = msgSetPoint[picture][line];
 				shadowPoint.v = textPoint.v + 1;
 				shadowPoint.h = textPoint.h + 1;
-				
+
 				text = messages[picture][line];
-				
+
 				while( *text && weight > 0 )
 				{
 					int fixedWeight = (weight > 31)? 31: weight;
-					
+
 					SurfaceBlitWeightedCharacter( titleFont, *text, &shadowPoint, 0,  0,  0,  fixedWeight );
 					SurfaceBlitWeightedCharacter( titleFont, *text, &textPoint,   31, 31, 31, fixedWeight );
 					weight--;
 					text++;
 				}
 			}
-			
+
 			bubblePoint = dPoint[picture];
 			weight = ( vertScroll <= 210 )? vertScroll - 10: 241 - vertScroll;
 			if( weight < 0  ) weight = 0;
 			if( weight > 31 ) weight = 31;
-			
+
 			if( weight > 0 )
 			{
 				SurfaceBlitWeightedCharacter( bubbleFont, '*', &bubblePoint, 31, 31, 31, (weight+1)>>1 );
-				
+
 				for( line=0; line<6; line++ )
 				{
 					SkittlesFontPtr font = (line == 0)? titleFont: textFont;
-					
+
 					textPoint = setPoint[picture][line];
 					text = gameCredits[picture][line];
-					
+
 					while( *text )
 					{
 						SurfaceBlitWeightedCharacter( font, *text++, &textPoint, 0, 0, 0, weight );
 					}
 				}
 			}
-			
+
 			SDLU_ReleaseSurface( frontBuffer );
-			
+
 			SDLU_BlitFrontSurface( frontBuffer, &fullSDLRect, &fullSDLRect );
-			                       
+
 			scrollSDLRect.y += scrollDir[picture];
-			
+
 			ticks += 4;
 			do
-			{ 
+			{
 				if( SDLU_Button() ) vertScroll = 250;
-			    SDLU_Yield();
-			}			
+				SDLU_Yield();
+			}
 			while( ticks >= MTickCount() );
 		}
 
 		QuickFadeOut( NULL );
 	}
-	
+
 	SDL_FreeSurface( backBuffer  );
 	SDL_FreeSurface( frontBuffer );
 }
 
 void TotalVictory( void )
 {
-	
+
 	AddHiscore( score[0] );
-	QuickFadeOut( NULL );	
+	QuickFadeOut( NULL );
 
 	DoFullRepaint = NoPaint;
 

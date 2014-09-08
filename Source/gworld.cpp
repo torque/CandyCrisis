@@ -27,19 +27,19 @@ SDL_Surface* playerSpriteSurface[2];
 void GetBlobGraphics()
 {
 	MRect myRect;
-	
+
 	// Get board
-	
+
 	myRect.top = myRect.left = 0;
 	myRect.right = kBlobHorizSize * kGridAcross;
 	myRect.bottom = kBlobVertSize * (kGridDown-1);
-	
+
 	boardSurface[0] = LoadPICTAsSurface( picBoard, 16 );
-	
+
 	boardSurface[1] = LoadPICTAsSurface( picBoardRight, 16 );
 	if( boardSurface[1] == NULL )
 		boardSurface[1] = LoadPICTAsSurface( picBoard, 16 );
-	
+
 	// Get blob worlds
 
 	blobSurface = LoadPICTAsSurface( picBlob, 16 );
@@ -47,7 +47,7 @@ void GetBlobGraphics()
 	charMaskSurface = LoadPICTAsSurface( picCharMask, 1 );
 
 	// Get blast worlds
-	
+
 	blastSurface = LoadPICTAsSurface( picBlast, 16 );
 	blastMaskSurface = LoadPICTAsSurface( picBlastMask, 16 );
 }
@@ -58,13 +58,13 @@ void InitPlayerWorlds()
 	MRect     myRect;
 	SDL_Rect  sdlRect;
 	int       count;
-	
+
 	myRect.top = myRect.left = 0;
 	myRect.right = kGridAcross * kBlobHorizSize;
 	myRect.bottom = kGridDown * kBlobVertSize;
-	
+
 	SDLU_MRectToSDLRect( &myRect, &sdlRect );
-	
+
 	for( count=0; count<=1; count++ )
 	{
 		playerSurface[count]       = SDLU_InitSurface( &sdlRect, 16 );
@@ -77,7 +77,7 @@ void SurfaceDrawBoard( int player, const MRect *myRect )
 {
 	MRect    srcRect, offsetRect;
 	SDL_Rect srcSDLRect, offsetSDLRect;
-	
+
 	srcRect = *myRect;
 	if( srcRect.bottom <= kBlobVertSize ) return;
 	if( srcRect.top < kBlobVertSize ) srcRect.top = kBlobVertSize;
@@ -98,13 +98,13 @@ void SurfaceDrawBlob( int player, const MRect *myRect, int blob, int state, int 
 	if( charred & 0x0F )
 	{
 		MRect blobRect, charRect, alphaRect;
-		
+
 		CalcBlobRect( (charred & 0x0F), kBombTop-1, &charRect );
 		CalcBlobRect( (charred & 0x0F), kBombBottom-1, &alphaRect );
 		CalcBlobRect( state, blob-1, &blobRect );
 
 		SurfaceBlitWeightedDualAlpha(  SDLU_GetCurrentSurface(),  blobSurface,  charMaskSurface,  blobSurface,  SDLU_GetCurrentSurface(),
-                                       myRect,                   &charRect,    &blobRect,        &alphaRect,    myRect, 
+                                       myRect,                   &charRect,    &blobRect,        &alphaRect,    myRect,
                                       (charred & 0xF0)>>3 );
 	}
 }
@@ -113,7 +113,7 @@ void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
 {
 	int x;
 	MPoint offset[4] = { {-2, 0}, {0, -2}, {2, 0}, {0, 2} };
-	
+
 	if( blob > kEmpty )
 	{
 		MRect blobRect, destRect;
@@ -122,10 +122,10 @@ void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
 		{
 			destRect = *myRect;
 			OffsetMRect( &destRect, offset[x].h, offset[x].v );
-			
+
 			CalcBlobRect( state, blob-1, &blobRect );
 			SurfaceBlitColor(  maskSurface,  SDLU_GetCurrentSurface(),
-			                  &blobRect,    &destRect, 
+			                  &blobRect,    &destRect,
 			                   0, 0, 0, 3 );
 		}
 	}
@@ -138,8 +138,8 @@ void SurfaceDrawColor( const MRect *myRect, int blob, int state, int r, int g, i
 	{
 		CalcBlobRect( state, blob-1, &blobRect );
 		SurfaceBlitColor(  charMaskSurface,  SDLU_GetCurrentSurface(),
-						  &blobRect,         myRect, 
-						   r, g, b, w );
+		                  &blobRect,         myRect,
+		                   r, g, b, w );
 	}
 }
 
@@ -151,7 +151,7 @@ void SurfaceDrawAlpha( const MRect *myRect, int blob, int mask, int state )
 
 		CalcBlobRect( state, blob-1, &blobRect );
 		CalcBlobRect( state, mask-1, &alphaRect );
-		
+
 		SurfaceBlitAlpha( SDLU_GetCurrentSurface(),  blobSurface,  blobSurface, SDLU_GetCurrentSurface(),
 		                  myRect,                   &blobRect,    &alphaRect,   myRect );
 	}
@@ -175,7 +175,7 @@ MBoolean PICTExists( int pictID )
 
 	if( FileExists( QuickResourceName( "PICT", pictID, ".png" ) ) )
 		return true;
-	
+
 	return false;
 }
 
@@ -184,7 +184,7 @@ SDL_Surface* LoadPICTAsSurface( int pictID, int depth )
 {
 	const char*  filename;
 	SDL_Surface* surface;
-	
+
 	filename = QuickResourceName( "PICT", pictID, ".jpg" );
 	if( FileExists( filename ) )
 	{
@@ -203,25 +203,25 @@ SDL_Surface* LoadPICTAsSurface( int pictID, int depth )
 			return NULL;
 		}
 	}
-	
+
 	if( depth != 0 )
 	{
 		SDLU_ChangeSurfaceDepth( &surface, depth );
 	}
-	
+
 	return surface;
 }
 
 void DrawPICTInSurface( SDL_Surface* surface, int pictID )
 {
 	SDL_Surface* image;
-	
+
 	image = LoadPICTAsSurface( pictID, 0 );
 	if( image != NULL )
 	{
 		SDLU_BlitSurfaceHQ( image,    &image->clip_rect,
 		                    surface,  &surface->clip_rect );
-		                 
+
 		SDL_FreeSurface( image );
 	}
 }

@@ -25,9 +25,9 @@
 #include "music.h"
 #include "soundfx.h"
 
-Combo defaultBest = 
+Combo defaultBest =
 {
-	/*bestGrid[kGridAcross][kGridDown] = */ 
+	/*bestGrid[kGridAcross][kGridDown] = */
 	{ { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
 	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
 	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,                          1, 1, 1, 2, 2 },
@@ -37,8 +37,8 @@ Combo defaultBest =
 
 	/*bestA      = */ 2,
 	/*bestB      = */ 2,
-	/*bestM      = */ false, 
-	/*bestG      = */ false, 
+	/*bestM      = */ false,
+	/*bestG      = */ false,
 	/*bestLv     = */ kTutorialLevel,
 	/*bestX      = */ 1,
 	/*bestR      = */ upRotate,
@@ -47,9 +47,9 @@ Combo defaultBest =
 	/*bestName   = */ "Tutorial"
 };
 
-Combo best = 
+Combo best =
 {
-	/*bestGrid[kGridAcross][kGridDown] = */ 
+	/*bestGrid[kGridAcross][kGridDown] = */
 	{ { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
 	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
 	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,                          1, 1, 1, 2, 2 },
@@ -59,8 +59,8 @@ Combo best =
 
 	/*bestA      = */ 2,
 	/*bestB      = */ 2,
-	/*bestM      = */ false, 
-	/*bestG      = */ false, 
+	/*bestM      = */ false,
+	/*bestG      = */ false,
 	/*bestLv     = */ kTutorialLevel,
 	/*bestX      = */ 1,
 	/*bestR      = */ upRotate,
@@ -74,15 +74,15 @@ Combo potentialCombo[2];
 
 AutoPattern hiScorePattern[] =
 {
-	{ kIdleTicks,          60, 0,   NULL },	
-	{ kBlockUntilDrop,     0,  0,   NULL },	
-	{ kBlockUntilComplete, 0,  0,   NULL },	
-	{ kIdleTicks,          60, 0,   NULL },	
+	{ kIdleTicks,          60, 0,   NULL },
+	{ kBlockUntilDrop,     0,  0,   NULL },
+	{ kBlockUntilComplete, 0,  0,   NULL },
+	{ kIdleTicks,          60, 0,   NULL },
 	{ kComplete,           0,  0,   NULL }
 };
 
-HighScore scores[10] = 
-{	
+HighScore scores[10] =
+{
 	{"Leviathan", 40000},
 	{"Dr. Crisis", 36000},
 	{"Angel", 32000},
@@ -92,11 +92,11 @@ HighScore scores[10] =
 	{"Kumo", 16000},
 	{"Patty", 12000},
 	{"Yuurei", 8000},
-	{"Glurp", 4000}  
+	{"Glurp", 4000}
 };
 
-HighScore defaultScores[10] = 
-{	
+HighScore defaultScores[10] =
+{
 	{"Leviathan", 40000},
 	{"Dr. Crisis", 36000},
 	{"Angel", 32000},
@@ -106,7 +106,7 @@ HighScore defaultScores[10] =
 	{"Kumo", 16000},
 	{"Patty", 12000},
 	{"Yuurei", 8000},
-	{"Glurp", 4000}  
+	{"Glurp", 4000}
 };
 
 char highScoreName[256];
@@ -120,9 +120,9 @@ static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, i
 	SDL_Rect  destSDLRect;
 	SDL_Rect  fullSDLRect = { 0, 0, 640, 480 };
 	int       black;
-	
+
 	black = SDL_MapRGB( fadeSurface->format, 0, 0, 0 );
-	
+
 	if( start < end )
 	{
 		direction = 1;
@@ -135,7 +135,7 @@ static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, i
 		fadeStart = 32;
 		fadeEnd = 0;
 	}
-	
+
 	skip = 1;
 	timer = MTickCount( ) + 1;
 	while( timer > MTickCount() ) { }
@@ -144,38 +144,38 @@ static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, i
 	{
 		MRect drawRect = {0, 0, 15, 640};
 		timer += skip;
-		
+
 		for( fade = fadeStart; fade != fadeEnd; fade += direction )
 		{
 			color = frame + fade;
 			if( color <  0 ) color = 0;
 			if( color > 31 ) color = 31;
-			
+
 			SDLU_MRectToSDLRect( &drawRect, &destSDLRect );
 
 			switch( color )
 			{
 				case 0:
 					SDLU_BlitSurface( hiScoreSurface, &destSDLRect,
-					                  fadeSurface,    &destSDLRect  ); 
+					                  fadeSurface,    &destSDLRect  );
 					break;
-			
+
 				case 31:
 					SDL_FillRect( fadeSurface, &destSDLRect, black );
 					break;
-				
+
 				default:
-					SurfaceBlitColorOver(  hiScoreSurface,  fadeSurface, 
+					SurfaceBlitColorOver(  hiScoreSurface,  fadeSurface,
 					                      &drawRect,       &drawRect,
 					                       0, 0, 0, color );
 					break;
 			}
-			
+
 			OffsetMRect( &drawRect, 0, 15 );
 		}
 
 		SDLU_BlitFrontSurface( fadeSurface, &fullSDLRect, &fullSDLRect );
-				
+
 		if( timer <= MTickCount( ) )
 		{
 			skip = 2;
@@ -204,23 +204,23 @@ void ShowHiscore( void )
 	MPoint            dPoint;
 	const char*      highScores = "HIGH SCORES";
 	int              r, g, b;
-	
+
 	if( /* the delete key is held down */ 0 ) // <-- MUST BE OBSOLETED ... ACTUALLY MUST BE FIXED, BUT I ALWAYS SEARCH FOR OBSOLETE :)
 	{
 		// If the user holds delete while opening the high scores,
 		// clear the high score table.
-		
+
 		memcpy( &scores, &defaultScores, sizeof( scores ) );
 		memcpy( &best,   &defaultBest,   sizeof( best   ) );
 	}
-	
+
 	hiScoreSurface = LoadPICTAsSurface( picBackdrop + (100 * RandomBefore(IsRegistered()? kLevels: kSharewareLevels)), 16 );
 	fadeSurface    = SDLU_InitSurface( &fullSDLRect, 16 );
 
 	font = GetFont( picHiScoreFont );
 
 	SDLU_AcquireSurface( hiScoreSurface );
-		
+
 	SDLU_GetPixel( hiScoreSurface, RandomBefore( fullSDLRect.w ), RandomBefore( fullSDLRect.h ), &anyColor );
 
 	anyColor.r = anyColor.r * 32 / 256;
@@ -234,58 +234,58 @@ void ShowHiscore( void )
 	dPoint.h = 225;
 	for( count=0; highScores[count]; count++ )
 	{
-		SurfaceBlitCharacter( font, highScores[count], &dPoint, 31, 31, 31, 1 );			
+		SurfaceBlitCharacter( font, highScores[count], &dPoint, 31, 31, 31, 1 );
 	}
-	
+
 	for( count=0; count<=9; count++ )
 	{
 		r = ((31 * (10-count)) + (anyColor.r * count)) / 10;
 		g = ((31 * (10-count)) + (anyColor.g * count)) / 10;
 		b = ((31 * (10-count)) + (anyColor.b * count)) / 10;
-		
+
 		dPoint.v = 75 + count * 38;
 		dPoint.h = 85;
-		
+
 		if( count<9 )
 		{
-			SurfaceBlitCharacter( font, count + '1', &dPoint, r, g, b, 1 );			
+			SurfaceBlitCharacter( font, count + '1', &dPoint, r, g, b, 1 );
 		}
 		else
 		{
-			SurfaceBlitCharacter( font, '1', &dPoint, r, g, b, 1 );			
-			SurfaceBlitCharacter( font, '0', &dPoint, r, g, b, 1 );			
+			SurfaceBlitCharacter( font, '1', &dPoint, r, g, b, 1 );
+			SurfaceBlitCharacter( font, '0', &dPoint, r, g, b, 1 );
 		}
-		
-		SurfaceBlitCharacter( font, '.', &dPoint, r, g, b, 1 );			
-		SurfaceBlitCharacter( font, ' ', &dPoint, r, g, b, 1 );			
+
+		SurfaceBlitCharacter( font, '.', &dPoint, r, g, b, 1 );
+		SurfaceBlitCharacter( font, ' ', &dPoint, r, g, b, 1 );
 
 		length = 0;
 		while( scores[count].name[length] && dPoint.h < 430 )
 		{
-			SurfaceBlitCharacter( font, scores[count].name[length++], &dPoint, r, g, b, 1 );			
+			SurfaceBlitCharacter( font, scores[count].name[length++], &dPoint, r, g, b, 1 );
 		}
-		
-		
+
+
 		while( dPoint.h < 450 )
 		{
-			SurfaceBlitCharacter( font, '.', &dPoint, r, g, b, 1 );			
+			SurfaceBlitCharacter( font, '.', &dPoint, r, g, b, 1 );
 		}
-		
+
 		dPoint.h = 470;
 
 		stringLength = sprintf( myString, "%d", scores[count].score );
 		for( length=0; length < stringLength; length++ )
 		{
-			SurfaceBlitCharacter( font, myString[length], &dPoint, r, g, b, 1 );			
+			SurfaceBlitCharacter( font, myString[length], &dPoint, r, g, b, 1 );
 		}
 	}
-	
+
 	SDLU_ReleaseSurface( hiScoreSurface );
-	
+
 	SDL_FillRect( frontSurface, &frontSurface->clip_rect, SDL_MapRGB( frontSurface->format, 0, 0, 0 ));
 	SDL_Flip( frontSurface );
-	
-	SDLU_SetBrightness( 1.0f );	
+
+	SDLU_SetBrightness( 1.0f );
 
 	FadeScreen( hiScoreSurface, fadeSurface, 31, -32 );
 	do
@@ -293,8 +293,8 @@ void ShowHiscore( void )
 	}
 	while( !AnyKeyIsPressed( ) && !SDLU_Button() );
 	FadeScreen( hiScoreSurface, fadeSurface, -31, 32 );
-	
-	SDLU_SetBrightness( 0.0f );	
+
+	SDLU_SetBrightness( 0.0f );
 
 	SDL_FreeSurface( hiScoreSurface );
 	SDL_FreeSurface( fadeSurface );
@@ -314,7 +314,7 @@ void SubmitCombo( Combo *in )
 	{
 		PlayMono( kContinueSnd );
 		memcpy( &evenBetter, in, sizeof( Combo ) );
-	}	
+	}
 }
 
 // Please note: This function may well be the biggest kludge in Candy Crisis.
@@ -325,9 +325,9 @@ void ShowBestCombo( void )
 	char *bestCombo = "BEST COMBO", bestInfo[256], *scan;
 	MPoint dPoint;
 	int levelCap;
-	
+
 	font = GetFont( picHiScoreFont );
-	
+
 	StopBalloon( );
 	InitGame( kAutoControl, kNobodyControl );
 	scoreWindowVisible[0] = false;
@@ -335,7 +335,7 @@ void ShowBestCombo( void )
 
 	level = best.lv;
 	levelCap = IsRegistered()? kLevels: kSharewareSolitaireLevels;
-	if( (level < 1 || level > levelCap) && level != kTutorialLevel ) 
+	if( (level < 1 || level > levelCap) && level != kTutorialLevel )
 	{
 		memcpy( &best, &defaultBest, sizeof(best) );
 		showStartMenu = true;
@@ -344,27 +344,27 @@ void ShowBestCombo( void )
 
 	BeginRound( false );
 	character[0].dropSpeed = 12;
-	
+
 	SDLU_AcquireSurface( backdropSurface );
-	
+
 	dPoint.v = 40;
 	dPoint.h = 225;
 	for( scan = bestCombo; *scan; scan++ )
 	{
-		SurfaceBlitCharacter( font, *scan, &dPoint, 31, 31, 31, 1 );			
+		SurfaceBlitCharacter( font, *scan, &dPoint, 31, 31, 31, 1 );
 	}
-		
+
 	sprintf( bestInfo, "%s (%d points)", best.name, best.value );
 	dPoint.v = 410;
 	dPoint.h = 320 - (GetTextWidth( font, bestInfo ) / 2);
 
 	for( scan = bestInfo; *scan; scan++ )
 	{
-		SurfaceBlitCharacter( font, *scan, &dPoint, 31, 31, 31, 1 );			
+		SurfaceBlitCharacter( font, *scan, &dPoint, 31, 31, 31, 1 );
 	}
 
 	SDLU_ReleaseSurface( backdropSurface );
-	
+
 	memcpy( grid[0], best.grid, kGridAcross * kGridDown );
 	ResolveSuction( 0 );
 	RedrawBoardContents( 0 );
@@ -380,11 +380,11 @@ void ShowBestCombo( void )
 	blobX[0] = best.x;
 	blobR[0] = best.r;
 	DrawSpriteBlobs( 0, kNoSuction );
-	
+
 	QuickFadeIn( NULL );
 	blobTime[0] = animTime[0] = GameTickCount( );
 
-	autoPattern = hiScorePattern;	
+	autoPattern = hiScorePattern;
 	tutorialTime = 0;
 }
 
@@ -394,36 +394,36 @@ void AddHiscore( long score )
 	char rank[50];
 	char text[256], *playerName = "You", *twoPlayerNames[] = { "Player 1", "Player 2" };
 	int highScoreLevel = -1;
-	
+
 
 	// Check for high score
 	// (only do high scores if it's player vs CPU)
-			
+
 	if( players == 1 &&
 	    control[0] == kPlayerControl &&
 	    control[1] == kAIControl        )
-	{		
+	{
 		for( count=0; count<=9; count++ )
 		{
 			if( score >= scores[count].score )
-			{				
+			{
 				sprintf( rank, "%d points", score );
 				highScoreLevel = count;
 				break;
 			}
 		}
 	}
-	
+
 	// Determine player's name for best combo
 
 	if( players == 2 ) playerName = twoPlayerNames[evenBetter.player];
 
 
 	// See if both best combo AND high score
-		
+
 	if( evenBetter.value > best.value && highScoreLevel != -1 )
 	{
-		
+
 		sprintf( text, "You got a high score and the best combo!" );
 
 		highScoreText = text;
@@ -442,23 +442,23 @@ void AddHiscore( long score )
 			{
 				memmove( &scores[item+1], &scores[item], sizeof( HighScore ) );
 			}
-			
+
 			scores[highScoreLevel].score = score;
-			strcpy( scores[highScoreLevel].name, highScoreName );				
+			strcpy( scores[highScoreLevel].name, highScoreName );
 		}
 	}
-	
+
 	// See if best combo has been won
-		
+
 	else if( evenBetter.value > best.value )
 	{
 		sprintf( text, "Congratulations! %s got best combo!", playerName );
-		
+
 		highScoreText = text;
 		highScoreRank = "";
-				
+
 		HandleDialog( kHiScoreDialog );
-		
+
 		if( !finished )
 		{
 			highScoreName[kNameLength] = '\0';
@@ -469,14 +469,14 @@ void AddHiscore( long score )
 	}
 
 	// See if high score has been won
-	
+
 	else if( highScoreLevel != -1 )
 	{
 		highScoreText = "Congratulations! You got a high score!";
 		highScoreRank = rank;
 
 		HandleDialog( kHiScoreDialog );
-		
+
 		if( !finished )
 		{
 			highScoreName[kNameLength] = '\0';
@@ -485,9 +485,9 @@ void AddHiscore( long score )
 			{
 				memmove( &scores[item+1], &scores[item], sizeof( HighScore ) );
 			}
-			
+
 			scores[highScoreLevel].score = score;
-			strcpy( scores[highScoreLevel].name, highScoreName );				
+			strcpy( scores[highScoreLevel].name, highScoreName );
 		}
 	}
 }

@@ -27,7 +27,7 @@ typedef struct MRect
 	short top;
 	short left;
 	short bottom;
-	short right;	
+	short right;
 } MRect;
 
 

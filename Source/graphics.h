@@ -17,7 +17,7 @@ void OpeningProgress( int current, int total ) ;
 extern SDL_Surface* backdropSurface;
 
 
-enum 
+enum
 {
 	blobBlinkAnimation = 0,
 	blobJiggleAnimation,
