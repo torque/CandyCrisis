@@ -50,10 +50,10 @@ void UpdatePlayerWindow( int player )
 			{
 				if( update[player][x][y] )
 				{
-					updateRect.top  = y * kBlobVertSize;
-					updateRect.left = x * kBlobHorizSize;
-					updateRect.bottom = updateRect.top + kBlobVertSize;
-					updateRect.right = updateRect.left + kBlobHorizSize;
+					updateRect.top    = y * kBlobVertSize;
+					updateRect.left   = x * kBlobHorizSize;
+					updateRect.bottom = updateRect.top  + kBlobVertSize;
+					updateRect.right  = updateRect.left + kBlobHorizSize;
 					if( first )
 					{
 						fullRect = updateRect;
@@ -128,9 +128,9 @@ void SurfaceBlitMask( SDL_Surface* object,     SDL_Surface* mask,     SDL_Surfac
 	endY = objectRect->bottom - objectRect->top;
 
 	if( destRect->left   > destBounds.right  ||			// completely clipped?
-		destRect->right  < destBounds.left   ||
-		destRect->top    > destBounds.bottom ||
-		destRect->bottom < destBounds.top )
+	    destRect->right  < destBounds.left   ||
+	    destRect->top    > destBounds.bottom ||
+	    destRect->bottom < destBounds.top )
 	{
 		return; 												// do nothing
 	}

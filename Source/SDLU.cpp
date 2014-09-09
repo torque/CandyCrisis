@@ -698,8 +698,8 @@ void SDLU_SetBrightness( float b )
 
 void SDLU_Yield()
 {
-    SDL_Delay( 2 );
-    SDL_PumpEvents();
+	SDL_Delay( 2 );
+	SDL_PumpEvents();
 }
 
 void SDLU_PumpEvents()
@@ -709,8 +709,8 @@ void SDLU_PumpEvents()
 
 	if( lastPump != time )
 	{
-        SDL_Event evt;
-        while( SDL_PollEvent( &evt ) ) { }
+		SDL_Event evt;
+		while( SDL_PollEvent( &evt ) ) { }
 		lastPump = time;
 	}
 }
