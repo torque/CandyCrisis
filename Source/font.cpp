@@ -10,7 +10,7 @@
 
 #define kNumFonts (picBatsuFont-picFont+1)
 
-static SkittlesFont s_font[kNumFonts] = {0};
+static SkittlesFont s_font[kNumFonts] = {{0}};
 
 
 static SkittlesFontPtr LoadFont( SkittlesFontPtr font, int pictID, unsigned char *letterMap )

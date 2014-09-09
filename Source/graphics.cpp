@@ -162,7 +162,6 @@ void DrawBackdrop( void )
 void OpeningProgress( int current, int total )
 {
 	// computers are fast now... progress bar seems silly
-	current, total;
 }
 
 void ShowTitle( void )

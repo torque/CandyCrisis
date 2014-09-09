@@ -563,7 +563,6 @@ void GetZapStyle( int player, MRect *myRect, int *color, int *type, int which, i
 	                             kSquish3, kSquish3, kSquish3, kSquish3, kSquish3,
 	                             kSquish4, kSquish4, kSquish4, kSquish4, kSquish4 };
 
-	color; // later
 	*type = chunkGraphic[level];
 
 	switch(  style )
@@ -572,7 +571,6 @@ void GetZapStyle( int player, MRect *myRect, int *color, int *type, int which, i
 		{
 			const int direction[7][2] = { {0, -2}, {-2,-1}, {-2,1}, {0,0}, {2,-1}, {2,1}, {0, 2} };
 			const int position[kZapFrames] = {0, 5, 9, 13, 17, 21, 24, 26, 30, 33, 35, 37, 39, 41, 42, 43, 43, 44, 44, 44 };
-			const int yVelocity = 2;
 
 			OffsetMRect( myRect, direction[which+3][0] * position[level],
 								direction[which+3][1] * position[level] );

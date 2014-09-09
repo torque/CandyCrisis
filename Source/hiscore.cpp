@@ -69,7 +69,7 @@ Combo best =
 	/*bestName   = */ "Tutorial"
 };
 
-Combo evenBetter = {0};
+Combo evenBetter = {{{0}}};
 Combo potentialCombo[2];
 
 AutoPattern hiScorePattern[] =
@@ -273,7 +273,7 @@ void ShowHiscore( void )
 
 		dPoint.h = 470;
 
-		stringLength = sprintf( myString, "%d", scores[count].score );
+		stringLength = sprintf( myString, "%ld", scores[count].score );
 		for( length=0; length < stringLength; length++ )
 		{
 			SurfaceBlitCharacter( font, myString[length], &dPoint, r, g, b, 1 );
@@ -322,7 +322,8 @@ void SubmitCombo( Combo *in )
 void ShowBestCombo( void )
 {
 	SkittlesFontPtr font;
-	char *bestCombo = "BEST COMBO", bestInfo[256], *scan;
+	const char *bestCombo = "BEST COMBO", *constScan;
+	char bestInfo[256], *scan;
 	MPoint dPoint;
 	int levelCap;
 
@@ -349,9 +350,9 @@ void ShowBestCombo( void )
 
 	dPoint.v = 40;
 	dPoint.h = 225;
-	for( scan = bestCombo; *scan; scan++ )
+	for( constScan = bestCombo; *constScan; constScan++ )
 	{
-		SurfaceBlitCharacter( font, *scan, &dPoint, 31, 31, 31, 1 );
+		SurfaceBlitCharacter( font, *constScan, &dPoint, 31, 31, 31, 1 );
 	}
 
 	sprintf( bestInfo, "%s (%d points)", best.name, best.value );
@@ -392,7 +393,8 @@ void AddHiscore( long score )
 {
 	short count, item;
 	char rank[50];
-	char text[256], *playerName = "You", *twoPlayerNames[] = { "Player 1", "Player 2" };
+	char text[256];
+	const char *playerName = "You", *twoPlayerNames[] = { "Player 1", "Player 2" };
 	int highScoreLevel = -1;
 
 
@@ -407,7 +409,7 @@ void AddHiscore( long score )
 		{
 			if( score >= scores[count].score )
 			{
-				sprintf( rank, "%d points", score );
+				sprintf( rank, "%ld points", score );
 				highScoreLevel = count;
 				break;
 			}
@@ -455,7 +457,7 @@ void AddHiscore( long score )
 		sprintf( text, "Congratulations! %s got best combo!", playerName );
 
 		highScoreText = text;
-		highScoreRank = "";
+		*highScoreRank = 0;
 
 		HandleDialog( kHiScoreDialog );
 

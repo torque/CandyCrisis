@@ -369,7 +369,7 @@ void PlaceGrenade( int player )
 void PlaceBlobs( int player )
 {
 	MRect myRect;
-	int x, y, height, delay = -6;
+	int x, y, height;
 	int currentX = blobX[player], currentY = blobY[player];
 
 	potentialCombo[player].x = currentX;

@@ -88,7 +88,6 @@ static void RemoveCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* s
 {
 	SDL_Rect      cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	SDL_Rect      cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
-	MPoint        mouseHereToo = mouseHere;
 
 	cursorFrontSDLRect.x = mouseHere.h;
 	cursorFrontSDLRect.y = mouseHere.v;
@@ -106,13 +105,11 @@ void GameStartMenu( void )
 {
 	// NOTE: be wary of initializing variables here! This function can run top-to-bottom
 	// multiple times in a row, thanks to "redo". Put initializations after redo.
-    SDL_Surface*    gameStartSurface;
-    SDL_Surface*    gameStartDrawSurface;
-    SDL_Surface*    cursorBackSurface;
-	MRect           backdropPortZRect = { 0, 0, 480, 640 };
+	SDL_Surface*    gameStartSurface;
+	SDL_Surface*    gameStartDrawSurface;
+	SDL_Surface*    cursorBackSurface;
 	SDL_Rect        backdropSDLRect = { 0, 0, 640, 480 };
 	SDL_Rect        cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
-	SDL_Rect        cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	SDL_Rect        destSDLRect;
 	MRect           drawRect[4], chunkRect, tempRect;
 	int             blob, count, oldGlow, splat, chunkType, selected;
@@ -699,20 +696,20 @@ MBoolean InitCharacter( int player, int level )
 {
 	const Character characterList[] = {
 		{ -1 }, // no zero'th character
-		{ 0, 3, 1, { 8, 8, 8, 8, 8, 8 }, 13, 9, 0, 25, { 0, 0, 0, 0 }, true },
-		{ 1, 6, 2, { 10, 9, 8, 8, 9, 10 }, 12, 7, 1, 20, { 223, 7, 0, 0 }, true },
-		{ 2, 9, 3, { 7, 7, 7, 11, 7, 7 }, 10, 6, 2, 17, { 0, 0, 0, 0 }, false },
-		{ 3, 12, 4, { 11, 10, 9, 8, 7, 6 }, 8, 5, 3, 13, { 32767, 4, 16912, 4 }, false },
-		{ 4, 15, 0, { 5, 9, 10, 10, 9, 5 }, 7, 4, 4, 10, { 32767, 1, 0, 0 }, false },
-		{ 5, 17, 1, { 4, 7, 11, 11, 6, 3 }, 7, 2, 5, 8, { 14835, 8, 0, 0 }, false },
-		{ 6, 18, 2, { 7, 9, 10, 10, 9, 7 }, 6, 4, 6, 7, { 0, 0, 0, 0 }, false },
-		{ 7, 20, 3, { 5, 10, 10, 10, 10, 5 }, 5, 3, 7, 5, { 9696, 2, 21151, 3 }, false },
-		{ 8, 21, 4, { 11, 11, 10, 10, 9, 9 }, 4, 3, 8, 5, { 32738, 5, 0, 0 }, false },
-		{ 9, 22, 0, { 11, 7, 11, 7, 11, 7 }, 3, 1, 9, 4, { 32356, 5, 17392, 3 }, false },
-		{ 10, 23, 1, { 11, 11, 11, 11, 11, 11 }, 2, 1, 10, 2, { 6337, 1, 0, 0 }, false },
-		{ 11, 24, 2, { 11, 11, 11, 11, 11, 11 }, 2, 1, 11, 2, { -1, 7, 0, 0 }, false },
+		{  0,  3, 1, {  8,  8,  8,  8,  8,  8 }, 13, 9,  0, 25, { {     0, 0 }, {     0, 0 } }, true },
+		{  1,  6, 2, { 10,  9,  8,  8,  9, 10 }, 12, 7,  1, 20, { {   223, 7 }, {     0, 0 } }, true },
+		{  2,  9, 3, {  7,  7,  7, 11,  7,  7 }, 10, 6,  2, 17, { {     0, 0 }, {     0, 0 } }, false },
+		{  3, 12, 4, { 11, 10,  9,  8,  7,  6 },  8, 5,  3, 13, { { 32767, 4 }, { 16912, 4 } }, false },
+		{  4, 15, 0, {  5,  9, 10, 10,  9,  5 },  7, 4,  4, 10, { { 32767, 1 }, {     0, 0 } }, false },
+		{  5, 17, 1, {  4,  7, 11, 11,  6,  3 },  7, 2,  5,  8, { { 14835, 8 }, {     0, 0 } }, false },
+		{  6, 18, 2, {  7,  9, 10, 10,  9,  7 },  6, 4,  6,  7, { {     0, 0 }, {     0, 0 } }, false },
+		{  7, 20, 3, {  5, 10, 10, 10, 10,  5 },  5, 3,  7,  5, { {  9696, 2 }, { 21151, 3 } }, false },
+		{  8, 21, 4, { 11, 11, 10, 10,  9,  9 },  4, 3,  8,  5, { { 32738, 5 }, {     0, 0 } }, false },
+		{  9, 22, 0, { 11,  7, 11,  7, 11,  7 },  3, 1,  9,  4, { { 32356, 5 }, { 17392, 3 } }, false },
+		{ 10, 23, 1, { 11, 11, 11, 11, 11, 11 },  2, 1, 10,  2, { {  6337, 1 }, {     0, 0 } }, false },
+		{ 11, 24, 2, { 11, 11, 11, 11, 11, 11 },  2, 1, 11,  2, { {    -1, 7 }, {     0, 0 } }, false },
 		{ -1 }, // skip
-		{ 13, 24, 1, { 11, 11, 11, 11, 11, 11 }, 10, 5, 0, 30, { 0, 0, 0, 0 }, true }
+		{ 13, 24, 1, { 11, 11, 11, 11, 11, 11 }, 10, 5,  0, 30, { {     0, 0 }, {     0, 0 } }, true }
 	};
 
 	if( !IsRegistered() )
@@ -1034,7 +1031,6 @@ void SharewareVictory( void )
 	MRect           bufferDstRect = { 0, 0, 480, 250 };
 	MPoint          dPoint = { 450, 50 }, lPoint, cPoint;
 	int             scroll, ticks, x, y;
-	int             delay = 2;
 	const char*     text;
 	int             thisFade;
 	const char fade[120] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //0

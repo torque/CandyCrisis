@@ -63,7 +63,6 @@ static char  candyCrisisResources[512];
 
 int main(int argc, char *argv[])
 {
-	argc, argv;
 
 	Initialize( );
 	if( IsRegistered( ) ) exit(0);
@@ -403,8 +402,8 @@ void LaunchURL( const char* url )
 			ICStop(inst);
 		}
 	}
-#else
-    SDL_WM_IconifyWindow();
+#elif _WIN32
+	SDL_WM_IconifyWindow();
 	ShellExecute( NULL, "open", url, "", "c:\\", SW_SHOWNORMAL );
 	WaitForRegainFocus();
 #endif
@@ -412,8 +411,6 @@ void LaunchURL( const char* url )
 
 void QuickFadeIn( MRGBColor *color )
 {
-	color; // is unused
-
 #ifndef TARGET_API_MAC_CARBON
 	long  c;
 	float percent;
@@ -434,8 +431,6 @@ void QuickFadeIn( MRGBColor *color )
 
 void QuickFadeOut( MRGBColor *color )
 {
-	color; // is unused
-
 #ifndef TARGET_API_MAC_CARBON
 	long   c;
 	float  percent;

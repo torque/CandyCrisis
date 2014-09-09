@@ -269,7 +269,7 @@ void DrawTimerCount( int player )
 		char seconds[20];
 		char *scan = seconds;
 
-		sprintf( seconds, "%d", (endTime - startTime) / 60 );
+		sprintf( seconds, "%ld", (endTime - startTime) / 60 );
 		while( *scan )
 		{
 			SurfaceBlitCharacter( zapFont, *scan++, &dPoint, 31, 31, 31, 1  );

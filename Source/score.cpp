@@ -97,7 +97,7 @@ void ShowScore( int player )
 	}
 	else
 	{
-		sprintf( myString, "%d", displayedScore[player] );
+		sprintf( myString, "%ld", displayedScore[player] );
 
 		SDLU_AcquireSurface( scoreSurface );
 

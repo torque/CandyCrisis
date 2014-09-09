@@ -383,14 +383,14 @@ void StopBalloon( void )
 	balloonTime = 0x7FFFFFFF;
 }
 
-void StartBalloon( char *message )
+void StartBalloon( const char *message )
 {
-	MPoint    balloonTip, balloonFill;
-	int       replace;
-	char*     match[] = { "~~", "||", "``", "{{" };
-	char*     search;
-	SDL_Rect  balloonSDLRect, balloonContentsSDLRect;
-	MRect     balloonContentsRect;
+	MPoint      balloonTip, balloonFill;
+	int         replace;
+	const char *match[] = { "~~", "||", "``", "{{" };
+	char       *search;
+	SDL_Rect    balloonSDLRect, balloonContentsSDLRect;
+	MRect       balloonContentsRect;
 
 	strcpy( balloonMsg, message );
 	for( replace=0; replace<4; replace++ )

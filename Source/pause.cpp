@@ -172,39 +172,40 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 {
 	unsigned char* src[4];
 	int srcRowBytes, width, height, count;
-	char edgeMap[4][kEdgeSize][kEdgeSize+1]={  "      --",
-	                                           "    -...",
-	                                           "   -.xxX",
-	                                           "  -.xXXX",
-	                                           " -.xXXXX",
-	                                           " .xXXXXX",
-	                                           "-.xXXXXX",
-	                                           "-.XXXXXX",
-	                                           "--      ",
-	                                           "...-    ",
-	                                           "Xxx.-   ",
-	                                           "XXXx.-  ",
-	                                           "XXXXx.- ",
-	                                           "XXXXXx. ",
-	                                           "XXXXXx.-",
-	                                           "XXXXXX.-",
-	                                           "-.XXXXXX",
-	                                           "-.xXXXXX",
-	                                           " .xXXXXX",
-	                                           " -.xXXXX",
-	                                           "  -.xXXX",
-	                                           "   -.xxX",
-	                                           "    -...",
-	                                           "      --",
-	                                           "XXXXXX.-",
-	                                           "XXXXXx.-",
-	                                           "XXXXXx. ",
-	                                           "XXXXx.- ",
-	                                           "XXXx.-  ",
-	                                           "Xxx.-   ",
-	                                           "...-    ",
-	                                           "--      "  };
-
+	char edgeMap[4][kEdgeSize][kEdgeSize+1]={
+		{ "      --",
+		  "    -...",
+		  "   -.xxX",
+		  "  -.xXXX",
+		  " -.xXXXX",
+		  " .xXXXXX",
+		  "-.xXXXXX",
+		  "-.XXXXXX" },
+		{ "--      ",
+		  "...-    ",
+		  "Xxx.-   ",
+		  "XXXx.-  ",
+		  "XXXXx.- ",
+		  "XXXXXx. ",
+		  "XXXXXx.-",
+		  "XXXXXX.-" },
+		{ "-.XXXXXX",
+		  "-.xXXXXX",
+		  " .xXXXXX",
+		  " -.xXXXX",
+		  "  -.xXXX",
+		  "   -.xxX",
+		  "    -...",
+		  "      --" },
+		{ "XXXXXX.-",
+		  "XXXXXx.-",
+		  "XXXXXx. ",
+		  "XXXXx.- ",
+		  "XXXx.-  ",
+		  "Xxx.-   ",
+		  "...-    ",
+		  "--      " }
+	};
 
 	src[0] = src[1] = src[2] = src[3] = (unsigned char*) edgeSurface->pixels;
 	srcRowBytes = edgeSurface->pitch;
@@ -474,7 +475,6 @@ static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, 
 static void DrawDialogCursor( MRect *pauseRect, int *shade )
 {
 	MPoint p, q;
-    shade;
 
 	SDLU_GetMouse( &p );
 
@@ -630,8 +630,6 @@ static void DrawHiScoreContents( int *item, int shade )
 	int    nameLength;
 	char  *line[3], *scan;
 
-	item; // is unused
-
 	line[0] = highScoreText;
 	line[1] = "Please enter your name and press return:";
 	line[2] = highScoreRank;
@@ -731,7 +729,7 @@ static void DrawControlsContents( int *item, int shade )
 		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );  // 80 pixels across
 
 		controlName = SDL_GetKeyName( playerKeys[index & 1][index >> 1] );
-		if( controlName == NULL ) controlName = "???";
+		if( controlName == NULL ) controlName = "•";
 
 		dPoint.v = 231 + ((index & ~1) * 13);
 		dPoint.h = (index & 1)? 460: 265;
@@ -741,11 +739,11 @@ static void DrawControlsContents( int *item, int shade )
 
 	dPoint.h = 200;
 	dPoint.v = 340;
-	DrawRainbowText( smallFont, "? OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
+	DrawRainbowText( smallFont, "• OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
 
 	dPoint.h = 365;
 	dPoint.v = 340;
-	DrawRainbowText( smallFont, "? Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
+	DrawRainbowText( smallFont, "• Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
 
 	SDLU_ReleaseSurface( drawSurface );
 }
@@ -755,16 +753,16 @@ static void DrawPauseContents( int *item, int shade )
 	MPoint dPoint;
 	int itemCount = IsRegistered()? 6: 7;
 	int index;
-	char *line[7] = { "• Music",           "• End Game",
-	                  "• Sound",           "• Hide Game",
-	                  "• Controls",        "• Resume",
-	                  "• Register Now"                       };
+	const char *line[7] = { "• Music",           "• End Game",
+	                        "• Sound",           "• Hide Game",
+	                        "• Controls",        "• Resume",
+	                        "• Register Now"                       };
 
 
-	if( level == kTutorialLevel ) line[1] = "? Skip Tutorial";
+	if( level == kTutorialLevel ) line[1] = "• Skip Tutorial";
 
-	if( !musicOn ) line[0] = "? Music";
-	if( !soundOn ) line[2] = "? Sound";
+	if( !musicOn ) line[0] = "• Music";
+	if( !soundOn ) line[2] = "• Sound";
 
 	SDLU_AcquireSurface( drawSurface );
 
@@ -812,15 +810,15 @@ static void DrawSharewareNoticeContents( int *item, int shade )
 
 	dPoint.v = 340;
 	dPoint.h = 130;
-	DrawRainbowText( smallFont, "? Not Yet", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeNotYet? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "• Not Yet", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeNotYet? kTextBlueGlow: kTextWhite) );
 
 	dPoint.v = 340;
 	dPoint.h = 260;
-	DrawRainbowText( smallFont, "? Purchase", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticePurchase? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "• Purchase", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticePurchase? kTextBlueGlow: kTextWhite) );
 
 	dPoint.v = 340;
 	dPoint.h = 390;
-	DrawRainbowText( smallFont, "? Enter Code", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeEnterCode? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "• Enter Code", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeEnterCode? kTextBlueGlow: kTextWhite) );
 
 	SDLU_ReleaseSurface( drawSurface );
 }
@@ -880,11 +878,11 @@ static void DrawEnterCodeContents( int *item, int shade )
 
 	dPoint.v = 340;
 	dPoint.h = 150;
-	DrawRainbowText( smallFont, "? OK", dPoint, (shade * 0.1), (*item == kEnterCodeOK? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "• OK", dPoint, (shade * 0.1), (*item == kEnterCodeOK? kTextBlueGlow: kTextWhite) );
 
 	dPoint.v = 340;
 	dPoint.h = 380;
-	DrawRainbowText( smallFont, "? Go Back", dPoint, (shade * 0.1), (*item == kEnterCodeNotYet? kTextBlueGlow: kTextWhite) );
+	DrawRainbowText( smallFont, "• Go Back", dPoint, (shade * 0.1), (*item == kEnterCodeNotYet? kTextBlueGlow: kTextWhite) );
 
 	if( batsuAlpha > 0 )
 	{
@@ -900,8 +898,6 @@ static MBoolean ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 {
 	MRect yes = {280, 220, 300, 260}, no = {280, 400, 300, 440};
 	MPoint p;
-
-	inSDLKey; // is unused
 
 	if( continueTimeOut )
 	{
@@ -928,8 +924,6 @@ static MBoolean RegisterSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 {
 	MRect registerNow = {305, 170, 325, 290}, registerLater = {305, 400, 325, 470};
 	MPoint p;
-
-	inKey, inSDLKey; // is unused
 
 	if( inKey == kEscapeKey )
 	{
@@ -963,8 +957,6 @@ static MBoolean RegisterSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	int nameLength;
-
-	inSDLKey; // is unused
 
 	nameLength = strlen(highScoreName);
 
@@ -1016,8 +1008,6 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 	MRect           okRect = { 340, 200, 360, 255 };
 	MRect           resetRect = { 340, 365, 360, 450 };
 	int             returnValue = 0;
-
-	inKey; // unused
 
 	*item = kNothing;
 
@@ -1078,8 +1068,6 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 
 static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
-	inSDLKey; // is unused
-
 	MRect targetRect[] =
 	{
 		{ 240, 180, 260, 320 },
@@ -1177,8 +1165,6 @@ static MBoolean SharewareNoticeSelected( int *item, unsigned char inKey, SDLKey 
 	MPoint   p;
 	MBoolean button;
 
-	inKey, inSDLKey; // are unused
-
 	*item = kNothing;
 
 	if( !SharewareNoticeIsStillWaiting() )
@@ -1215,8 +1201,6 @@ static MBoolean EnterCodeSelected( int *item, unsigned char inKey, SDLKey inSDLK
 	MPoint p;
 	int    fieldLength;
 	int    button;
-
-	inSDLKey; // is unused
 
 	// -- Handle keyboard stuff. (Ripped off from high score code.)
 	fieldLength = strlen(whichField);
@@ -1297,7 +1281,6 @@ void HandleDialog( int type )
 {
 	const float    lighten[4] = { 12.0f, 6.0f, 1.0f, 6.0f };
 	const MRect    boardWorldZRect = {0, 0, kBlobVertSize * (kGridDown-1), kBlobHorizSize * kGridAcross};
-	const MRect    fullRect = { 0, 0, 480, 640 };
 	SDL_Rect       fullSDLRect = { 0, 0, 640, 480 };
 	SDL_Rect       joinSDLRect;
 	int            skip = 1;

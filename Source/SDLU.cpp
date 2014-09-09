@@ -44,8 +44,6 @@ static void	SDLUi_Blit8BitTo1Bit( SDL_Surface* surface8, SDL_Rect* rect8,
 	int          x, y, across, down;
 	SDL_Color*   palette8;
 
-	rect8; // is unused for now
-
 //	ASSERTN( surface8->format->BitsPerPixel == 8, surface8->format->BitsPerPixel );
 //	ASSERTN( surface1->format->BitsPerPixel == 1, surface8->format->BitsPerPixel );
 //	ASSERT( rect8->w == rect1->w );
@@ -122,9 +120,9 @@ static void	SDLUi_Blit15BitTo16Bit( SDL_Surface* surface15, SDL_Rect* rect15,
 		for( x=0; x<rect16w; x++ )
 		{
 			work = src[x];
-			work = (work << 1) & 0xFFC0 |
-			       (work >> 4) & 0x0020 |
-			       (work     ) & 0x001F;
+			work = ((work << 1) & 0xFFC0) |
+			       ((work >> 4) & 0x0020) |
+			       ((work     ) & 0x001F);
 
 			dst[x] = work;
 		}
@@ -179,8 +177,8 @@ static void	SDLUi_Blit16BitTo15Bit( SDL_Surface* surface16, SDL_Rect* rect16,
 		for( x=0; x<rect15w; x++ )
 		{
 			work = src[x];
-			work = (work >> 1) & 0x7FE0 |
-			       (work     ) & 0x001F;
+			work = ((work >> 1) & 0x7FE0) |
+			       ((work     ) & 0x001F);
 
 			dst[x] = work;
 		}
@@ -205,7 +203,6 @@ static void	SDLUi_Blit24BitTo15BitHQ( SDL_Surface* surface24, SDL_Rect* rect24,
 
 	const unsigned char* aPixels = NULL;
 	const unsigned char* bPixels = NULL;
-	const unsigned char* swapPixels = NULL;
 
 	const unsigned char copyPixels[256] =
 	{

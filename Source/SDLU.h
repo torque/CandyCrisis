@@ -26,6 +26,3 @@ void         SDLU_StopWatchingTyping();
 MBoolean     SDLU_CheckTyping( char* ascii, SDLKey* sdl );
 int          SDLU_BlitSurfaceHQ( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect );
 MBoolean     SDLU_IsForeground();
-
-
-#endif

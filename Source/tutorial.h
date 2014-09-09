@@ -20,7 +20,7 @@ typedef struct
 {
 	AutoCommand command;
 	int d1, d2;
-	char *message;
+	const char *message;
 }
 AutoPattern, *AutoPatternPtr;
 
@@ -28,7 +28,7 @@ extern AutoPatternPtr autoPattern;
 extern int tutorialTime;
 
 void InitTutorial( void );
-void StartBalloon( char *message );
+void StartBalloon( const char *message );
 void StopBalloon( void );
 void UpdateBalloon( void );
 void EndTutorial( void );
