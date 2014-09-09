@@ -7,25 +7,29 @@
 #include <fmod.h>
 #include <fmod_errors.h>
 
-FSOUND_SAMPLE*  sound[kNumSounds];
 MBoolean        soundOn = true;
+
+FMOD_SYSTEM         *fmodSystem;
+static FMOD_RESULT   result;
+static FMOD_SOUND   *sound[kNumSounds];
+static FMOD_CHANNEL *soundChannel[3];
 
 void InitSound( void )
 {
-	int  index;
-
-    if (!FSOUND_Init(44100, 64, FSOUND_INIT_USEDEFAULTMIDISYNTH))
+	if( FMOD_System_Create( &fmodSystem ) != FMOD_OK )
 	{
 		musicOn = soundOn = false;
 		return;
 	}
+	result = FMOD_System_Init( fmodSystem, 32, FMOD_INIT_NORMAL, NULL );
 
-	for( index=0; index<kNumSounds; index++ )
+	for( int index = 0; index < kNumSounds; ++index )
 	{
-		sound[index] = FSOUND_Sample_Load( FSOUND_UNMANAGED, QuickResourceName( "snd", index+128, ".wav" ), FSOUND_NORMAL | FSOUND_LOOP_OFF | FSOUND_2D, 0 );
-		if( sound[index] == NULL )
+		result = FMOD_System_CreateStream( fmodSystem, QuickResourceName( "snd", index+128, ".wav" ), FMOD_SOFTWARE | FMOD_LOOP_OFF, NULL, &sound[index] );
+		if( result != FMOD_OK )
 		{
-			Error( "InitSound: files are missing" );
+			musicOn = soundOn = false;
+			return;
 		}
 	}
 }
@@ -35,7 +39,7 @@ void PlayMono( short which )
 {
 	if( soundOn )
 	{
-		int chanHandle = FSOUND_PlaySound( FSOUND_FREE, sound[which] );
+		FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, sound[which], false, &soundChannel[2]);
 	}
 }
 
@@ -48,10 +52,12 @@ void PlayStereoFrequency( short player, short which, short freq )
 {
 	if( soundOn )
 	{
-		int chanHandle = FSOUND_PlaySoundEx( FSOUND_FREE, sound[which], NULL, true );
-		FSOUND_SetPan( chanHandle, player? 255: 0 );
-		FSOUND_SetFrequency( chanHandle, (FSOUND_GetFrequency(chanHandle) * (16 + freq)) / 16 );
-		FSOUND_SetPaused( chanHandle, false );
+		float oldFreq;
+		FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, sound[which], true, &soundChannel[player] );
+		FMOD_Channel_SetPan( soundChannel[player], 1.0f );
+		FMOD_Channel_GetFrequency( soundChannel[player], &oldFreq );
+		FMOD_Channel_SetFrequency( soundChannel[player], oldFreq * (16 + freq)/ 16 );
+		FMOD_Channel_SetPaused( soundChannel[player], false );
 	}
 }
 

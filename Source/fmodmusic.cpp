@@ -4,10 +4,6 @@
 
 #include "main.h"
 #include "music.h"
-#include "gworld.h"
-#include "gameticks.h"
-#include "soundfx.h"
-#include "graphics.h"
 
 #include <fmod.h>
 #include <fmod_errors.h>
@@ -16,27 +12,31 @@ const int kNoMusic = -1;
 
 MBoolean musicOn = true, musicFast = false;
 int musicLevel = 0, musicSelection = kNoMusic;
-FMUSIC_MODULE *musicModule = NULL;
+
+extern FMOD_SYSTEM *fmodSystem;
+static FMOD_SOUND   *music = NULL;
+static FMOD_CHANNEL *musicChannel = NULL;
+static FMOD_RESULT   result;
 
 void EnableMusic( MBoolean on )
 {
-	FMUSIC_SetMasterVolume( musicModule, on? 192: 0 );
+	FMOD_Channel_SetPaused( musicChannel, !on );
 }
 
 void FastMusic( void )
 {
-	if( musicModule && !musicFast )
+	if( music && !musicFast )
 	{
-		FMUSIC_SetMasterSpeed( musicModule, 1.3f );
+		FMOD_Sound_SetMusicSpeed( music, 1.3f );
 		musicFast = true;
 	}
 }
 
 void SlowMusic( void )
 {
-	if( musicModule && musicFast )
+	if( music && musicFast )
 	{
-		FMUSIC_SetMasterSpeed( musicModule, 1.0f );
+		FMOD_Sound_SetMusicSpeed( music, 1.0f );
 		musicFast = false;
 	}
 }
@@ -45,8 +45,7 @@ void PauseMusic( void )
 {
 	if( musicSelection >= 0 && musicSelection <= kSongs )
 	{
-		FMUSIC_SetPaused( musicModule, true );
-		musicLevel++;
+		FMOD_Channel_SetPaused( musicChannel, 1 );
 	}
 }
 
@@ -54,30 +53,31 @@ void ResumeMusic( void )
 {
 	if( musicSelection >= 0 && musicSelection <= kSongs )
 	{
-		musicLevel--;
-		FMUSIC_SetPaused( musicModule, false );
+		FMOD_Channel_SetPaused( musicChannel, 0 );
 	}
 }
 
 void ChooseMusic( short which )
 {
-	if( musicSelection >= 0 && musicSelection <= kSongs )
+	if( musicSelection >= 0 && musicSelection <= kSongs && music )
 	{
-		FMUSIC_StopSong( musicModule );
-		FMUSIC_FreeSong( musicModule );
-		musicModule = NULL;
+		// releasing automatically stops the song.
+		result = FMOD_Sound_Release( music );
+		music = NULL;
+	// 	musicModule = NULL;
 	}
 
 	if( which >= 0 && which <= kSongs )
 	{
-		musicModule = FMUSIC_LoadSong( QuickResourceName( "mod", which+128, "" ) );
-		if( musicModule != NULL )
+		result = FMOD_System_CreateStream( fmodSystem, QuickResourceName( "mod", which+128, ".mod" ), FMOD_SOFTWARE | FMOD_LOOP_NORMAL, 0, &music );
+		if( result == FMOD_OK )
 		{
-			FMUSIC_SetMasterVolume( musicModule, musicOn? 192: 0 );
-			FMUSIC_SetLooping( musicModule, true );
-			FMUSIC_PlaySong( musicModule );
-			musicSelection = which;
-			musicLevel     = 0;
+			result = FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, music, !musicOn, &musicChannel );
+
+			if( result == FMOD_OK )
+			{
+				musicSelection = which;
+			}
 		}
 	}
 }
