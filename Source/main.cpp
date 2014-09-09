@@ -368,11 +368,9 @@ void Initialize( void )
         strcpy( candyCrisisResources, name );
         strcat( candyCrisisResources, "\\CandyCrisisResources\\" );
     }
-#endif
-#if TARGET_API_MAC_CARBON
+#elif TARGET_API_MAC_CARBON
 	strcpy( candyCrisisResources, ":CandyCrisisResources:" );
-#endif
-#ifdef linux
+#else
 	strcpy( candyCrisisResources, "CandyCrisisResources/" );
 #endif
 
