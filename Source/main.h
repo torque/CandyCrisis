@@ -15,7 +15,6 @@ void ReserveMonitor( void );
 void ReleaseMonitor( void );
 void MaskRect( MRect *r );
 void RefreshPlayerWindow( short player );
-MBoolean IsRegistered( void );
 int Warp( void );
 void WaitForRelease( void );
 void LaunchURL( const char* url );
@@ -25,8 +24,6 @@ MBoolean FileExists( const char* name );
 void GoToBackground();
 MBoolean ControlKeyIsPressed( void );
 MBoolean OptionKeyIsPressed( void );
-MBoolean IsRegistered();
-void InitRegistration();
 void NoPaint();
 void NeedRefresh();
 const char* QuickResourceName( const char* prefix, int id, const char* extension );
@@ -51,8 +48,7 @@ enum
 	eStartMenu,
 	eInGame,
 	eInGameOver,
-	eSharewareVictory,
-	eRegisteredVictory,
+	eVictory,
 	eFinished
 };
 
@@ -61,10 +57,7 @@ enum
 {
 	dFatalErrorAlert = 128,
 	dAbout = 130,
-	dSerialNumber,
-	dShareware,
 	dInformation,
-	dRegister,
 	dSoundTest,
 	dWarp,
 	dOptions = 500,
@@ -107,7 +100,9 @@ enum
 	picDashedLineFont,
 	picBatsuFont,
 	picTitle = 300,
-	picSharewareVictory,
+	// Keep shareware victory in the enum so the pics after it don't get
+	// the wrong values.
+	picUnused,
 	picGameStart,
 	picGameOver,
 	picVictory1,
@@ -289,7 +284,4 @@ extern MRect playerWindowZRect, playerWindowRect[2];
 extern MBoolean playerWindowVisible[2];
 extern KeyList hitKey[2];
 extern int backgroundID;
-extern MBoolean playerIsRegistered;
-extern char registeredName[64];
-extern char registeredKey[18];
 extern void (*DoFullRepaint)();

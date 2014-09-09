@@ -10,8 +10,7 @@ void ChooseDifficulty( int player );
 void SelectRandomLevel( void );
 void IncrementLevel( void );
 void TotalVictory( void );
-void SharewareVictory( void );
-void RegisteredVictory( void );
+void Victory( void );
 void InitStage( void );
 void DrawStage( void );
 void GameStartMenu( void );
@@ -21,8 +20,6 @@ void ShowGameOverScreen( void );
 
 #define kGlows 2
 
-#define kSharewareLevels 4
-#define kSharewareSolitaireLevels 5
 #define kLevels 12
 #define kTutorialLevel 14
 

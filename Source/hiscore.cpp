@@ -214,7 +214,7 @@ void ShowHiscore( void )
 		memcpy( &best,   &defaultBest,   sizeof( best   ) );
 	}
 
-	hiScoreSurface = LoadPICTAsSurface( picBackdrop + (100 * RandomBefore(IsRegistered()? kLevels: kSharewareLevels)), 16 );
+	hiScoreSurface = LoadPICTAsSurface( picBackdrop + (100 * RandomBefore( kLevels )), 16 );
 	fadeSurface    = SDLU_InitSurface( &fullSDLRect, 16 );
 
 	font = GetFont( picHiScoreFont );
@@ -335,7 +335,7 @@ void ShowBestCombo( void )
 	grayMonitorVisible[0] = false;
 
 	level = best.lv;
-	levelCap = IsRegistered()? kLevels: kSharewareSolitaireLevels;
+	levelCap = kLevels;
 	if( (level < 1 || level > levelCap) && level != kTutorialLevel )
 	{
 		memcpy( &best, &defaultBest, sizeof(best) );

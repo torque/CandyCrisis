@@ -29,7 +29,6 @@
 #include "victory.h"
 #include "hiscore.h"
 #include "score.h"
-#include "RegAlgorithm.h"
 
 
 const char kEscapeKey = 0x1B;
@@ -58,11 +57,6 @@ static MBoolean timeToRedraw = false;
 
 // for the controls dialog
 static int controlToReplace = -1;
-
-// for the enter code dialog
-static char  nameField[256], keyField[256];
-static char* whichField = nameField;
-static int   batsuAlpha = 0;
 
 static void ItsTimeToRedraw()
 {
@@ -275,11 +269,6 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 			srcS += (srcRowBytes / 2) - kEdgeSize;
 		}
 	}
-}
-
-static MBoolean SharewareNoticeIsStillWaiting()
-{
-	return MTickCount() < dialogUndimTime;
 }
 
 
@@ -518,34 +507,22 @@ enum
 {
 	kNothing = -1,
 
-// main pause screen (kEndGame is reused in continue and register)
-	kMusic = 0,		kEndGame,
-	kSound,			kPauseGame,
-	kControls,		kResume,
-	kRegisterNow,   kSecret,
-	kWarp,       	kSoundTest,
+// main pause screen (kEndGame is reused in continue)
+	kMusic = 0, kEndGame,
+	kSound,     kPauseGame,
+	kControls,  kResume,
+	kSecret,    kWarp,
+	kSoundTest,
 
 // continue screen
-    kContinue,
-
-// register screen
-    kLater,
+	kContinue,
 
 // controls screen
-    k1PLeft,        k2PLeft,
-    k1PRight,       k2PRight,
-    k1PDrop,        k2PDrop,
-    k1PRotate,      k2PRotate,
-    kControlsOK,    kControlsReset,
-
-// shareware notice screen
-	kSharewareNoticeNotYet,
-	kSharewareNoticeEnterCode,
-	kSharewareNoticePurchase,
-
-// enter code screen
-	kEnterCodeOK,
-	kEnterCodeNotYet
+	k1PLeft,        k2PLeft,
+	k1PRight,       k2PRight,
+	k1PDrop,        k2PDrop,
+	k1PRotate,      k2PRotate,
+	kControlsOK,    kControlsReset,
 };
 
 static void DrawContinueContents( int *item, int shade )
@@ -672,29 +649,6 @@ static void DrawHiScoreContents( int *item, int shade )
 	SDLU_ReleaseSurface( drawSurface );
 }
 
-static void DrawRegisterContents( int *item, int shade )
-{
-	int index;
-	MPoint dPoint[4] = { {240, 150}, {260, 160}, {305, 170}, {305, 400} };
-	char line[4][50] = {  "Sorry, you must register Candy Crisis",
-	                      "to gain access to two player mode!",
-	                      "Register Now",
-	                      "Not Yet" };
-
-	SDLU_AcquireSurface( drawSurface );
-
-	for( index=0; index<4; index++ )
-	{
-		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade),
-		                ( (index == 0)                              ||
-		                  (index == 1)                              ||
-		                 ((index == 2) && (*item == kRegisterNow )) ||
-		                 ((index == 3) && (*item == kLater       ))    )? kTextBrightRainbow: kTextRainbow );
-	}
-
-	SDLU_ReleaseSurface( drawSurface );
-}
-
 static void DrawControlsContents( int *item, int shade )
 {
 	MBoolean    highlight;
@@ -751,12 +705,11 @@ static void DrawControlsContents( int *item, int shade )
 static void DrawPauseContents( int *item, int shade )
 {
 	MPoint dPoint;
-	int itemCount = IsRegistered()? 6: 7;
+	int itemCount = 6;
 	int index;
 	const char *line[7] = { "• Music",           "• End Game",
 	                        "• Sound",           "• Hide Game",
-	                        "• Controls",        "• Resume",
-	                        "• Register Now"                       };
+	                        "• Controls",        "• Resume" };
 
 
 	if( level == kTutorialLevel ) line[1] = "• Skip Tutorial";
@@ -772,123 +725,6 @@ static void DrawPauseContents( int *item, int shade )
 		dPoint.v = 240 + ((index & ~1) * 15);
 
 		DrawRainbowText( smallFont, line[index], dPoint, (0.25 * index) + (0.075 * shade), (*item == index)? kTextBrightRainbow: kTextRainbow );
-	}
-
-	SDLU_ReleaseSurface( drawSurface );
-}
-
-static void DrawSharewareNoticeContents( int *item, int shade )
-{
-	MPoint      dPoint;
-	int         index;
-	MBoolean    itemsAreDimmed;
-	const char* line[10] = { "Candy Crisis is not free! You have a 30 day trial",
-	                         "period to try out the software. After 30 days, if",
-	                         "you wish to continue playing Candy Crisis, you",
-	                         "are expected to register.",
-	                         "",
-	                         "When you register Candy Crisis, we will send a",
-	                         "unique registration code to you by e-mail or postal",
-	                         "mail. This registration code will allow you to play",
-	                         "all twelve levels of the game, enables two player",
-	                         "mode, and removes these shareware notices." };
-
-	itemsAreDimmed = SharewareNoticeIsStillWaiting();
-
-	SDLU_AcquireSurface( drawSurface );
-
-	dPoint.v = 124;
-	dPoint.h = 140;
-	DrawRainbowText( bigFont, "Candy Crisis is shareware!", dPoint, 0, kTextWhite );
-
-	for( index=0; index<10; index++ )
-	{
-		dPoint.v = 165 + (16 * index);
-		dPoint.h = 156;
-		DrawRainbowText( tinyFont, line[index], dPoint, 0, 2 );
-	}
-
-	dPoint.v = 340;
-	dPoint.h = 130;
-	DrawRainbowText( smallFont, "• Not Yet", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeNotYet? kTextBlueGlow: kTextWhite) );
-
-	dPoint.v = 340;
-	dPoint.h = 260;
-	DrawRainbowText( smallFont, "• Purchase", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticePurchase? kTextBlueGlow: kTextWhite) );
-
-	dPoint.v = 340;
-	dPoint.h = 390;
-	DrawRainbowText( smallFont, "• Enter Code", dPoint, (shade * 0.1), itemsAreDimmed? kTextGray: (*item == kSharewareNoticeEnterCode? kTextBlueGlow: kTextWhite) );
-
-	SDLU_ReleaseSurface( drawSurface );
-}
-
-static void DrawEnterCodeContents( int *item, int shade )
-{
-	MPoint      dPoint;
-	int         index;
-	const char* line[4] = { "Thank you for your purchase! First, enter your",
-	                        "name below. Please make sure it matches your",
-	                        "name exactly as it appears in your registration",
-	                        "email." };
-
-	SDLU_AcquireSurface( drawSurface );
-
-	dPoint.v = 124;
-	dPoint.h = 240;
-	DrawRainbowText( bigFont, "Enter Code", dPoint, 0, kTextWhite );
-
-	for( index=0; index<4; index++ )
-	{
-		dPoint.v = 165 + (16 * index);
-		dPoint.h = 156;
-		DrawRainbowText( tinyFont, line[index], dPoint, 0, kTextAlmostWhite );
-	}
-
-	dPoint.v = 165 + (int)(5.75 * 16);
-	dPoint.h = 140;
-	DrawRainbowText( dashedLineFont, "......................", dPoint, 0, kTextGray );
-
-	dPoint.v = 165 + (int)(4.5 * 16);
-	dPoint.h = 150;
-	dPoint = DrawRainbowText( smallFont, nameField, dPoint, 0, kTextWhite );
-
-	if( whichField == nameField )
-	{
-		DrawRainbowText( smallFont, "|", dPoint, (shade * 0.1), kTextBlueGlow );
-	}
-
-	dPoint.v = 165 + (int)(7 * 16);
-	dPoint.h = 156;
-	DrawRainbowText( tinyFont, "Next, enter your registration code.", dPoint, 0, kTextAlmostWhite );
-
-
-	dPoint.v = 165 + (int)(9.75 * 16);
-	dPoint.h = 140;
-	DrawRainbowText( dashedLineFont, "......................", dPoint, 0, kTextGray );
-
-	dPoint.v = 165 + (int)(8.5 * 16);
-	dPoint.h = 150;
-	dPoint = DrawRainbowText( smallFont, keyField, dPoint, 0, kTextWhite );
-
-	if( whichField == keyField )
-	{
-		DrawRainbowText( smallFont, "|", dPoint, (shade * 0.1), kTextBlueGlow );
-	}
-
-	dPoint.v = 340;
-	dPoint.h = 150;
-	DrawRainbowText( smallFont, "• OK", dPoint, (shade * 0.1), (*item == kEnterCodeOK? kTextBlueGlow: kTextWhite) );
-
-	dPoint.v = 340;
-	dPoint.h = 380;
-	DrawRainbowText( smallFont, "• Go Back", dPoint, (shade * 0.1), (*item == kEnterCodeNotYet? kTextBlueGlow: kTextWhite) );
-
-	if( batsuAlpha > 0 )
-	{
-		dPoint.v = 240 - 111;
-		dPoint.h = 320 - 111;
-		SurfaceBlitWeightedCharacter( batsuFont, 'X', &dPoint, 31, 0, 0, batsuAlpha-- );
 	}
 
 	SDLU_ReleaseSurface( drawSurface );
@@ -918,40 +754,6 @@ static MBoolean ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 	else *item = kNothing;
 
 	return( SDLU_Button( ) && (*item != kNothing) );
-}
-
-static MBoolean RegisterSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
-{
-	MRect registerNow = {305, 170, 325, 290}, registerLater = {305, 400, 325, 470};
-	MPoint p;
-
-	if( inKey == kEscapeKey )
-	{
-		*item = kLater;
-		return true;
-	}
-
-	SDLU_GetMouse( &p );
-
-	     if( MPointInMRect( p, &registerNow   ) ) *item = kRegisterNow;
-	else if( MPointInMRect( p, &registerLater ) ) *item = kLater;
-	else *item = kNothing;
-
-	if( SDLU_Button( ) )
-	{
-		switch( *item )
-		{
-			case kRegisterNow:
-				PlayMono( kClick );
-				return true;
-
-			case kLater:
-				PlayMono( kClick );
-				return true;
-		}
-	}
-
-	return false;
 }
 
 static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
@@ -1125,10 +927,6 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 					ItsTimeToRedraw();
 					return false;
 
-				case kRegisterNow:
-					PlayMono( kClick );
-					return true;
-
 				case kControls:
 					PlayMono( kClick );
 					return true;
@@ -1157,126 +955,6 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 	return false;
 }
 
-static MBoolean SharewareNoticeSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
-{
-	MRect	 notYetRect    = { 340, 130, 360, 220 };
-	MRect    purchaseRect  = { 340, 260, 360, 365 };
-	MRect    enterCodeRect = { 340, 390, 360, 520 };
-	MPoint   p;
-	MBoolean button;
-
-	*item = kNothing;
-
-	if( !SharewareNoticeIsStillWaiting() )
-	{
-		SDLU_GetMouse( &p );
-		button = SDLU_Button();
-
-		     if( MPointInMRect( p, &notYetRect ) )      *item = kSharewareNoticeNotYet;
-		else if( MPointInMRect( p, &enterCodeRect ) )   *item = kSharewareNoticeEnterCode;
-		else if( MPointInMRect( p, &purchaseRect ) )
-		{
-			*item = kSharewareNoticePurchase;
-			if( button )
-			{
-				WaitForRelease();
-				LaunchURL( "http://candycrisis.com/register.html" );
-				button = false;
-			}
-		}
-
-		return (*item != kNothing) && button;
-	}
-
-	return false;
-}
-
-
-static MBoolean EnterCodeSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
-{
-	MRect  okRect     = { 340, 150, 360, 220 };
-	MRect  notYetRect = { 340, 380, 360, 500 };
-	MRect  nameRect   = { 237, 140, 257, 500 };
-	MRect  keyRect    = { 301, 140, 321, 500 };
-	MPoint p;
-	int    fieldLength;
-	int    button;
-
-	// -- Handle keyboard stuff. (Ripped off from high score code.)
-	fieldLength = strlen(whichField);
-
-	// return or tab
-	if( inKey == 13 || inKey == 9 )
-	{
-		whichField = (whichField == nameField)? keyField: nameField;
-		PlayMono( kRotate );
-	}
-
-	// backspace
-	else if( inKey == 8 )
-	{
-		if( fieldLength > 0 )
-		{
-			whichField[ fieldLength-1 ] = '\0';
-			PlayMono( kClick );
-		}
-	}
-
-	// characters
-	else if( (fieldLength < 40) && (smallFont->width[inKey] != 0) )
-	{
-		if( whichField == keyField ) inKey = toupper(inKey);
-
-		whichField[ fieldLength++ ] = inKey;
-		whichField[ fieldLength   ] = '\0';
-		PlayMono( kPlace );
-	}
-
-	// -- Handle mouse.
-	button = SDLU_Button();
-
-	*item = kNothing;
-	SDLU_GetMouse( &p );
-
-	     if( MPointInMRect( p, &notYetRect ) )        *item = kEnterCodeNotYet;
-	else if( MPointInMRect( p, &nameRect) && button ) whichField = nameField;
-	else if( MPointInMRect( p, &keyRect) && button )  whichField = keyField;
-    else if( MPointInMRect( p, &okRect ) )
-    {
-    	*item = kEnterCodeOK;
-
-    	if( button )
-		{
-			WaitForRelease();
-			playerIsRegistered = ValidateCode( nameField, keyField );
-			if( playerIsRegistered )
-			{
-				strcpy( registeredName, nameField );
-				strcpy( registeredKey, keyField );
-			}
-			else
-			{
-				batsuAlpha = 31;
-				PlayMono( kBatsuSnd );
-				button = false;
-			}
-		}
-	}
-
-	return (*item != kNothing) && button;
-}
-
-
-void SharewareNotice( int forceWait )
-{
-	SDL_FillRect( frontSurface, &frontSurface->clip_rect, SDL_MapRGB( frontSurface->format, 40, 40, 40 ) );
-	SDL_Flip( frontSurface );
-	dialogUndimTime = MTickCount() + forceWait;
-
-	HandleDialog( kSharewareNoticeDialog );
-}
-
-
 void HandleDialog( int type )
 {
 	const float    lighten[4] = { 12.0f, 6.0f, 1.0f, 6.0f };
@@ -1290,10 +968,6 @@ void HandleDialog( int type )
 	MRect          pauseRect, joinRect;
 
 	// Clear state
-	whichField = nameField;
-	nameField[0] = '\0';
-	keyField[0] = '\0';
-	batsuAlpha = 0;
 	controlToReplace = -1;
 
 	// Remember dialog info
@@ -1309,33 +983,20 @@ void HandleDialog( int type )
 	continueFont   = GetFont( picContinueFont );
 	batsuFont      = GetFont( picBatsuFont );
 
-	if( type == kSharewareNoticeDialog || type == kEnterCodeDialog )
+	// Pick some colors to animate.
+	for( count=0; count<4; count++ )
 	{
-		// People shouldn't enjoy the nag dialogs, so let's not have flashy animated colors.
-		for( count=0; count<4; count++ )
-		{
-			backColor[count].red   = 2;
-			backColor[count].green = 2;
-			backColor[count].blue  = 2;
-		}
-	}
-	else
-	{
-		// Pick some colors to animate.
-		for( count=0; count<4; count++ )
-		{
-			SDL_Color inColor;
+		SDL_Color inColor;
 
-			SDLU_GetPixel( boardSurface[0], RandomBefore( boardWorldZRect.right ), RandomBefore( boardWorldZRect.bottom ), &inColor );
+		SDLU_GetPixel( boardSurface[0], RandomBefore( boardWorldZRect.right ), RandomBefore( boardWorldZRect.bottom ), &inColor );
 
-			backColor[count].red   = inColor.r * (32.0f / 256.0f);
-			backColor[count].green = inColor.g * (32.0f / 256.0f);
-			backColor[count].blue  = inColor.b * (32.0f / 256.0f);
+		backColor[count].red   = inColor.r * (32.0f / 256.0f);
+		backColor[count].green = inColor.g * (32.0f / 256.0f);
+		backColor[count].blue  = inColor.b * (32.0f / 256.0f);
 
-			backColor[count].red   = min( 31.0f, backColor[count].red   + lighten[count] );
-			backColor[count].green = min( 31.0f, backColor[count].green + lighten[count] );
-			backColor[count].blue  = min( 31.0f, backColor[count].blue  + lighten[count] );
-		}
+		backColor[count].red   = min( 31.0f, backColor[count].red   + lighten[count] );
+		backColor[count].green = min( 31.0f, backColor[count].green + lighten[count] );
+		backColor[count].blue  = min( 31.0f, backColor[count].blue  + lighten[count] );
 	}
 
 	// Get some graphics that we're going to need
@@ -1353,8 +1014,6 @@ void HandleDialog( int type )
 
 	SDLU_BlitSurface( backSurface, &backSurface->clip_rect,
 	                  drawSurface, &drawSurface->clip_rect  );
-
-	//
 
 	PlayMono( kWhomp );
 	dialogTimer = MTickCount();
@@ -1383,10 +1042,7 @@ void HandleDialog( int type )
 				PauseSelected,
 				HiScoreSelected,
 				ContinueSelected,
-				RegisterSelected,
-				ControlsSelected,
-				SharewareNoticeSelected,
-				EnterCodeSelected
+				ControlsSelected
 			};
 
 			if( DialogSelected[dialogType]( &dialogItem, inASCII, inSDLKey ) )
@@ -1398,7 +1054,7 @@ void HandleDialog( int type )
 
 		// Do animation ...
 		{
-			const MBoolean dialogIsLarge[kNumDialogs] = { false, false, false, false, true, true, true };
+			const MBoolean dialogIsLarge[kNumDialogs] = { false, false, false, true };
 
 			pauseRect = lastPauseRect;
 			dialogStageComplete = DrawDialogBox( dialogIsLarge[dialogType], dialogStage, &dialogTarget, skip, &colorWrap, colorInc, &pauseRect );
@@ -1412,10 +1068,7 @@ void HandleDialog( int type )
 				DrawPauseContents,
 				DrawHiScoreContents,
 				DrawContinueContents,
-				DrawRegisterContents,
-				DrawControlsContents,
-				DrawSharewareNoticeContents,
-				DrawEnterCodeContents
+				DrawControlsContents
 			};
 
 			// Refresh screen if necessary
@@ -1429,12 +1082,7 @@ void HandleDialog( int type )
 
 			dialogShade += skip;
 
-			{
-				const MBoolean dialogHasCandyCrisisLogo[kNumDialogs] = { true, true, true, true, true, false, false };
-
-				if( dialogHasCandyCrisisLogo[dialogType] )
-					DrawDialogLogo( &pauseRect, dialogShade );
-			}
+			DrawDialogLogo( &pauseRect, dialogShade );
 
 			// ... and animation is complete so add content
 			DialogDraw[dialogType]( &dialogItem, dialogShade );
@@ -1484,19 +1132,6 @@ void HandleDialog( int type )
 
 	switch( dialogItem )
 	{
-		case kRegisterNow:
-			SharewareNotice( 0 );
-			RefreshAll();
-			break;
-
-		case kSharewareNoticeEnterCode:
-			HandleDialog( kEnterCodeDialog );
-			break;
-
-		case kEnterCodeNotYet:
-			HandleDialog( kSharewareNoticeDialog );
-			break;
-
 		case kControls:
 			HandleDialog( kControlsDialog );
 			HandleDialog( kPauseDialog );

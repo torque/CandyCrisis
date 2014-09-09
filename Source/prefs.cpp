@@ -19,11 +19,9 @@
 PrefList prefList[] = {
 	{ 'mod ', &musicOn,                    sizeof( MBoolean       ) },
 	{ 'sfx ', &soundOn,                    sizeof( MBoolean       ) },
-	{ 'size', registeredKey,               sizeof( registeredKey  ) },
 	{ 'keys', playerKeys,                  sizeof( playerKeys     ) },
 	{ 'high', scores,                      sizeof( scores         ) },
-	{ 'cmbx', &best,                       sizeof( best           ) },
-	{ 'user', registeredName,              sizeof( registeredName ) }
+	{ 'cmbx', &best,                       sizeof( best           ) }
 };
 
 #define kPrefListSize (sizeof(prefList)/sizeof(prefList[0]))

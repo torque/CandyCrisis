@@ -37,7 +37,6 @@
 #include "zap.h"
 #include "pause.h"
 #include "tutorial.h"
-#include "RegAlgorithm.h"
 
 
 SDL_Surface* frontSurface;
@@ -53,9 +52,6 @@ MBoolean     playerWindowVisible[2] = { true, true };
 KeyList      hitKey[2];
 int          backgroundID = -1;
 MPoint       blobWindow[8][2];
-MBoolean     playerIsRegistered = false;
-char         registeredName[64] = "";
-char         registeredKey[18] = ""; // size is strange just to perplex hackers
 void         (*DoFullRepaint)() = NoPaint;
 MBoolean     needsRefresh = false;
 
@@ -65,19 +61,10 @@ int main(int argc, char *argv[])
 {
 
 	Initialize( );
-	if( IsRegistered( ) ) exit(0);
-
 	LoadPrefs( );
 
 	ReserveMonitor( );
 	ShowTitle( );
-
-	if( !IsRegistered( ) )
-	{
-		SDLU_SetBrightness( 1.0 );
-		SharewareNotice( 15*30 );
-		SDLU_SetBrightness( 0.0 );
-	}
 
 	ChooseMusic( 13 );
 
@@ -272,7 +259,6 @@ void RetrieveResources( void )
 
 	InitScore( );               OpeningProgress( 5, 10 );
 
-	InitRegistration();
 	InitGrayMonitors( );        OpeningProgress( 6, 10 );
 
 	InitOpponent( );            OpeningProgress( 7, 10 );
@@ -472,16 +458,4 @@ void WaitForRegainFocus()
     while( !SDLU_IsForeground() );
 
 	DoFullRepaint();
-}
-
-
-void InitRegistration()
-{
-	playerIsRegistered = ValidateCode( registeredName, registeredKey );
-}
-
-
-MBoolean IsRegistered()
-{
-	return playerIsRegistered;
 }

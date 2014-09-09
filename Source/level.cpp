@@ -119,7 +119,6 @@ void GameStartMenu( void )
 	MPoint          sPoint[4];
 	unsigned long   black;
 	int             currentID;
-	char            registeredString[256];
 	char*           scan;
 	int             combo[2], comboBright[2], missBright[2];
 	SkittlesFontPtr smallFont = GetFont( picFont );
@@ -159,34 +158,6 @@ redo:
 	// make cursor backing store
 	cursorBackSurface    = SDLU_InitSurface( &cursorBackSDLRect, 16 );
 	SDL_FillRect( cursorBackSurface, &cursorBackSDLRect, black );
-
-	// draw user name with a cool blue halo
-	if( IsRegistered() )
-	{
-		sprintf( registeredString, "Registered to %s", registeredName );
-	}
-	else
-	{
-		sprintf( registeredString, "U N R E G I S T E R E D" );
-	}
-
-	dPoint.v = 131;
-	dPoint.h = 320 - (GetTextWidth( smallFont, registeredString ) / 2);
-	sPoint[0].v = dPoint.v + 1;	sPoint[0].h = dPoint.h + 1;
-	sPoint[1].v = dPoint.v - 1;	sPoint[1].h = dPoint.h - 1;
-	sPoint[2].v = dPoint.v - 1;	sPoint[2].h = dPoint.h + 1;
-	sPoint[3].v = dPoint.v + 1;	sPoint[3].h = dPoint.h - 1;
-
-	SDLU_AcquireSurface( gameStartSurface );
-	for( scan = registeredString; *scan; scan++ )
-	{
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[0], 0, 0, 25, 0 );
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[1], 0, 0, 25, 0 );
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[2], 0, 0, 25, 0 );
-		SurfaceBlitCharacter( smallFont, *scan, &sPoint[3], 0, 0, 25, 0 );
-		SurfaceBlitCharacter( smallFont, *scan, &dPoint, 30, 30, 30, 0 );
-	}
-	SDLU_ReleaseSurface( gameStartSurface );
 
 	// make drawing surface
 	gameStartDrawSurface = SDLU_InitSurface( &backdropSDLRect, 16 );
@@ -536,7 +507,7 @@ redo:
 			break;
 
 		case 6:
-			currentID = RandomBefore( IsRegistered()? kLevels: kSharewareLevels ) * 100;
+			currentID = RandomBefore( kLevels ) * 100;
 
 			DrawPICTInSurface( boardSurface[0], picBoard + currentID );
 			DrawPICTInSurface( frontSurface, picBackdrop + currentID );
@@ -712,14 +683,6 @@ MBoolean InitCharacter( int player, int level )
 		{ 13, 24, 1, { 11, 11, 11, 11, 11, 11 }, 10, 5,  0, 30, { {     0, 0 }, {     0, 0 } }, true }
 	};
 
-	if( !IsRegistered() )
-	{
-		int levelCap = kSharewareLevels;
-		if( control[1] == kNobodyControl ) levelCap = kSharewareSolitaireLevels;
-
-		if( level > levelCap && level != kTutorialLevel ) return false;
-	}
-
 	character[player] = characterList[level];
 	return (character[player].picture != -1);
 }
@@ -879,7 +842,7 @@ void IncrementLevel( void )
 
 void SelectRandomLevel( void )
 {
-	level = RandomBefore( IsRegistered()? kLevels: kSharewareLevels ) + 1;
+	level = RandomBefore( kLevels ) + 1;
 }
 
 void InitDifficulty( )
@@ -957,18 +920,6 @@ void ChooseDifficulty( int player )
 	                                blobJiggleAnimation, blobCryAnimation, kNoSuction };
 	int oldX = blobX[player];
 
-	if( !IsRegistered( ) )
-	{
-		if( player == 0 )
-		{
-			HandleDialog( kRegisterDialog );
-			QuickFadeOut( NULL );
-			showStartMenu = true;
-		}
-
-		return;
-	}
-
 	PlayerControl( player );
 	if( blobX[player] != oldX ) anim[player] = 0;
 
@@ -1015,143 +966,10 @@ const char *gameCredits[][6] =
 	{ "Music", "Jester, Pygmy", "Siren", "Sirrus", "Scaven, FC", "Spring" },
 	{ "Music", "Timewalker", "Jason, Silents", "Chromatic Dragon", "Ng Pei Sin", "" },
 	{ "Open Source", "gcc, mingw", "SDL", "libpng", "IJG", "zlib" },
-	{ "Special Thanks", "Sam Lantinga", "Carey Lening", "modarchive.com", "digitalblasphemy.com", "" },
-	{ "Please Register!", "The full version of", "Candy Crisis features", "twelve stages and also", "includes two player", "mode." }
+	{ "Special Thanks", "Sam Lantinga", "Carey Lening", "modarchive.com", "digitalblasphemy.com", "" }
 };
 
-
-void SharewareVictory( void )
-{
-	SkittlesFontPtr textFont, titleFont;
-	SDL_Surface*    backBuffer;
-	SDL_Surface*    frontBuffer;
-	SDL_Rect        creditSrcSDLRect, bufferSrcSDLRect, bufferDstSDLRect;
-	MRect           creditSrcRect = { 0, 0, 369, 150 };
-	MRect           bufferSrcRect = { 0, 50, 480, 300 };
-	MRect           bufferDstRect = { 0, 0, 480, 250 };
-	MPoint          dPoint = { 450, 50 }, lPoint, cPoint;
-	int             scroll, ticks, x, y;
-	const char*     text;
-	int             thisFade;
-	const char fade[120] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //0
-	                         1, 2, 3, 4, 5, 6, 7, 8, 9,10, //1
-	                        11,12,13,14,15,16,17,18,19,20, //2
-	                        20,20,20,20,20,20,20,20,20,20, //3
-	                        20,20,20,20,20,20,20,20,20,20, //4
-	                        20,20,20,20,20,20,20,20,20,20, //5
-	                        20,20,20,20,20,20,20,20,20,20, //6
-	                        20,20,20,20,20,20,20,20,20,20, //7
-	                        20,20,20,20,20,20,20,20,20,20, //8
-	                        20,19,18,17,16,15,14,13,12,11, //9
-	                        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, //10
-	                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0  //11
-	                       };
-
-	titleFont = GetFont( picFont );
-	textFont = GetFont( picTinyFont );
-
-	SDLU_MRectToSDLRect( &creditSrcRect, &creditSrcSDLRect );
-	SDLU_MRectToSDLRect( &bufferSrcRect, &bufferSrcSDLRect );
-	SDLU_MRectToSDLRect( &bufferDstRect, &bufferDstSDLRect );
-
-	DrawPICTInSurface( frontSurface, picSharewareVictory );
-	SDL_Flip( frontSurface );
-
-	backBuffer = SDLU_InitSurface( &bufferDstSDLRect, 16 );
-
-	SDLU_BlitSurface( frontSurface, &bufferSrcSDLRect,
-	                  backBuffer,   &bufferDstSDLRect   );
-
-	frontBuffer = SDLU_InitSurface( &bufferDstSDLRect, 16 );
-
-	QuickFadeIn( NULL );
-
-	ChooseMusic( 12 );
-
-	ticks = MTickCount();
-	for( scroll=0; scroll<1500; scroll++ )
-	{
-		SDLU_AcquireSurface( frontBuffer );
-
-		SDLU_BlitSurface( backBuffer,   &bufferDstSDLRect,
-		                  frontBuffer,  &bufferDstSDLRect  );
-
-		ticks += 3;
-		lPoint = dPoint;
-		for( y=0; y<8; y++ )
-		{
-			if( y != 3 && y != 4 )
-			{
-				cPoint.v = lPoint.v + 25;
-				cPoint.h = lPoint.h;
-				if( cPoint.v > 480 ) break;
-
-				if( cPoint.v > 0 )
-				{
-					text = gameCredits[y][0];
-					thisFade = fade[cPoint.v >> 2];
-
-					while( *text )
-					{
-						SurfaceBlitWeightedCharacter( titleFont, *text++, &cPoint, 31, 31, 0, thisFade );
-					}
-				}
-
-				lPoint.v += 50;
-			}
-
-			for( x=1; x<6; x++ )
-			{
-				if( gameCredits[y][x][0] )
-				{
-					cPoint.v = lPoint.v;
-					cPoint.h = lPoint.h + 20;
-					if( cPoint.v > 480 ) break;
-
-					if( cPoint.v > 0 )
-					{
-						text = gameCredits[y][x];
-						thisFade = fade[cPoint.v >> 2];
-
-						while( *text )
-						{
-							SurfaceBlitWeightedCharacter( textFont, *text++, &cPoint, 31, 31, 0, thisFade );
-						}
-					}
-
-					lPoint.v += 20;
-				}
-			}
-		}
-
-		SDLU_ReleaseSurface( frontBuffer );
-
-		dPoint.v--;
-
-		SDLU_BlitFrontSurface( frontBuffer, &bufferDstSDLRect, &bufferSrcSDLRect );
-
-		do
-		{
-			if( SDLU_Button() ) goto out;
-            SDLU_Yield();
-		}
-		while( ticks >= MTickCount() );
-	}
-
-	do
-	{
-        SDLU_Yield();
-	}
-	while( !AnyKeyIsPressed( ) && !SDLU_Button() );
-
-out:
-	QuickFadeOut( NULL );
-
-	SDL_FreeSurface( backBuffer );
-	SDL_FreeSurface( frontBuffer );
-}
-
-void RegisteredVictory( void )
+void Victory( void )
 {
 	SkittlesFontPtr textFont, titleFont, bubbleFont;
 	SDL_Surface*    backBuffer;
@@ -1323,14 +1141,7 @@ void TotalVictory( void )
 
 	DoFullRepaint = NoPaint;
 
-	if( !IsRegistered() )
-	{
-		SharewareVictory( );
-	}
-	else
-	{
-		RegisteredVictory( );
-	}
+	Victory( );
 
 	showStartMenu = true;
 }
