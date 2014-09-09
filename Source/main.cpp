@@ -307,7 +307,7 @@ void ReserveMonitor( void )
 #if TARGET_API_MAC_CARBON
 	frontSurface = SDL_SetVideoMode( 640, 480, 15, SDL_SWSURFACE );
 #else
-	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_SWSURFACE | SDL_FULLSCREEN );
+	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE );
 #endif
 
 	SDL_WM_SetCaption( "Candy Crisis", "CandyCrisis" );
