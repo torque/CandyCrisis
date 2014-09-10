@@ -104,8 +104,8 @@ void SurfaceDrawBlob( int player, const MRect *myRect, int blob, int state, int 
 		CalcBlobRect( state, blob-1, &blobRect );
 
 		SurfaceBlitWeightedDualAlpha(  SDLU_GetCurrentSurface(),  blobSurface,  charMaskSurface,  blobSurface,  SDLU_GetCurrentSurface(),
-                                       myRect,                   &charRect,    &blobRect,        &alphaRect,    myRect,
-                                      (charred & 0xF0)>>3 );
+		                               myRect,                   &charRect,    &blobRect,        &alphaRect,    myRect,
+		                              (charred & 0xF0)>>3 );
 	}
 }
 

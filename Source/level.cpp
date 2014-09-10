@@ -116,10 +116,8 @@ void GameStartMenu( void )
 	int             skip;
 	MPoint          mouse;
 	MPoint          dPoint;
-	MPoint          sPoint[4];
 	unsigned long   black;
 	int             currentID;
-	char*           scan;
 	int             combo[2], comboBright[2], missBright[2];
 	SkittlesFontPtr smallFont = GetFont( picFont );
 	SkittlesFontPtr tinyFont = GetFont( picTinyFont );
