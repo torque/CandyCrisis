@@ -25,6 +25,35 @@ Yes, I am aware of [CCX][CCX]. However, I am mostly doing this as an
 exercise for myself, to work on my C(++) fluency. There are also some
 decisions CCX made that I disagree with.
 
+### Status (On OS X)
+
+The audio backend was rewritten to use FMODex, based against the 4.44.41
+release. FMOD 3 doesn't appear to exist anywhere.
+
+The code compiles (with some warnings that aren't currently worth
+fixing) against `SDL 1.2.15` and `SDL_Image 1.2.12`.
+
+However, during gameplay, and in the menu, there are severe performance
+issues. Some inspection with Instruments indicates that most of the time
+is being spent in `CGColorTransformConvertData`, which leads me to
+believe the problem exists somewhere between SDL and Quartz. It seems
+likely that the conversion routine from the 16-bit surfaces provided by
+SDL to the (presumably) 32-bit Quartz surfaces causes the game speed to
+become memory-limited. This may in fact be a bug in SDL 1.2.15, but
+older versions require obnoxious amounts of patching to build on 10.9,
+so I don't care to pursue this theory any further.
+
+Unfortunately, after some tinkering, it seems that there is not an
+obvious, simple way to prevent these conversion routines from lagging
+the gameplay. The way the graphics are stored currently is not
+particularly conducive to handing the blitting over to SDL and keeping
+everything in a 32-bit pipeline.
+
+It seems that if major effort is required to fix the slowdown problems,
+the game may as well also be ported to SDL2.
+
+While currently playable, it is a long way from being optimal.
+
 [puyo]: http://en.wikipedia.org/wiki/Puyo_Puyo_(series)
 [CCX]: https://github.com/philstopford/CCX
 [MGSkittles]: http://macintoshgarden.org/games/skittles
