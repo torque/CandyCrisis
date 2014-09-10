@@ -219,8 +219,8 @@ void DrawPICTInSurface( SDL_Surface* surface, int pictID )
 	image = LoadPICTAsSurface( pictID, 0 );
 	if( image != NULL )
 	{
-		SDLU_BlitSurfaceHQ( image,    &image->clip_rect,
-		                    surface,  &surface->clip_rect );
+		SDLU_BlitSurface( image,    &image->clip_rect,
+		                  surface,  &surface->clip_rect );
 
 		SDL_FreeSurface( image );
 	}

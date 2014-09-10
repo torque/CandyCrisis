@@ -170,16 +170,6 @@ void RefreshAll( void )
 
 void Error( const char* extra )
 {
-#if TARGET_API_MAC_CARBON
-	Str255 myString, extraP;
-
-	CopyCStringToPascal( extra, extraP );
-	ReleaseMonitor( );
-	GetIndString( myString, 131, errUnknown );
-	ParamText( myString, extraP, "\p", "\p" );
-	Alert( dFatalErrorAlert, NULL );
-	ExitToShell( );
-#else
 	char message[256];
 	sprintf( message, "Sorry, a critical error has occurred. Please report the following error message:\n    %s", extra );
 	#if WIN32
@@ -188,7 +178,6 @@ void Error( const char* extra )
 		fprintf(stderr, "Candy Crisis: %s\n", message);
 	#endif
 	exit(0);
-#endif
 }
 
 void WaitForRelease( void )
@@ -295,6 +284,8 @@ void ReserveMonitor( void )
 	SDL_Surface* icon;
 	SDL_Surface* mask;
 
+	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE );
+
 	icon = LoadPICTAsSurface( 10000, 16 );
 	mask = LoadPICTAsSurface( 10001, 1 );
 	SDL_WM_SetIcon( icon, (Uint8*) mask->pixels );
@@ -302,12 +293,6 @@ void ReserveMonitor( void )
 	SDL_FreeSurface( mask );
 
 	SDL_ShowCursor( SDL_DISABLE );
-
-#if TARGET_API_MAC_CARBON
-	frontSurface = SDL_SetVideoMode( 640, 480, 15, SDL_SWSURFACE );
-#else
-	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE );
-#endif
 
 	SDL_WM_SetCaption( "Candy Crisis", "CandyCrisis" );
 }
@@ -352,8 +337,6 @@ void Initialize( void )
         strcpy( candyCrisisResources, name );
         strcat( candyCrisisResources, "\\CandyCrisisResources\\" );
     }
-#elif TARGET_API_MAC_CARBON
-	strcpy( candyCrisisResources, ":CandyCrisisResources:" );
 #else
 	strcpy( candyCrisisResources, "CandyCrisisResources/" );
 #endif
