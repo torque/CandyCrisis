@@ -454,10 +454,13 @@ void AddHiscore( long score )
 
 	else if( evenBetter.value > best.value )
 	{
+		char rank[1];
 		sprintf( text, "Congratulations! %s got best combo!", playerName );
+		// trying to write c-style c++ is pretty dumb.
+		sprintf( rank, "" );
 
 		highScoreText = text;
-		*highScoreRank = 0;
+		highScoreRank = rank;
 
 		HandleDialog( kHiScoreDialog );
 
@@ -474,7 +477,9 @@ void AddHiscore( long score )
 
 	else if( highScoreLevel != -1 )
 	{
-		highScoreText = "Congratulations! You got a high score!";
+		sprintf( text, "Congratulations! You got a high score!" );
+
+		highScoreText = text;
 		highScoreRank = rank;
 
 		HandleDialog( kHiScoreDialog );
