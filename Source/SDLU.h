@@ -4,7 +4,6 @@
 #include "MTypes.h"
 
 
-//GWorldPtr  SDLU_SurfaceToGWorld( SDL_Surface* surface );
 SDL_Rect*    SDLU_MRectToSDLRect( const MRect* in, SDL_Rect* out );
 MRect*       SDLU_SDLRectToMRect( const SDL_Rect* in, MRect* out );
 int          SDLU_BlitSurface( SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect );
