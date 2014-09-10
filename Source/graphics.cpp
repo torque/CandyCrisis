@@ -159,11 +159,6 @@ void DrawBackdrop( void )
 	SDLU_BlitFrontSurface( backdropSurface, &backdropRect, &backdropRect );
 }
 
-void OpeningProgress( int current, int total )
-{
-	// computers are fast now... progress bar seems silly
-}
-
 void ShowTitle( void )
 {
 	int time;

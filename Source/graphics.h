@@ -11,7 +11,6 @@ void CalcBlobRect( int x, int y, MRect *myRect );
 void DrawBackdrop( void );
 void ShowTitle( void );
 void InitBackdrop( void );
-void OpeningProgress( int current, int total ) ;
 
 
 extern SDL_Surface* backdropSurface;

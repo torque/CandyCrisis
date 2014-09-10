@@ -248,20 +248,19 @@ MBoolean OptionKeyIsPressed( void )
 
 void RetrieveResources( void )
 {
-	                            OpeningProgress( 0, 10 );
-	InitSound( );               OpeningProgress( 1, 10 );
+	InitSound( );
 
-	InitBackdrop( );            OpeningProgress( 2, 10 );
+	InitBackdrop( );
 
-	GetBlobGraphics( );         OpeningProgress( 3, 10 );
+	GetBlobGraphics( );
 
-	InitNext( );                OpeningProgress( 4, 10 );
+	InitNext( );
 
-	InitScore( );               OpeningProgress( 5, 10 );
+	InitScore( );
 
-	InitGrayMonitors( );        OpeningProgress( 6, 10 );
+	InitGrayMonitors( );
 
-	InitOpponent( );            OpeningProgress( 7, 10 );
+	InitOpponent( );
 
 	InitStage( );   // must run after backdrop window is open
 	InitGameTickCount( );
@@ -269,13 +268,13 @@ void RetrieveResources( void )
 	InitPlayers( ); // must run after backdrop window is open
 	InitFont( );
 	InitZapStyle( );// must run after fonts are inited
-	                            OpeningProgress( 8, 10 );
+
 
 	InitBlitter( ); // must run after player windows are open
-	InitPlayerWorlds( );        OpeningProgress( 9, 10 );
+	InitPlayerWorlds( );
 
 	InitVictory( );	// must run after fonts are inited
-	InitTweak( );               OpeningProgress( 10, 10 );
+	InitTweak( );
 }
 
 
