@@ -18,11 +18,6 @@ static FMOD_SOUND   *music = NULL;
 static FMOD_CHANNEL *musicChannel = NULL;
 static FMOD_RESULT   result;
 
-void EnableMusic( MBoolean on )
-{
-	FMOD_Channel_SetPaused( musicChannel, !on );
-}
-
 void FastMusic( void )
 {
 	if( music && !musicFast )
@@ -45,15 +40,15 @@ void PauseMusic( void )
 {
 	if( musicSelection >= 0 && musicSelection <= kSongs )
 	{
-		FMOD_Channel_SetPaused( musicChannel, 1 );
+		FMOD_Channel_SetPaused( musicChannel, true );
 	}
 }
 
 void ResumeMusic( void )
 {
-	if( musicSelection >= 0 && musicSelection <= kSongs )
+	if( musicSelection >= 0 && musicSelection <= kSongs && musicOn )
 	{
-		FMOD_Channel_SetPaused( musicChannel, 0 );
+		FMOD_Channel_SetPaused( musicChannel, false );
 	}
 }
 

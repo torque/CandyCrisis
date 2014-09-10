@@ -916,7 +916,7 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 			switch( *item )
 			{
 				case kSound:     PlayMono( kClick ); soundOn = !soundOn; PlayMono( kClick );     return false;
-				case kMusic:     PlayMono( kClick ); musicOn = !musicOn; EnableMusic( musicOn ); return false;
+				case kMusic:     PlayMono( kClick ); musicOn = !musicOn;                         return false;
 				case kEndGame:   PlayMono( kClick );                                             return true;
 				case kResume:    PlayMono( kClick );                                             return true;
 

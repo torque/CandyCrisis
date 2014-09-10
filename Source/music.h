@@ -1,7 +1,6 @@
 // music.h
 #pragma once
 
-void EnableMusic( MBoolean on );
 void PauseMusic( void );
 void ResumeMusic( void );
 void FastMusic( void );

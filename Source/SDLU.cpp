@@ -330,13 +330,13 @@ int SDLU_EventFilter( const SDL_Event *event )
 		if( !event->active.gain && s_isForeground )
 		{
 			FreezeGameTickCount();
-			EnableMusic(false);
+			PauseMusic();
             s_isForeground = false;
 		}
 		else if( event->active.gain && !s_isForeground )
 		{
 			UnfreezeGameTickCount();
-			EnableMusic(musicOn);
+			ResumeMusic();
             s_isForeground = true;
 
 			DoFullRepaint();
