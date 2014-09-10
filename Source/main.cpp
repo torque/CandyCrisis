@@ -368,31 +368,8 @@ void Initialize( void )
 	SDL_SetEventFilter( SDLU_EventFilter );
 }
 
-void LaunchURL( const char* url )
 void QuickFadeIn( void )
 {
-#if TARGET_API_MAC_CARBON
-	OSStatus err = -1;
-	ICInstance inst;
-	long startSel;
-	long endSel;
-
-	if( ICStart != NULL )
-	{
-		err = ICStart( &inst, 'Skit' );
-		if (err == noErr)
-		{
-			startSel = 0;
-			endSel = strlen(url);
-			err = ICLaunchURL( inst, "\p", url, strlen(url), &startSel, &endSel );
-			ICStop(inst);
-		}
-	}
-#elif _WIN32
-	SDL_WM_IconifyWindow();
-	ShellExecute( NULL, "open", url, "", "c:\\", SW_SHOWNORMAL );
-	WaitForRegainFocus();
-#endif
 }
 
 void QuickFadeOut( void )

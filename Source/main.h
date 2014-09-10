@@ -17,7 +17,6 @@ void MaskRect( MRect *r );
 void RefreshPlayerWindow( short player );
 int Warp( void );
 void WaitForRelease( void );
-void LaunchURL( const char* url );
 void QuickFadeIn( void );
 void QuickFadeOut( void );
 MBoolean FileExists( const char* name );
