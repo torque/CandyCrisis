@@ -682,20 +682,6 @@ void SDLU_BlitFrontSurface( SDL_Surface* source, SDL_Rect* sourceSDLRect, SDL_Re
 	SDL_UpdateRect( frontSurface, destSDLRect->x, destSDLRect->y, destSDLRect->w, destSDLRect->h );
 }
 
-
-void SDLU_SetBrightness( float b )
-{
-	Uint16 table[256];
-	int    index;
-
-	for( index=0; index<256; index++ )
-	{
-		table[index] = (int)(index * b * 257.0f); // 255 * 257 = 65535
-	}
-
-	SDL_SetGammaRamp( table, table, table );
-}
-
 void SDLU_Yield()
 {
 	SDL_Delay( 2 );

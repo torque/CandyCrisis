@@ -176,7 +176,7 @@ redo:
 
 	WaitForRelease();
 
-	QuickFadeIn( NULL );
+	QuickFadeIn();
 
 	DoFullRepaint = GameStartMenuRepaint;
 
@@ -473,7 +473,7 @@ redo:
 	SDL_FreeSurface( gameStartDrawSurface );
 	SDL_FreeSurface( cursorBackSurface );
 
-	QuickFadeOut( NULL );
+	QuickFadeOut();
 
 	switch( selected )
 	{
@@ -482,7 +482,7 @@ redo:
 			level = kTutorialLevel;
 			BeginRound( true );
 			InitTutorial( );
-			QuickFadeIn( NULL );
+			QuickFadeIn();
 			break;
 
 		case 1:
@@ -493,7 +493,7 @@ redo:
 
 				InitGame( kPlayerControl, player2[selected] );
 				BeginRound( true );
-				QuickFadeIn( NULL );
+				QuickFadeIn();
 				break;
 			}
 
@@ -513,9 +513,9 @@ redo:
 			DrawPICTInSurface( frontSurface, picBackdrop + currentID );
 			SDL_Flip( frontSurface );
 
-			QuickFadeIn( NULL );
+			QuickFadeIn();
 			HandleDialog( kControlsDialog );
-			QuickFadeOut( NULL );
+			QuickFadeOut();
 			goto redo;
 	}
 }
@@ -524,19 +524,19 @@ void ShowGameOverScreen( void )
 {
 	unsigned long timer = MTickCount() + (60*3);
 
-	QuickFadeOut(NULL);
+	QuickFadeOut();
 
 	DrawPICTInSurface( frontSurface, picGameOver );
 	SDL_Flip( frontSurface );
 
-	QuickFadeIn( NULL );
+	QuickFadeIn();
 	do
 	{
 		if( MTickCount() > timer ) break;
 		SDLU_Yield();
 	}
 	while( !AnyKeyIsPressed( ) && !SDLU_Button() );
-	QuickFadeOut( NULL );
+	QuickFadeOut();
 }
 
 void InitStage( void )
@@ -1058,7 +1058,7 @@ void Victory( void )
 
 		SDLU_BlitFrontSurface( backBuffer, &scrollSDLRect, &fullSDLRect );
 
-		QuickFadeIn( NULL );
+		QuickFadeIn();
 
 		ticks = MTickCount();
 		for( vertScroll = 0; vertScroll < 250; vertScroll++ )
@@ -1126,7 +1126,7 @@ void Victory( void )
 			while( ticks >= MTickCount() );
 		}
 
-		QuickFadeOut( NULL );
+		QuickFadeOut();
 	}
 
 	SDL_FreeSurface( backBuffer  );
@@ -1137,7 +1137,7 @@ void TotalVictory( void )
 {
 
 	AddHiscore( score[0] );
-	QuickFadeOut( NULL );
+	QuickFadeOut();
 
 	DoFullRepaint = NoPaint;
 

@@ -285,16 +285,12 @@ void ShowHiscore( void )
 	SDL_FillRect( frontSurface, &frontSurface->clip_rect, SDL_MapRGB( frontSurface->format, 0, 0, 0 ));
 	SDL_Flip( frontSurface );
 
-	SDLU_SetBrightness( 1.0f );
-
 	FadeScreen( hiScoreSurface, fadeSurface, 31, -32 );
 	do
 	{
 	}
 	while( !AnyKeyIsPressed( ) && !SDLU_Button() );
 	FadeScreen( hiScoreSurface, fadeSurface, -31, 32 );
-
-	SDLU_SetBrightness( 0.0f );
 
 	SDL_FreeSurface( hiScoreSurface );
 	SDL_FreeSurface( fadeSurface );
@@ -382,7 +378,7 @@ void ShowBestCombo( void )
 	blobR[0] = best.r;
 	DrawSpriteBlobs( 0, kNoSuction );
 
-	QuickFadeIn( NULL );
+	QuickFadeIn();
 	blobTime[0] = animTime[0] = GameTickCount( );
 
 	autoPattern = hiScorePattern;

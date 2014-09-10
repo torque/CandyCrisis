@@ -9,15 +9,6 @@
 
 typedef signed char MBoolean;
 
-
-typedef struct MRGBColor
-{
-	unsigned short red;
-	unsigned short green;
-	unsigned short blue;
-} MRGBColor;
-
-
 typedef struct MRect
 {
 	short top;

@@ -337,7 +337,7 @@ void InitTutorial( void )
 
 void EndTutorial( void )
 {
-	QuickFadeOut( NULL );
+	QuickFadeOut();
 
 	showStartMenu = true;
 }

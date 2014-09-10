@@ -12,7 +12,6 @@ void         SDLU_GetPixel( SDL_Surface* surface, int x, int y, SDL_Color* pixel
 void         SDLU_ChangeSurfaceDepth( SDL_Surface** surface, int depth );
 SDL_Surface* SDLU_InitSurface( SDL_Rect* rect, int depth );
 void         SDLU_BlitFrontSurface( SDL_Surface* source, SDL_Rect* sourceSDLRect, SDL_Rect* destSDLRect );
-void         SDLU_SetBrightness( float b );
 void         SDLU_AcquireSurface( SDL_Surface* surface );
 SDL_Surface* SDLU_GetCurrentSurface();
 void         SDLU_ReleaseSurface( SDL_Surface* surface );

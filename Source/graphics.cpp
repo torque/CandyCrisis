@@ -167,7 +167,7 @@ void ShowTitle( void )
 
 	SDL_Flip( frontSurface );
 
-	QuickFadeIn( NULL );
+	QuickFadeIn();
 
 	time = MTickCount() + 180;
 
@@ -180,7 +180,7 @@ void ShowTitle( void )
 
 	WaitForRelease();
 
-	QuickFadeOut( NULL );
+	QuickFadeOut();
 
 	SDL_FillRect( frontSurface, &frontSurface->clip_rect, SDL_MapRGB( frontSurface->format, 0, 0, 0 ) );
 	SDL_Flip( frontSurface );

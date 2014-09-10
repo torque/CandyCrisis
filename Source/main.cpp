@@ -369,6 +369,7 @@ void Initialize( void )
 }
 
 void LaunchURL( const char* url )
+void QuickFadeIn( void )
 {
 #if TARGET_API_MAC_CARBON
 	OSStatus err = -1;
@@ -394,44 +395,8 @@ void LaunchURL( const char* url )
 #endif
 }
 
-void QuickFadeIn( MRGBColor *color )
+void QuickFadeOut( void )
 {
-#ifndef TARGET_API_MAC_CARBON
-	long  c;
-	float percent;
-
-	for( percent=0.0f; percent<1.0f; percent += 0.04f )
-	{
-		c = MTickCount( );
-		SDLU_SetBrightness( percent );
-		while( c == MTickCount( ) )
-		{
-			SDLU_Yield();
-		}
-	}
-
-	SDLU_SetBrightness( percent );
-#endif
-}
-
-void QuickFadeOut( MRGBColor *color )
-{
-#ifndef TARGET_API_MAC_CARBON
-	long   c;
-	float  percent;
-
-	for( percent=1.0f; percent>0.0f; percent -= 0.04f )
-	{
-		c = MTickCount( );
-		SDLU_SetBrightness( percent );
- 		while( c == MTickCount( ) )
- 		{
- 			SDLU_Yield();
- 		}
-	}
-
-	SDLU_SetBrightness( percent );
-#endif
 }
 
 MBoolean FileExists( const char* name )

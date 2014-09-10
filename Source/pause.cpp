@@ -1146,7 +1146,7 @@ void HandleDialog( int type )
 			}
 			else
 			{
-				QuickFadeOut(NULL);
+				QuickFadeOut();
 			}
 
 			showStartMenu = true;
