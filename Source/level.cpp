@@ -79,8 +79,8 @@ static void InsertCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* s
 	                  scratch, &cursorBackSDLRect   );
 
 	SDLU_AcquireSurface( surface );
-	SurfaceBlitCharacter( cursorFont, '°', &mouseHere,    0,  0,  0, 0 );
-	SurfaceBlitCharacter( cursorFont, '¢', &mouseHereToo, 31, 31, 31, 0 );
+	SurfaceBlitCharacter( cursorFont, '^', &mouseHere,    0,  0,  0, 0 );
+	SurfaceBlitCharacter( cursorFont, '}', &mouseHereToo, 31, 31, 31, 0 );
 	SDLU_ReleaseSurface( surface );
 }
 

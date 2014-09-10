@@ -434,8 +434,8 @@ void StartBalloon( const char *message )
 	balloonTip.h = balloonContentsRect.right - 40;
 	balloonFill = balloonTip;
 
-	SurfaceBlitCharacter( balloonFont, 'Á', &balloonFill,  0,  0,  0,  0 );
-	SurfaceBlitCharacter( balloonFont, 'ª', &balloonTip,  31, 31, 31,  0 );
+	SurfaceBlitCharacter( balloonFont, '[', &balloonFill,  0,  0,  0,  0 );
+	SurfaceBlitCharacter( balloonFont, ']', &balloonTip,  31, 31, 31,  0 );
 
 	SDLU_ReleaseSurface( balloonSurface );
 

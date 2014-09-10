@@ -475,8 +475,8 @@ static void DrawDialogCursor( MRect *pauseRect, int *shade )
 
 	SDLU_AcquireSurface( drawSurface );
 
-	SurfaceBlitCharacter( smallFont, '?', &p,  0,  0,  0, 0 );
-	SurfaceBlitCharacter( smallFont, '?', &q, 31, 31, 31, 0 );
+	SurfaceBlitCharacter( smallFont, '^', &p,  0,  0,  0, 0 );
+	SurfaceBlitCharacter( smallFont, '}', &q, 31, 31, 31, 0 );
 
 	SDLU_ReleaseSurface( drawSurface );
 }
@@ -683,7 +683,7 @@ static void DrawControlsContents( int *item, int shade )
 		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );  // 80 pixels across
 
 		controlName = SDL_GetKeyName( playerKeys[index & 1][index >> 1] );
-		if( controlName == NULL ) controlName = "•";
+		if( controlName == NULL ) controlName = "{";
 
 		dPoint.v = 231 + ((index & ~1) * 13);
 		dPoint.h = (index & 1)? 460: 265;
@@ -693,11 +693,11 @@ static void DrawControlsContents( int *item, int shade )
 
 	dPoint.h = 200;
 	dPoint.v = 340;
-	DrawRainbowText( smallFont, "• OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
+	DrawRainbowText( smallFont, "{ OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
 
 	dPoint.h = 365;
 	dPoint.v = 340;
-	DrawRainbowText( smallFont, "• Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
+	DrawRainbowText( smallFont, "{ Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
 
 	SDLU_ReleaseSurface( drawSurface );
 }
@@ -707,15 +707,15 @@ static void DrawPauseContents( int *item, int shade )
 	MPoint dPoint;
 	int itemCount = 6;
 	int index;
-	const char *line[7] = { "• Music",           "• End Game",
-	                        "• Sound",           "• Hide Game",
-	                        "• Controls",        "• Resume" };
+	const char *line[7] = { "{ Music [",           "{ End Game",
+	                        "{ Sound [",           "{ Hide Game",
+	                        "{ Controls",        "{ Resume" };
 
 
-	if( level == kTutorialLevel ) line[1] = "• Skip Tutorial";
+	if( level == kTutorialLevel ) line[1] = "{ Skip Tutorial";
 
-	if( !musicOn ) line[0] = "• Music";
-	if( !soundOn ) line[2] = "• Sound";
+	if( !musicOn ) line[0] = "{ Music ]";
+	if( !soundOn ) line[2] = "{ Sound ]";
 
 	SDLU_AcquireSurface( drawSurface );
 

@@ -82,10 +82,11 @@ static SkittlesFontPtr LoadFont( SkittlesFontPtr font, int pictID, unsigned char
 
 void InitFont( void )
 {
-	LoadFont( &s_font[0],  picFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!:,.()*?0123456789'|-Áª£¢° " );
+	// [ = box with x, ] = box, { = bullet, } = small cursor, ^ = big cursor
+	LoadFont( &s_font[0],  picFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!:,.()*?0123456789'|-[]{}^ " );
 	LoadFont( &s_font[1],  picHiScoreFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*().,/-=_+<>?|'\":; " );
 	LoadFont( &s_font[2],  picContinueFont, (unsigned char*) "0123456789" );
-	LoadFont( &s_font[3],  picBalloonFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+;:,./<>? Áª'\"" );
+	LoadFont( &s_font[3],  picBalloonFont, (unsigned char*) "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-=_+;:,./<>? []'\"" );
 	LoadFont( &s_font[4],  picZapFont, (unsigned char*) "0123456789*PS" );
 	LoadFont( &s_font[5],  picZapOutlineFont, (unsigned char*) "0123456789*" );
 	LoadFont( &s_font[6],  picVictoryFont, (unsigned char*) "AB" );
