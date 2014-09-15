@@ -132,10 +132,10 @@ void SavePrefs( void )
 	{
 		for( count=0; count<kPrefListSize; count++ )
 		{
-			fprintf( F, "%ld%ld%ld%ld: ", (prefList[count].itemName >> 24) & 0xFF,
-			                              (prefList[count].itemName >> 16) & 0xFF,
-			                              (prefList[count].itemName >>  8) & 0xFF,
-			                              (prefList[count].itemName      ) & 0xFF  );
+			fprintf( F, "%c%c%c%c: ", (char)(prefList[count].itemName >> 24) & 0xFF,
+			                          (char)(prefList[count].itemName >> 16) & 0xFF,
+			                          (char)(prefList[count].itemName >>  8) & 0xFF,
+			                          (char)(prefList[count].itemName      ) & 0xFF  );
 
 			dataAt = (unsigned char*) prefList[count].itemPointer;
 			for( size=0; size<prefList[count].size; size++ )
