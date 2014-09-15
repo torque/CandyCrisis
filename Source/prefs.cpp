@@ -34,8 +34,10 @@ void LoadPrefs( void )
 	FILE *F;
 	int fileSize, count, digitsLeft;
 	unsigned char info, *infoAt, *dataAt, *fileData;
+	char prefsPath[512];
+	sprintf( prefsPath, "%s/.CandyCrisisPrefs", getenv( "HOME" ) );
 
-	F = fopen( QuickResourceName( "Preferences", 0, ".txt" ), "r" );
+	F = fopen( prefsPath, "r" );
 
 	if( F != NULL )
 	{
@@ -125,8 +127,10 @@ void SavePrefs( void )
 	FILE *F;
 	short count, size;
 	unsigned char* dataAt;
+	char prefsPath[512];
+	sprintf( prefsPath, "%s/.CandyCrisisPrefs", getenv( "HOME" ) );
 
-	F = fopen( QuickResourceName( "Preferences", 0, ".txt" ), "w" );
+	F = fopen( prefsPath, "w" );
 
 	if( F != NULL )
 	{
