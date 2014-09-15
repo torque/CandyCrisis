@@ -7,7 +7,7 @@ SOURCE_DIRS := Source
 SOURCES     := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.cpp))
 OBJECTS     := $(SOURCES:.cpp=.o)
 
-.PHONY: all debug clean
+.PHONY: all debug clean osxbundle
 
 all: $(TARGET)
 
@@ -22,6 +22,11 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	@echo CXX $@
 	@$(CXX) $(CFLAGS) -c $< -o $@
+
+osxbundle: CFLAGS += -DOSXBUNDLE
+osxbundle: LIBS   += -rpath "../Frameworks"
+osxbundle: all
+	@bundle/makeBundle.rb
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
