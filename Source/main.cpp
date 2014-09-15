@@ -337,6 +337,8 @@ void Initialize( void )
         strcpy( candyCrisisResources, name );
         strcat( candyCrisisResources, "\\CandyCrisisResources\\" );
     }
+#elif OSXBUNDLE
+	strcpy( candyCrisisResources, "../Resources/" );
 #else
 	strcpy( candyCrisisResources, "CandyCrisisResources/" );
 #endif
