@@ -42,7 +42,7 @@ class OSXBundle
 	end
 
 	def getVersion
-		version = `git describe git describe --dirty --abbrev=10 --tags 2>&1`
+		version = `git describe --abbrev=10 --tags 2>&1`
 		if version.match /^fatal: No names found/
 			version = "git-" + `git rev-parse --short=10 @`
 		end
