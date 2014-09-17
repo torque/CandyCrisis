@@ -11,8 +11,8 @@
 #include "level.h"
 #include "graphics.h"
 
-MBoolean update[2][kGridAcross][kGridDown];
-MBoolean refresh[2];
+bool update[2][kGridAcross][kGridDown];
+bool refresh[2];
 
 void InitBlitter( void )
 {
@@ -42,7 +42,7 @@ void UpdatePlayerWindow( int player )
 	if( playerWindowVisible[player] && refresh[player] )
 	{
 		MRect updateRect = {0, 0, 0, 0}, fullRect, offsetRect;
-		MBoolean first = true;
+		bool first = true;
 
 		for( x=0; x<kGridAcross; x++ )
 		{
@@ -746,7 +746,7 @@ void SurfaceBlitBlendOver( SDL_Surface* source,     SDL_Surface* dest,
 	int width, height, dstRowBytes, srcRowBytes;
 	unsigned char *src, *dst;
 	MRect destBounds;
-	MBoolean oddX = false;
+	bool oddX = false;
 
 	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
 

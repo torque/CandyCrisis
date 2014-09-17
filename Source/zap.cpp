@@ -197,7 +197,7 @@ void KillBlobs( int player )
 	                                        kGrayBlink3, kGrayBlink3, kGrayBlink3,
 	                                        kGrayBlink3, kGrayBlink3 };
 	MRect myRect;
-	MBoolean busy = false;
+	bool busy = false;
 	MPoint dPoint, oPoint;
 	char *scan;
 

@@ -475,7 +475,7 @@ void PlaceBlobs( int player )
 
 void DropBlobs( int player )
 {
-	MBoolean busy = false;
+	bool busy = false;
 	signed char tempG[kGridDown], tempC[kGridDown];
 	const int jiggleList[] = { kNoSuction, kSquish,
 	                           kNoSuction, kSquash,

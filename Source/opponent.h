@@ -5,7 +5,7 @@ void InitOpponent( void );
 void BeginOpponent( int which );
 void UpdateOpponent( void );
 void DrawFrozenOpponent( void );
-void OpponentChatter( MBoolean on );
+void OpponentChatter( bool on );
 void OpponentPissed( void );
 
 enum

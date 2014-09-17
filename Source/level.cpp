@@ -46,12 +46,12 @@ int difficultyTicks, backdropTicks, backdropFrame;
 #define max(x,y) (((x)>(y))?(x):(y))
 
 
-const int startSkip = 1;
-static MBoolean shouldFullRepaint = false;
-static int startMenuTime = 0;
-static int splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats];
+const  int   startSkip = 1;
+static bool  shouldFullRepaint = false;
+static int   startMenuTime = 0;
+static int   splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats];
 static MRect splatBlob[kNumSplats];
-static int glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
+static int   glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
 static MRect titleRect[kTitleItems] = {
 	{ 155, 203, 207, 426 }, // tutorial
 	{ 225, 179, 281, 451 }, // 1p
@@ -661,7 +661,7 @@ void InitGame( int player1, int player2 )
 	credits = (player2 == kNobodyControl)? 1: 5;
 }
 
-MBoolean InitCharacter( int player, int level )
+bool InitCharacter( int player, int level )
 {
 	const Character characterList[] = {
 		{ -1 }, // no zero'th character
@@ -728,7 +728,7 @@ void PrepareStageGraphics( int type )
 	backdropFrame = 0;
 }
 
-void BeginRound( MBoolean changeMusic )
+void BeginRound( bool changeMusic )
 {
 	int player, count, count2;
 

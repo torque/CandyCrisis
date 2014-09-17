@@ -15,7 +15,7 @@
 int destinationX[2], destinationR[2];
 signed char tempGrid[kGridAcross][kGridDown];
 long timeAI[2], timeMove[2];
-MBoolean moveQuick[2];
+bool moveQuick[2];
 AutoPatternPtr autoPattern = NULL;
 
 void AutoControl( int player )
@@ -142,7 +142,7 @@ void AutoControl( int player )
 void PlayerControl( int player )
 {
 	int a = player, b = player;
-	MBoolean moved = false;
+	bool moved = false;
 
 	if( players == 1 )
 	{
@@ -244,7 +244,7 @@ void ChooseAIDestination( int player )
 	int x, y;
 	int bestX[kGridAcross*4], bestR[kGridAcross*4], currentBest = -1;
 	int rowDifference, totalTries, temp;
-	MBoolean shouldTry[kGridAcross][4];
+	bool shouldTry[kGridAcross][4];
 
 	timeAI[player] = GameTickCount( ) + 1;
 	moveQuick[player] = true;
@@ -440,12 +440,12 @@ int ScoreTemporaryGrid( void )
 {
 	int x, y, change, result = 0;
 	int deductions[kGridAcross][kGridDown] =
-		{ { 400, 350, 350, 200, 120, 60, 20, 5, 0, 0, 0, 0 },
-		  { 600, 500, 300, 150, 100, 50, 20, 0, 0, 0, 0, 0 },
+		{ { 400,  350, 350, 200, 120, 60, 20, 5, 0, 0, 0, 0 },
+		  { 600,  500, 300, 150, 100, 50, 20, 0, 0, 0, 0, 0 },
 		  { 9999, 800, 200, 100,  50, 40, 20, 0, 0, 0, 0, 0 },
 		  { 9999, 800, 200, 100,  50, 40, 20, 0, 0, 0, 0, 0 },
 		  { 9999, 500, 300, 150, 100, 50, 20, 0, 0, 0, 0, 0 },
-		  { 400, 350, 350, 200, 120, 60, 20, 5, 0, 0, 0, 0 } };
+		  { 400,  350, 350, 200, 120, 60, 20, 5, 0, 0, 0, 0 } };
 
 	for( x=0; x<kGridAcross; x++ )
 	{
@@ -492,7 +492,7 @@ int ScoreTemporaryGrid( void )
 
 int TestTemporaryGrid( void )
 {
-	MBoolean busy;
+	bool busy;
 	int x, y, stackSize, chains = 0;
 
 	do

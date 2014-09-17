@@ -21,5 +21,6 @@ void         SDLU_PumpEvents();
 int          SDLU_EventFilter( const SDL_Event *event );
 void         SDLU_StartWatchingTyping();
 void         SDLU_StopWatchingTyping();
-MBoolean     SDLU_CheckTyping( char* ascii, SDLKey* sdl );
-MBoolean     SDLU_IsForeground();
+bool         SDLU_CheckTyping( char* ascii, SDLKey* sdl );
+bool         SDLU_IsForeground();
+bool         SDLU_PointInRect( MPoint p, MRect* r );

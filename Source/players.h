@@ -21,7 +21,7 @@ void FadeCharred( int player );
 void RedrawBoardContents( int player );
 
 extern unsigned long boredTime[2], hintTime[2], fadeCharTime[2], animTime[2], shadowDepth[2], messageTime;
-extern MBoolean idling[2];
+extern bool idling[2];
 extern int emotions[2];
 extern int glowColors[][3];
 

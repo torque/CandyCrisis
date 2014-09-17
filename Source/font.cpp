@@ -17,7 +17,7 @@ static SkittlesFontPtr LoadFont( SkittlesFontPtr font, int pictID, const char *l
 {
 	unsigned char* lastLine;
 	unsigned char  white;
-	MBoolean       success = false;
+	bool           success = false;
 	int            start, across, skip;
 	SDL_Surface*   temporarySurface;
 	SDL_Rect       sdlRect;

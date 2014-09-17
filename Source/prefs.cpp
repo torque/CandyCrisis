@@ -17,15 +17,14 @@
 #define kPrefsMaxSize 65536
 
 PrefList prefList[] = {
-	{ 'mod ', &musicOn,                    sizeof( MBoolean       ) },
-	{ 'sfx ', &soundOn,                    sizeof( MBoolean       ) },
-	{ 'keys', playerKeys,                  sizeof( playerKeys     ) },
-	{ 'high', scores,                      sizeof( scores         ) },
-	{ 'cmbx', &best,                       sizeof( best           ) }
+	{ 'mod ', &musicOn,   sizeof( bool       ) },
+	{ 'sfx ', &soundOn,   sizeof( bool       ) },
+	{ 'keys', playerKeys, sizeof( playerKeys ) },
+	{ 'high', scores,     sizeof( scores     ) },
+	{ 'cmbx', &best,      sizeof( best       ) }
 };
 
 #define kPrefListSize (sizeof(prefList)/sizeof(prefList[0]))
-
 
 /* Loads the preferences from a file in the System Folder:Preferences. */
 

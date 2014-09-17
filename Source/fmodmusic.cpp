@@ -10,8 +10,8 @@
 
 const int kNoMusic = -1;
 
-MBoolean musicOn = true, musicFast = false;
-int musicLevel = 0, musicSelection = kNoMusic;
+bool musicOn = true, musicFast = false;
+int  musicLevel = 0, musicSelection = kNoMusic;
 
 extern FMOD_SYSTEM *fmodSystem;
 static FMOD_SOUND   *music = NULL;

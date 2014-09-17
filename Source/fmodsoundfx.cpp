@@ -7,7 +7,7 @@
 #include <fmod.h>
 #include <fmod_errors.h>
 
-MBoolean        soundOn = true;
+bool                 soundOn = true;
 
 FMOD_SYSTEM         *fmodSystem;
 static FMOD_RESULT   result;

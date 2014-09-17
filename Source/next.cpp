@@ -20,7 +20,7 @@ SDL_Surface* nextSurface;
 SDL_Surface* nextDrawSurface;
 
 MRect nextWindowZRect, nextWindowRect[2];
-MBoolean nextWindowVisible[2] = {true, true};
+bool nextWindowVisible[2] = {true, true};
 int nextTime[2][2], nextStage[2][2], pullA[2], pullB[2];
 
 void InitNext( void )
@@ -117,7 +117,7 @@ void ShowPull( int player )
 
 void UpdateNext( int player )
 {
-	MBoolean changed = false;
+	bool changed = false;
 	int blob;
 
 	if( nextStage[player][0] >= kPulling )

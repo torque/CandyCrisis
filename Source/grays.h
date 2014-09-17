@@ -8,7 +8,7 @@ void BlinkGrays( int player );
 void PlaceGrayRow( int player, int grayX );
 void Bounce( int player );
 void LockGrays( int player );
-MBoolean BusyDroppingGrays( int player );
+bool BusyDroppingGrays( int player );
 
 extern int grays[2][kGridAcross], grayAir[2][kGridAcross], graySpeed[2];
 extern int unallocatedGrays[2], lockGrays[2], rowBounce[2][kGridAcross], splat[2][kGridAcross];

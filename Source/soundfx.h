@@ -29,4 +29,4 @@ enum
 	kNumSounds
 };
 
-extern MBoolean soundOn;
+extern bool soundOn;

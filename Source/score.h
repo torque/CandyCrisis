@@ -11,7 +11,7 @@ void DrawCharacter( char which, const MRect *myRect );
 #define kNumberAmount 41
 
 extern MRect scoreWindowZRect, scoreWindowRect[2];
-extern MBoolean scoreWindowVisible[2];
+extern bool scoreWindowVisible[2];
 extern long roundStartScore[2], score[2], displayedScore[2];
 
 extern const char characterList[];

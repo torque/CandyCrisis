@@ -45,15 +45,15 @@ signed char  nextA[2], nextB[2], nextM[2], nextG[2], colorA[2], colorB[2],
              control[2], dropping[2], magic[2], grenade[2], anim[2];
 int          chain[2];
 long         blobTime[2], startTime, endTime;
-MBoolean     finished = false, pauseKey = false, showStartMenu = true;
+bool         finished = false, pauseKey = false, showStartMenu = true;
 signed char  grid[2][kGridAcross][kGridDown], suction[2][kGridAcross][kGridDown], charred[2][kGridAcross][kGridDown], glow[2][kGridAcross][kGridDown];
 MRect        playerWindowZRect, playerWindowRect[2];
-MBoolean     playerWindowVisible[2] = { true, true };
+bool         playerWindowVisible[2] = { true, true };
 KeyList      hitKey[2];
 int          backgroundID = -1;
 MPoint       blobWindow[8][2];
 void         (*DoFullRepaint)() = NoPaint;
-MBoolean     needsRefresh = false;
+bool         needsRefresh = false;
 
 static char  candyCrisisResources[512];
 
@@ -189,7 +189,7 @@ void WaitForRelease( void )
 	while( AnyKeyIsPressed( ) || SDLU_Button() );
 }
 
-MBoolean AnyKeyIsPressed( void )
+bool AnyKeyIsPressed( void )
 {
 	int index;
 	int arraySize;
@@ -213,7 +213,7 @@ MBoolean AnyKeyIsPressed( void )
 	return false;
 }
 
-MBoolean ControlKeyIsPressed( void )
+bool ControlKeyIsPressed( void )
 {
 	int arraySize;
 	unsigned char* pressedKeys;
@@ -224,7 +224,7 @@ MBoolean ControlKeyIsPressed( void )
 	return pressedKeys[ SDLK_LCTRL ] || pressedKeys[ SDLK_RCTRL ];
 }
 
-MBoolean OptionKeyIsPressed( void )
+bool OptionKeyIsPressed( void )
 {
 	int arraySize;
 	unsigned char* pressedKeys;
@@ -361,7 +361,7 @@ void QuickFadeOut( void )
 {
 }
 
-MBoolean FileExists( const char* name )
+bool FileExists( const char* name )
 {
 	FILE* f = fopen( name, "rb" );
 	if( f == NULL )

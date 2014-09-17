@@ -7,8 +7,6 @@
 ///
 #pragma once
 
-typedef signed char MBoolean;
-
 typedef struct MRect
 {
 	short top;

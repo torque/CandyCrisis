@@ -120,9 +120,9 @@ void LockGrays( int player )
 
 void SetupGrays( int player )
 {
-	int grayX, change;
-	MBoolean onlyOnce[kGridAcross];
-	int rowFree[kGridAcross];
+	int  grayX, change;
+	bool onlyOnce[kGridAcross];
+	int  rowFree[kGridAcross];
 
 	if( role[player] == kDropGrays ) return; // next time around
 
@@ -237,7 +237,7 @@ void DropGrays( int player )
 	}
 }
 
-MBoolean BusyDroppingGrays( int player )
+bool BusyDroppingGrays( int player )
 {
 	int grayX;
 

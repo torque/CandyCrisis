@@ -20,7 +20,7 @@ SDL_Surface* numberMaskSurface;
 
 
 MRect scoreWindowZRect, scoreWindowRect[2];
-MBoolean scoreWindowVisible[2] = {true, true};
+bool scoreWindowVisible[2] = {true, true};
 long roundStartScore[2], score[2], displayedScore[2], scoreTime[2];
 const char characterList[] =
 { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',

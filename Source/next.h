@@ -14,5 +14,5 @@ void ShowPull( int player );
 extern SDL_Surface* nextSurface;
 extern SDL_Surface* nextDrawSurface;
 
-extern MBoolean nextWindowVisible[2];
+extern bool nextWindowVisible[2];
 extern MRect nextWindowZRect, nextWindowRect[2];

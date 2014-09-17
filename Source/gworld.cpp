@@ -168,7 +168,7 @@ void SurfaceDrawSprite( const MRect *myRect, int blob, int state )
 }
 
 
-MBoolean PICTExists( int pictID )
+bool PICTExists( int pictID )
 {
 	if( FileExists( QuickResourceName( "PICT", pictID, ".jpg" ) ) )
 		return true;

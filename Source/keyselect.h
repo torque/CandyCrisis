@@ -8,7 +8,7 @@ int SDLTypingFilter(const SDL_Event *event);
 
 void StartWatchingTyping();
 void StopWatchingTyping();
-MBoolean CheckTyping( char* ascii, SDLKey* sdl );
+bool CheckTyping( char* ascii, SDLKey* sdl );
 void CheckKeys();
 
 

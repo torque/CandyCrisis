@@ -93,20 +93,12 @@ void OpponentPissed( void )
 	opponentTime = GameTickCount();
 }
 
-void OpponentChatter( MBoolean on )
+void OpponentChatter( bool on )
 {
-	switch( on )
-	{
-		case true:
-			opponentMood = 5;
-			opponentTime = GameTickCount();
-			break;
 
-		case false:
-			opponentMood = 0;
-			opponentTime = GameTickCount();
-			break;
-	}
+	opponentMood = on? 5: 0;
+	opponentTime = GameTickCount();
+
 }
 
 void UpdateOpponent( void )

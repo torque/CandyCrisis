@@ -47,13 +47,13 @@ SDL_Surface* logoAlphaSurface;
 
 SkittlesFontPtr smallFont, bigFont, dashedLineFont, continueFont, tinyFont, batsuFont;
 FRGBColor backColor[4];
-MBoolean continueTimeOut;
+bool continueTimeOut;
 
 static int dialogType, dialogStage, dialogTimer, dialogTarget, dialogShade, dialogItem;
 static float colorWrap = 0, colorInc;
 static MRect logoRect = {0, 0, 111, 246}, lastPauseRect;
-static MBoolean dialogStageComplete;
-static MBoolean timeToRedraw = false;
+static bool dialogStageComplete;
+static bool timeToRedraw = false;
 
 // for the controls dialog
 static int controlToReplace = -1;
@@ -282,9 +282,9 @@ enum
 	kClosing
 };
 
-static MBoolean DrawDialogBox( MBoolean larger, int animationType, int *target, int skip, float *colorWrap, float colorInc, MRect *pauseRect )
+static bool DrawDialogBox( bool larger, int animationType, int *target, int skip, float *colorWrap, float colorInc, MRect *pauseRect )
 {
-	MBoolean animationStageComplete = false;
+	bool animationStageComplete = false;
 	MRect normalRect[2][19]     = { { { 240 - 10,  320 - 30,  240 + 10,  320 + 30  },
 	                                  { 240 - 40,  320 - 120, 240 + 40,  320 + 120 },
 	                                  { 240 - 60,  320 - 180, 240 + 60,  320 + 180 },
@@ -651,7 +651,7 @@ static void DrawHiScoreContents( int *item, int shade )
 
 static void DrawControlsContents( int *item, int shade )
 {
-	MBoolean    highlight;
+	bool    highlight;
 	MPoint      dPoint;
 	int         index;
 	const char* controlName;
@@ -730,7 +730,7 @@ static void DrawPauseContents( int *item, int shade )
 	SDLU_ReleaseSurface( drawSurface );
 }
 
-static MBoolean ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	MRect yes = {280, 220, 300, 260}, no = {280, 400, 300, 440};
 	MPoint p;
@@ -756,7 +756,7 @@ static MBoolean ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 	return( SDLU_Button( ) && (*item != kNothing) );
 }
 
-static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	int nameLength;
 
@@ -800,13 +800,13 @@ static MBoolean HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey
 }
 
 
-static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	MPoint          p;
 	MRect           dRect;
 	int             index;
-	static MBoolean lastDown = false;
-	MBoolean        down;
+	static bool lastDown = false;
+	bool        down;
 	MRect           okRect = { 340, 200, 360, 255 };
 	MRect           resetRect = { 340, 365, 360, 450 };
 	int             returnValue = 0;
@@ -868,7 +868,7 @@ static MBoolean ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKe
 }
 
 
-static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	MRect targetRect[] =
 	{
@@ -882,7 +882,7 @@ static MBoolean PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 		{ 120, 550, 130, 560 }
 	};
 
-	static MBoolean lastDown = false;
+	static bool lastDown = false;
 	int trigger;
 	int index;
 	MPoint p;
@@ -1037,7 +1037,7 @@ void HandleDialog( int type )
 
 		if( (dialogStage == kOpening) && dialogStageComplete )
 		{
-			MBoolean (*DialogSelected[kNumDialogs])( int *item, unsigned char inKey, SDLKey inSDLKey ) =
+			bool (*DialogSelected[kNumDialogs])( int *item, unsigned char inKey, SDLKey inSDLKey ) =
 			{
 				PauseSelected,
 				HiScoreSelected,
@@ -1054,7 +1054,7 @@ void HandleDialog( int type )
 
 		// Do animation ...
 		{
-			const MBoolean dialogIsLarge[kNumDialogs] = { false, false, false, true };
+			const bool dialogIsLarge[kNumDialogs] = { false, false, false, true };
 
 			pauseRect = lastPauseRect;
 			dialogStageComplete = DrawDialogBox( dialogIsLarge[dialogType], dialogStage, &dialogTarget, skip, &colorWrap, colorInc, &pauseRect );

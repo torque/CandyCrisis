@@ -24,10 +24,10 @@ static int          s_mouseButton;
 static MPoint       s_mousePosition;
 
 // for event loop
-static MBoolean     s_isForeground = true;
+static bool         s_isForeground = true;
 
 // for checktyping
-static MBoolean     s_interestedInTyping = false;
+static bool         s_interestedInTyping = false;
 static char         s_keyBufferASCII[16] = { 0 };
 static SDLKey       s_keyBufferSDL[16]   = { (SDLKey) 0};
 static int          s_keyBufferPullFrom = 0;
@@ -259,7 +259,7 @@ void SDLU_PumpEvents()
 }
 
 
-MBoolean SDLU_IsForeground()
+bool SDLU_IsForeground()
 {
     return s_isForeground;
 }
@@ -365,7 +365,7 @@ void SDLU_StopWatchingTyping()
 }
 
 
-MBoolean SDLU_CheckTyping( char* ascii, SDLKey* sdl )
+bool SDLU_CheckTyping( char* ascii, SDLKey* sdl )
 {
 	if( s_keyBufferFilled > 0 )
 	{

@@ -9,6 +9,6 @@ void ChooseMusic( short which );
 
 #define kSongs 14
 
-extern MBoolean musicOn;
-extern int      musicSelection;
+extern bool musicOn;
+extern int  musicSelection;
 

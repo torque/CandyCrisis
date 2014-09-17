@@ -16,7 +16,7 @@ static SDL_Surface* smallGrayDrawSurface;
 
 
 MRect grayMonitorZRect, grayMonitorRect[2];
-MBoolean grayMonitorVisible[2] = {true, true};
+bool grayMonitorVisible[2] = {true, true};
 
 void InitGrayMonitors( void )
 {

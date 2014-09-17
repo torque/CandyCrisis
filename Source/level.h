@@ -2,9 +2,9 @@
 #pragma once
 
 void InitGame( int player1, int player2 );
-MBoolean InitCharacter( int player, int level );
+bool InitCharacter( int player, int level );
 void PrepareStageGraphics( int type );
-void BeginRound( MBoolean changeMusic );
+void BeginRound( bool changeMusic );
 void InitDifficulty( void );
 void ChooseDifficulty( int player );
 void SelectRandomLevel( void );

@@ -33,7 +33,7 @@ void CalcSecondBlobOffset( int player, int *x, int *y )
 	}
 }
 
-MBoolean CanGoLeft( int player )
+bool CanGoLeft( int player )
 {
 	return CanMoveDirection( player, -1, halfway[player]? 1: 0 );
 }
@@ -48,7 +48,7 @@ void GoLeft( int player )
 	PlayStereo( player, kShift );
 }
 
-MBoolean CanGoRight( int player )
+bool CanGoRight( int player )
 {
 	return CanMoveDirection( player, 1, halfway[player]? 1: 0 );
 }
@@ -63,12 +63,12 @@ void GoRight( int player )
 	PlayStereo( player, kShift );
 }
 
-MBoolean CanFall( int player )
+bool CanFall( int player )
 {
 	return CanMoveDirection( player, 0, 1 );
 }
 
-MBoolean CanMoveDirection( int player, int dirX, int dirY )
+bool CanMoveDirection( int player, int dirX, int dirY )
 {
 	int currentX = blobX[player], currentY = blobY[player], x, y;
 
@@ -110,7 +110,7 @@ void DoFall( int player )
 	DrawSpriteBlobs( player, kNoSuction );
 }
 
-MBoolean CanRotate( int player )
+bool CanRotate( int player )
 {
 	if( role[player] == kChooseDifficulty ) return false;
 
@@ -122,7 +122,7 @@ MBoolean CanRotate( int player )
 
 void DoRotate( int player )
 {
-	MBoolean possible;
+	bool possible;
 
 	EraseSpriteBlobs( player );
 

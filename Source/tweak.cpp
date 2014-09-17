@@ -85,7 +85,7 @@ void StartTweak( int player, int direction, int rotate, int fall )
 
 void UpdateTweak( int player, int animation )
 {
-	MBoolean isXTweaked, isYTweaked, isRTweaked, isAnimTweaked = false;
+	bool isXTweaked, isYTweaked, isRTweaked, isAnimTweaked = false;
 
 	if( GameTickCount( ) >= animTime[player] )
 	{

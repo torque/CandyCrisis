@@ -42,6 +42,6 @@ void SetUpdateRect( int player, MRect *where );
 void UpdatePlayerWindow( int player );
 void InitBlitter( void );
 
-extern MBoolean update[2][kGridAcross][kGridDown];
-extern MBoolean refresh[2];
+extern bool   update[2][kGridAcross][kGridDown];
+extern bool   refresh[2];
 extern MPoint topLeft[2];
