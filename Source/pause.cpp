@@ -615,7 +615,7 @@ static void DrawHiScoreContents( int *item, int shade )
 	{
 		scan = line[index];
 		while( *scan )
-			dPoint[index].h -= smallFont->width[*scan++];
+			dPoint[index].h -= smallFont->width[(int)*scan++];
 
 		dPoint[index].h /= 2;
 	}

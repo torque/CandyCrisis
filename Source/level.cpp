@@ -1027,7 +1027,7 @@ void Victory( void )
 				textPoint.v = 65 + (spacing[picture] * line);
 			}
 
-			textPoint.h = (bubbleFont->width['*'] - GetTextWidth( font, gameCredits[picture][line] )) / 2;
+			textPoint.h = (bubbleFont->width[(int)'*'] - GetTextWidth( font, gameCredits[picture][line] )) / 2;
 
 			setPoint[picture][line].v = dPoint[picture].v + textPoint.v;
 			setPoint[picture][line].h = dPoint[picture].h + textPoint.h;

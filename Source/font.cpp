@@ -59,10 +59,10 @@ static SkittlesFontPtr LoadFont( SkittlesFontPtr font, int pictID, const char *l
 			}
 
 			start = across;
-			font->across[*letterMap] = across + (skip/2);
+			font->across[(int)*letterMap] = across + (skip/2);
 
 			while( lastLine[across] == white ) across++;
-			font->width [*letterMap] = across - start - skip;
+			font->width [(int)*letterMap] = across - start - skip;
 
 			letterMap++;
 		}
@@ -113,7 +113,7 @@ int GetTextWidth( SkittlesFontPtr font, const char *text )
 	int width = 0;
 	while( *text )
 	{
-		width += font->width[*text++];
+		width += font->width[(int)*text++];
 	}
 
 	return width;

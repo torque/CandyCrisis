@@ -362,7 +362,7 @@ static int CalculateBalloonWidth( char *message )
 				break;
 
 			default:
-				currentWidth += balloonFont->width[in];
+				currentWidth += balloonFont->width[(int)in];
 				break;
 		}
 	}
@@ -476,7 +476,7 @@ void UpdateBalloon( void )
 				break;
 
 			default:
-				if( balloonFont->width[in] > 0 )
+				if( balloonFont->width[(int)in] > 0 )
 				{
 					SDLU_AcquireSurface( balloonSurface );
 					SurfaceBlitCharacter( balloonFont, in, &balloonPt, 0, 0, 0, 0 );

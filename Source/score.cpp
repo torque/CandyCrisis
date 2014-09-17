@@ -137,7 +137,7 @@ void DrawCharacter( char which, const MRect *myRect )
 	result = -1;
 	for( count = 0; count < kNumberAmount; count++ )
 	{
-		if( characterList[count] == which )
+		if( characterList[(int)count] == which )
 		{
 			result = count;
 			break;
