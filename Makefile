@@ -15,6 +15,11 @@ debug: CFLAGS += -O0 -ggdb
 debug: LIBS   += -ggdb
 debug: all
 
+osxbundle: CFLAGS += -DOSXBUNDLE
+osxbundle: LIBS   += -rpath "../Frameworks"
+osxbundle: all
+	@bundle/makeBundle.rb
+
 $(TARGET): $(OBJECTS)
 	@echo LINK $@
 	@$(CXX) $^ $(LIBS) -o $@
@@ -22,11 +27,6 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	@echo CXX $@
 	@$(CXX) $(CFLAGS) -c $< -o $@
-
-osxbundle: CFLAGS += -DOSXBUNDLE
-osxbundle: LIBS   += -rpath "../Frameworks"
-osxbundle: all
-	@bundle/makeBundle.rb
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)
