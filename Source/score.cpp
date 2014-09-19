@@ -18,7 +18,6 @@ SDL_Surface* scoreSurface;
 SDL_Surface* numberSurface;
 SDL_Surface* numberMaskSurface;
 
-
 MRect scoreWindowZRect, scoreWindowRect[2];
 bool scoreWindowVisible[2] = {true, true};
 long roundStartScore[2], score[2], displayedScore[2], scoreTime[2];
@@ -90,43 +89,41 @@ void ShowScore( int player )
 	char       myString[256];
 	int        count;
 
-	if( !scoreWindowVisible[player] ) return;
-
-	if( control[player] == kNobodyControl )
+	if( !scoreWindowVisible[player] || control[player] == kNobodyControl )
 	{
+		return;
 	}
-	else
+
+	sprintf( myString, "%ld", displayedScore[player] );
+
+	SDLU_AcquireSurface( scoreSurface );
+
+	SDLU_BlitSurface( boardSurface[player], &scoreSurface->clip_rect,
+	                  scoreSurface,         &scoreSurface->clip_rect   );
+
+	myRect.top    = 0;
+	myRect.left   = 2;
+	myRect.bottom = kNumberVertSize;
+	myRect.right  = myRect.left + kNumberHorizSize;
+	DrawCharacter( kCharacterScore,   &myRect );
+	OffsetMRect( &myRect, kNumberHorizSize, 0 );
+	DrawCharacter( kCharacterScore+1, &myRect );
+
+	myRect = scoreWindowZRect;
+	myRect.right -= 2;
+	myRect.left = myRect.right - kNumberHorizSize;
+	for( count = strlen(myString) - 1; count >= 0; count-- )
 	{
-		sprintf( myString, "%ld", displayedScore[player] );
-
-		SDLU_AcquireSurface( scoreSurface );
-
-		SDLU_BlitSurface( boardSurface[player], &scoreSurface->clip_rect,
-		                  scoreSurface,         &scoreSurface->clip_rect   );
-
-		myRect.top = 0;
-		myRect.left = 2;
-		myRect.bottom = kNumberVertSize;
-		myRect.right = myRect.left + kNumberHorizSize;
-		DrawCharacter( kCharacterScore,   &myRect );
-		OffsetMRect( &myRect, kNumberHorizSize, 0 );
-		DrawCharacter( kCharacterScore+1, &myRect );
-
-		myRect = scoreWindowZRect;
-		myRect.right -= 2;
-		myRect.left = myRect.right - kNumberHorizSize;
-		for( count = strlen(myString) - 1; count >= 0; count-- )
-		{
-			DrawCharacter( myString[count], &myRect );
-			OffsetMRect( &myRect, -kNumberHorizSize - 1, 0 );
-		}
-
-		SDLU_ReleaseSurface( scoreSurface );
-
-		SDLU_BlitFrontSurface( scoreSurface,
-		                       SDLU_MRectToSDLRect( &scoreWindowZRect, &sourceSDLRect ),
-		                       SDLU_MRectToSDLRect( &scoreWindowRect[player], &destSDLRect ) );
+		DrawCharacter( myString[count], &myRect );
+		OffsetMRect( &myRect, -kNumberHorizSize - 1, 0 );
 	}
+
+	SDLU_ReleaseSurface( scoreSurface );
+
+	SDLU_BlitFrontSurface( scoreSurface,
+	                       SDLU_MRectToSDLRect( &scoreWindowZRect, &sourceSDLRect ),
+	                       SDLU_MRectToSDLRect( &scoreWindowRect[player], &destSDLRect ) );
+
 }
 
 void DrawCharacter( char which, const MRect *myRect )
