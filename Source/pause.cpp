@@ -4,32 +4,31 @@
 // and instead I cobbled this together. It is just barely good enough to work. Fortunately it looks
 // decent to the end user...
 
+#include <ctype.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
+#include "pause.h"
 
-#include "main.h"
-#include "gameticks.h"
 #include "blitter.h"
+#include "font.h"
+#include "gameticks.h"
 #include "graphics.h"
 #include "gworld.h"
-#include "pause.h"
-#include "random.h"
-#include "font.h"
-#include "music.h"
-#include "soundfx.h"
+#include "hiscore.h"
 #include "keyselect.h"
 #include "level.h"
-#include "victory.h"
-#include "hiscore.h"
+#include "main.h"
+#include "music.h"
+#include "random.h"
 #include "score.h"
-
+#include "soundfx.h"
+#include "victory.h"
 
 const char kEscapeKey = 0x1B;
 

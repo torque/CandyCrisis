@@ -3,10 +3,10 @@
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "font.h"
-#include "gworld.h"
 
+#include "gworld.h"
+#include "main.h"
 
 #define kNumFonts (picBatsuFont-picFont+1)
 

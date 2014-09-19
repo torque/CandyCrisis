@@ -5,19 +5,19 @@
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
-#include "players.h"
 #include "graphics.h"
-#include "gworld.h"
-#include "moving.h"
-#include "tweak.h"
-#include "gameticks.h"
-#include "blitter.h"
-#include "victory.h"
-#include "grays.h"
-#include "level.h"
-#include "keyselect.h"
 
+#include "blitter.h"
+#include "gameticks.h"
+#include "grays.h"
+#include "gworld.h"
+#include "keyselect.h"
+#include "level.h"
+#include "main.h"
+#include "moving.h"
+#include "players.h"
+#include "tweak.h"
+#include "victory.h"
 
 SDL_Surface* backdropSurface = NULL;
 

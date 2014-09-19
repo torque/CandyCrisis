@@ -1,29 +1,28 @@
 // zap.c
 
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include <stdio.h>
-
-#include "main.h"
-#include "players.h"
 #include "zap.h"
-#include "grays.h"
-#include "soundfx.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "gameticks.h"
-#include "level.h"
-#include "random.h"
-#include "tweak.h"
+
 #include "blitter.h"
 #include "font.h"
-#include "score.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "grays.h"
+#include "gworld.h"
 #include "hiscore.h"
-
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
+#include "level.h"
+#include "main.h"
+#include "players.h"
+#include "random.h"
+#include "score.h"
+#include "soundfx.h"
+#include "tweak.h"
 
 signed char death[2][kGridAcross][kGridDown];
 int zapIteration[2];

@@ -1,23 +1,24 @@
 // tutorial.c
 
+#include <string.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "tutorial.h"
-#include "level.h"
-#include "font.h"
-#include "pause.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "control.h"
-#include "blitter.h"
-#include "gameticks.h"
-#include "soundfx.h"
-#include "opponent.h"
-#include "keyselect.h"
 
-#include <string.h>
+#include "blitter.h"
+#include "control.h"
+#include "font.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "gworld.h"
+#include "keyselect.h"
+#include "level.h"
+#include "main.h"
+#include "opponent.h"
+#include "pause.h"
+#include "soundfx.h"
 
 AutoPattern tutorialPattern[] =
 {

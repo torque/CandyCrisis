@@ -1,29 +1,30 @@
 // hiscore.c
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "main.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "score.h"
 #include "hiscore.h"
-#include "keyselect.h"
-#include "font.h"
+
 #include "blitter.h"
-#include "random.h"
-#include "pause.h"
-#include "level.h"
-#include "tutorial.h"
-#include "graymonitor.h"
-#include "players.h"
+#include "font.h"
 #include "gameticks.h"
+#include "graphics.h"
+#include "graymonitor.h"
+#include "gworld.h"
+#include "keyselect.h"
+#include "level.h"
+#include "main.h"
 #include "music.h"
+#include "pause.h"
+#include "players.h"
+#include "random.h"
+#include "score.h"
 #include "soundfx.h"
+#include "tutorial.h"
 
 Combo defaultBest =
 {

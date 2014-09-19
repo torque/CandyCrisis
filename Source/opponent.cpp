@@ -1,22 +1,23 @@
 // opponent.c
 
-#include <SDL/SDL.h>
-#include "SDLU.h"
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "main.h"
-#include "level.h"
+#include <SDL/SDL.h>
+#include "SDLU.h"
+
 #include "opponent.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "random.h"
-#include "control.h"
-#include "players.h"
-#include "gameticks.h"
+
 #include "blitter.h"
+#include "control.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "gworld.h"
+#include "level.h"
+#include "main.h"
+#include "players.h"
+#include "random.h"
 
 SDL_Surface* opponentSurface;
 SDL_Surface* opponentMaskSurface;

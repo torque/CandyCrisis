@@ -2,11 +2,12 @@
 
 #include <string.h>
 
-#include "main.h"
-#include "music.h"
-
 #include <fmod.h>
 #include <fmod_errors.h>
+
+#include "music.h"
+
+#include "main.h"
 
 const int kNoMusic = -1;
 

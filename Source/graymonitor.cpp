@@ -3,17 +3,16 @@
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "graymonitor.h"
-#include "grays.h"
-#include "score.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "level.h"
 
+#include "graphics.h"
+#include "grays.h"
+#include "gworld.h"
+#include "level.h"
+#include "main.h"
+#include "score.h"
 
 static SDL_Surface* smallGrayDrawSurface;
-
 
 MRect grayMonitorZRect, grayMonitorRect[2];
 bool grayMonitorVisible[2] = {true, true};

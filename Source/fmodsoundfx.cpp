@@ -1,11 +1,12 @@
-// soundfx.c
-
-#include "main.h"
-#include "soundfx.h"
-#include "music.h"
+// fmodsoundfx.c
 
 #include <fmod.h>
 #include <fmod_errors.h>
+
+#include "soundfx.h"
+
+#include "main.h"
+#include "music.h"
 
 bool                 soundOn = true;
 

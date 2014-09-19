@@ -7,12 +7,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "main.h"
 #include "prefs.h"
-#include "music.h"
-#include "soundfx.h"
+
 #include "hiscore.h"
 #include "keyselect.h"
+#include "main.h"
+#include "music.h"
+#include "soundfx.h"
 
 #define kPrefsMaxSize 65536
 

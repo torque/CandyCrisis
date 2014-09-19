@@ -3,14 +3,15 @@
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "next.h"
+
+#include "blitter.h"
+#include "gameticks.h"
 #include "graphics.h"
 #include "gworld.h"
-#include "gameticks.h"
-#include "random.h"
-#include "blitter.h"
 #include "level.h"
+#include "main.h"
+#include "random.h"
 
 #define kJiggleFrames 8
 #define kPulling 10

@@ -1,18 +1,18 @@
 // gworld.c
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include "SDLU.h"
-
-#include "main.h"
-#include "gworld.h"
-#include "blitter.h"
-#include "graphics.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include "SDLU.h"
+
+#include "gworld.h"
+
+#include "blitter.h"
+#include "graphics.h"
+#include "main.h"
 
 SDL_Surface* blobSurface;
 SDL_Surface* maskSurface;

@@ -2,12 +2,13 @@
 
 #include <math.h>
 
-#include "main.h"
 #include "tweak.h"
-#include "gworld.h"
-#include "moving.h"
+
 #include "gameticks.h"
 #include "graphics.h"
+#include "gworld.h"
+#include "main.h"
+#include "moving.h"
 #include "players.h"
 
 long  xTweakTime[2], yTweakTime[2], rTweakTime[2];

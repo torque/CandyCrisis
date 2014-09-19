@@ -1,16 +1,17 @@
 // keyselect.c
 
-#include <SDL/SDL.h>
-#include "SDLU.h"
-
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+
+#include <SDL/SDL.h>
+#include "SDLU.h"
+
+#include "keyselect.h"
 
 #include "main.h"
 #include "players.h"
-#include "keyselect.h"
 
 
 SDLKey playerKeys[2][4] = {

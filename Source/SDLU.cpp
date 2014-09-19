@@ -8,10 +8,10 @@
 
 #include <SDL/SDL.h>
 #include "SDLU.h"
-#include "gameticks.h"
-#include "music.h"
 
+#include "gameticks.h"
 #include "main.h" // for Error
+#include "music.h"
 
 
 // for acquiresurface

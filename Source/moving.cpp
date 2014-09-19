@@ -1,13 +1,14 @@
 // moving.c
 
-#include "main.h"
 #include "moving.h"
-#include "players.h"
+
+#include "gameticks.h"
 #include "graphics.h"
+#include "level.h"
+#include "main.h"
+#include "players.h"
 #include "soundfx.h"
 #include "tweak.h"
-#include "gameticks.h"
-#include "level.h"
 
 void CalcSecondBlobOffset( int player, int *x, int *y )
 {

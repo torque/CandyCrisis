@@ -1,32 +1,34 @@
 // victory.c
 
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "victory.h"
-#include "players.h"
-#include "gworld.h"
-#include "grays.h"
-#include "graphics.h"
-#include "soundfx.h"
-#include "score.h"
-#include "control.h"
-#include "random.h"
-#include "tweak.h"
-#include "gameticks.h"
-#include "level.h"
+
 #include "blitter.h"
-#include "music.h"
+#include "control.h"
+#include "font.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "grays.h"
+#include "gworld.h"
 #include "hiscore.h"
 #include "keyselect.h"
-#include "zap.h"
+#include "level.h"
+#include "main.h"
+#include "music.h"
 #include "pause.h"
-#include "font.h"
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "players.h"
+#include "random.h"
+#include "score.h"
+#include "soundfx.h"
+#include "tweak.h"
+#include "zap.h"
 
 unsigned long winTime, loseTime;
 long winStage, loseStage;

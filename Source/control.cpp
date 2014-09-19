@@ -1,16 +1,18 @@
 // control.c
 
-#include "main.h"
+#include <stdlib.h>
+
 #include "control.h"
+
+#include "gameticks.h"
+#include "grays.h"
+#include "level.h"
+#include "main.h"
 #include "moving.h"
 #include "players.h"
 #include "random.h"
-#include "grays.h"
-#include "zap.h"
-#include "gameticks.h"
-#include "level.h"
 #include "tutorial.h"
-#include <stdlib.h>
+#include "zap.h"
 
 int destinationX[2], destinationR[2];
 signed char tempGrid[kGridAcross][kGridDown];

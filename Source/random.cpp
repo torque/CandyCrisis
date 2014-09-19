@@ -3,8 +3,10 @@
 #include <stdlib.h>
 
 #include <SDL/SDL.h>
-#include "main.h"
+
 #include "random.h"
+
+#include "main.h"
 
 unsigned long randomSeed[2], pieceCount[2], grenadeTimer[2];
 int pieceMap[kBlobTypes], numPieces;

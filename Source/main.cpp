@@ -9,38 +9,39 @@
 #include <io.h> // for _chdir
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "SDLU.h"
 
 #include "main.h"
 
-#include <string.h>
-#include <stdlib.h>
-
-#include "hiscore.h"
-#include "control.h"
-#include "players.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "grays.h"
-#include "soundfx.h"
-#include "next.h"
-#include "random.h"
-#include "victory.h"
-#include "score.h"
-#include "graymonitor.h"
-#include "music.h"
-#include "gameticks.h"
-#include "level.h"
-#include "opponent.h"
-#include "keyselect.h"
 #include "blitter.h"
-#include "prefs.h"
-#include "tweak.h"
-#include "zap.h"
+#include "control.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "graymonitor.h"
+#include "grays.h"
+#include "gworld.h"
+#include "hiscore.h"
+#include "keyselect.h"
+#include "level.h"
+#include "music.h"
+#include "next.h"
+#include "opponent.h"
 #include "pause.h"
+#include "players.h"
+#include "prefs.h"
+#include "random.h"
+#include "score.h"
+#include "soundfx.h"
 #include "tutorial.h"
+#include "tweak.h"
+#include "victory.h"
+#include "zap.h"
 
 
 SDL_Surface* frontSurface;

@@ -1,31 +1,32 @@
 // players.c
 
+#include <stdlib.h>
+#include <string.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "players.h"
-#include "gworld.h"
-#include "moving.h"
-#include "graphics.h"
-#include "control.h"
-#include "grays.h"
-#include "soundfx.h"
-#include "next.h"
-#include "random.h"
-#include "victory.h"
-#include "tweak.h"
-#include "zap.h"
-#include "level.h"
-#include "opponent.h"
-#include "gameticks.h"
-#include "blitter.h"
-#include "music.h"
-#include "score.h"
-#include "hiscore.h"
 
-#include <string.h>
-#include <stdlib.h>
+#include "blitter.h"
+#include "control.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "grays.h"
+#include "gworld.h"
+#include "hiscore.h"
+#include "level.h"
+#include "main.h"
+#include "moving.h"
+#include "music.h"
+#include "next.h"
+#include "opponent.h"
+#include "random.h"
+#include "score.h"
+#include "soundfx.h"
+#include "tweak.h"
+#include "victory.h"
+#include "zap.h"
 
 unsigned long boredTime[2], hintTime[2], fadeCharTime[2], animTime[2], shadowDepth[2], hintGlow, messageTime;
 int emotions[2];

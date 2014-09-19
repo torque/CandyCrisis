@@ -1,18 +1,19 @@
 // score.c
 
+#include <string.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include <string.h>
-
-#include "main.h"
 #include "score.h"
-#include "gworld.h"
-#include "graphics.h"
+
 #include "blitter.h"
-#include "hiscore.h"
 #include "gameticks.h"
+#include "graphics.h"
+#include "gworld.h"
+#include "hiscore.h"
 #include "level.h"
+#include "main.h"
 
 SDL_Surface* scoreSurface;
 SDL_Surface* numberSurface;

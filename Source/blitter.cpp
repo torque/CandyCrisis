@@ -4,12 +4,12 @@
 #include <SDL/SDL_endian.h>
 #include "SDLU.h"
 
-#include "main.h"
-#include "gworld.h"
 #include "blitter.h"
 #include "font.h"
-#include "level.h"
 #include "graphics.h"
+#include "gworld.h"
+#include "level.h"
+#include "main.h"
 
 bool update[2][kGridAcross][kGridDown];
 bool refresh[2];

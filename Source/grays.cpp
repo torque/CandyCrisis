@@ -3,21 +3,22 @@
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "grays.h"
-#include "players.h"
-#include "graphics.h"
-#include "gworld.h"
-#include "control.h"
-#include "soundfx.h"
-#include "score.h"
-#include "random.h"
-#include "graymonitor.h"
-#include "gameticks.h"
+
 #include "blitter.h"
-#include "zap.h"
+#include "control.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "graymonitor.h"
+#include "gworld.h"
 #include "level.h"
+#include "main.h"
 #include "opponent.h"
+#include "players.h"
+#include "random.h"
+#include "score.h"
+#include "soundfx.h"
+#include "zap.h"
 
 int grays[2][kGridAcross], grayAir[2][kGridAcross];
 int unallocatedGrays[2], lockGrays[2], rowBounce[2][kGridAcross], splat[2][kGridAcross];
