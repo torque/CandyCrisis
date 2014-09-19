@@ -1,4 +1,5 @@
 // grays.h
+#pragma once
 
 void InitGrays( void );
 void CalculateGrays( int player, int BlobsToDrop );
