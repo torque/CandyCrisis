@@ -56,7 +56,7 @@ MRect        playerWindowZRect, playerWindowRect[2];
 bool         playerWindowVisible[2] = { true, true };
 KeyList      hitKey[2];
 int          backgroundID = -1;
-MPoint       blobWindow[8][2];
+SDLU_Point   blobWindow[8][2];
 void         (*DoFullRepaint)() = NoPaint;
 bool         needsRefresh = false;
 
@@ -274,14 +274,14 @@ void RetrieveResources( void )
 
 void CenterRectOnScreen( MRect *rect, double locationX, double locationY )
 {
-	MPoint dest = {0,0};
+	SDLU_Point dest = { .x = 0, .y = 0 };
 
-	dest.h = (short)(locationX * (640 - (rect->right - rect->left)));
-	dest.h &= ~3;
-	dest.v = (short)(locationY * (480 - (rect->bottom - rect->top)));
+	dest.x = (int)(locationX * (640 - (rect->right - rect->left)));
+	dest.x &= ~3; // force last two bits to be 0? I'm not sure what this accomplishes.
+	dest.y = (int)(locationY * (480 - (rect->bottom - rect->top)));
 
 	OffsetMRect( rect, -rect->left, -rect->top );
-	OffsetMRect( rect, dest.h, dest.v );
+	OffsetMRect( rect, dest.x, dest.y );
 }
 
 void ReserveMonitor( void )

@@ -16,13 +16,5 @@ typedef struct MRect
 } MRect;
 
 
-typedef struct MPoint
-{
-	short v;
-	short h;
-} MPoint;
-
-
 void UnionMRect( const MRect* a, const MRect* b, MRect* u );
 void OffsetMRect( MRect* r, int x, int y );
-unsigned char MPointInMRect( MPoint p, MRect* r );

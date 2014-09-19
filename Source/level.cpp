@@ -65,15 +65,15 @@ static MRect titleRect[kTitleItems] = {
 const int kCursorWidth  = 32;
 const int kCursorHeight = 32;
 
-static void InsertCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
+static void InsertCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
 {
 	SkittlesFontPtr cursorFont = GetFont( picFont );
 	SDL_Rect        cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	SDL_Rect        cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
-	MPoint          mouseHereToo = mouseHere;
+	SDLU_Point      mouseHereToo = mouseHere;
 
-	cursorFrontSDLRect.x = mouseHere.h;
-	cursorFrontSDLRect.y = mouseHere.v;
+	cursorFrontSDLRect.x = mouseHere.x;
+	cursorFrontSDLRect.y = mouseHere.y;
 
 	SDLU_BlitSurface( surface, &cursorFrontSDLRect,
 	                  scratch, &cursorBackSDLRect   );
@@ -84,13 +84,13 @@ static void InsertCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* s
 	SDLU_ReleaseSurface( surface );
 }
 
-static void RemoveCursor( MPoint mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
+static void RemoveCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
 {
 	SDL_Rect      cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 	SDL_Rect      cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
 
-	cursorFrontSDLRect.x = mouseHere.h;
-	cursorFrontSDLRect.y = mouseHere.v;
+	cursorFrontSDLRect.x = mouseHere.x;
+	cursorFrontSDLRect.y = mouseHere.y;
 
 	SDLU_BlitSurface( scratch, &cursorBackSDLRect,
 	                  surface, &cursorFrontSDLRect );
@@ -114,8 +114,8 @@ void GameStartMenu( void )
 	MRect           drawRect[4], chunkRect, tempRect;
 	int             blob, count, oldGlow, splat, chunkType, selected;
 	int             skip;
-	MPoint          mouse;
-	MPoint          dPoint;
+	SDLU_Point      mouse;
+	SDLU_Point      dPoint;
 	unsigned long   black;
 	int             currentID;
 	int             combo[2], comboBright[2], missBright[2];
@@ -133,7 +133,7 @@ redo:
 
 	skip = 1;
 	selected = -1;
-	mouse.h = mouse.v = 0;
+	mouse.x = mouse.y = 0;
 
 	if( finished ) return;
 
@@ -209,10 +209,10 @@ redo:
 
 		// Take the cursor out of the scene
 		RemoveCursor( mouse, cursorBackSurface, gameStartDrawSurface );
-		drawRect[kCursor].top    = mouse.v;
-		drawRect[kCursor].left   = mouse.h;
-		drawRect[kCursor].bottom = mouse.v + kCursorHeight;
-		drawRect[kCursor].right  = mouse.h + kCursorWidth;
+		drawRect[kCursor].top    = mouse.y;
+		drawRect[kCursor].left   = mouse.x;
+		drawRect[kCursor].bottom = mouse.y + kCursorHeight;
+		drawRect[kCursor].right  = mouse.x + kCursorWidth;
 
 		// is this a hack? maybe. but it works!
 		drawRect[kLeftSide].top    = drawRect[kRightSide].top    = drawRect[kGlow].top    =
@@ -222,7 +222,7 @@ redo:
 
 		// Get cursor position
 		SDLU_GetMouse( &mouse );
-        if( mouse.v > 460 ) mouse.v = 460;
+        if( mouse.y > 460 ) mouse.y = 460;
 
 		// Erase falling blobs
 		for( blob=0; blob<kNumSplats; blob++ )
@@ -265,8 +265,8 @@ redo:
 
 				if( mBright > 1 )
 				{
-					dPoint.v = meterRect[count].y;
-					dPoint.h = meterRect[count].x + 10;
+					dPoint.y = meterRect[count].y;
+					dPoint.x = meterRect[count].x + 10;
 					SurfaceBlitCharacter( smallFont, 'M', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
 					SurfaceBlitCharacter( smallFont, 'I', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
 					SurfaceBlitCharacter( smallFont, 'S', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
@@ -279,8 +279,8 @@ redo:
 					char* scan;
 					sprintf( number, "%d", combo[count] );
 
-					dPoint.v = meterRect[count].y + 3;
-					dPoint.h = meterRect[count].x;
+					dPoint.y = meterRect[count].y + 3;
+					dPoint.x = meterRect[count].x;
 
 					SurfaceBlitCharacter( tinyFont, 'C', &dPoint, bright, bright, bright, 1 );
 					SurfaceBlitCharacter( tinyFont, 'O', &dPoint, bright, bright, bright, 1 );
@@ -288,7 +288,7 @@ redo:
 					SurfaceBlitCharacter( tinyFont, 'B', &dPoint, bright, bright, bright, 1 );
 					SurfaceBlitCharacter( tinyFont, 'O', &dPoint, bright, bright, bright, 1 );
 					SurfaceBlitCharacter( tinyFont, ' ', &dPoint, bright, bright, bright, 1 );
-					dPoint.v -= 3;
+					dPoint.y -= 3;
 
 					for( scan = number; *scan; scan++ )
 					{
@@ -316,9 +316,9 @@ redo:
 					splatState[blob] = 1;
 
 					// Process combos
-					if( mouse.v > 420 &&
-						mouse.h >= (splatBlob[blob].left - 30) &&
-						mouse.h <= (splatBlob[blob].right + 10)    )
+					if( mouse.y > 420 &&
+						mouse.x >= (splatBlob[blob].left - 30) &&
+						mouse.x <= (splatBlob[blob].right + 10)    )
 					{
 						combo[splatSide[blob]]++;
 						comboBright[splatSide[blob]] = 31;
@@ -369,7 +369,7 @@ redo:
 		selected = -1;
 		for( count=0; count<kTitleItems; count++ )
 		{
-			if( MPointInMRect( mouse, &titleRect[count] ) )
+			if( SDLU_PointInRect( mouse, &titleRect[count] ) )
 			{
 				selected = count;
 				break;
@@ -411,10 +411,10 @@ redo:
 
 		// Reinsert the cursor into the scene
 		InsertCursor( mouse, cursorBackSurface, gameStartDrawSurface );
-		drawRect[kCursor].top    = min( drawRect[kCursor].top,    mouse.v );
-		drawRect[kCursor].left   = min( drawRect[kCursor].left,   mouse.h );
-		drawRect[kCursor].bottom = max( drawRect[kCursor].bottom, mouse.v + kCursorHeight );
-		drawRect[kCursor].right  = max( drawRect[kCursor].right,  mouse.h + kCursorWidth );
+		drawRect[kCursor].top    = min( drawRect[kCursor].top,    mouse.y );
+		drawRect[kCursor].left   = min( drawRect[kCursor].left,   mouse.x );
+		drawRect[kCursor].bottom = max( drawRect[kCursor].bottom, mouse.y + kCursorHeight );
+		drawRect[kCursor].right  = max( drawRect[kCursor].right,  mouse.x + kCursorWidth );
 
 		// Copy down everything
 		if( shouldFullRepaint )
@@ -972,18 +972,26 @@ void Victory( void )
 	SkittlesFontPtr textFont, titleFont, bubbleFont;
 	SDL_Surface*    backBuffer;
 	SDL_Surface*    frontBuffer;
-	MPoint          dPoint[] = { { 230, 340 }, { 230, 30 }, { 230, 30 }, { 30, 30 }, { 30, 340 }, { 230, 340 }, { 230, 30 } };
-	MPoint          bubblePoint, textPoint, shadowPoint;
-	MPoint          setPoint[7][6];
-	MPoint          msgSetPoint[7][2];
+	SDLU_Point      dPoint[] ={
+		{ .y = 230, .x = 340 },
+		{ .y = 230, .x =  30 },
+		{ .y = 230, .x =  30 },
+		{ .y =  30, .x =  30 },
+		{ .y =  30, .x = 340 },
+		{ .y = 230, .x = 340 },
+		{ .y = 230, .x =  30 }
+	};
+	SDLU_Point      bubblePoint, textPoint, shadowPoint;
+	SDLU_Point      setPoint[7][6];
+	SDLU_Point      msgSetPoint[7][2];
 	long            ticks;
 	int             vertScroll, picture, weight, line, minimum;
 	int             scrollDir[] = {1, -1, 1, -1, 1, -1, -1};
 	int             spacing[] = {40, 19, 19, 19, 23, 19, 23 };
 	const char*     text;
-	SDL_Rect        fullSDLRect = { 0, 0, 640, 480 };
-	SDL_Rect        highSDLRect = { 0, 0, 640, 480 };
-	SDL_Rect        lowSDLRect = { 0, 250, 640, 480 };
+	SDL_Rect        fullSDLRect = { 0,   0, 640, 480 };
+	SDL_Rect        highSDLRect = { 0,   0, 640, 480 };
+	SDL_Rect        lowSDLRect  = { 0, 250, 640, 480 };
 	SDL_Rect        backBufferSDLRect = { 0, 0, 640, 730 };
 	SDL_Rect        scrollSDLRect;
 
@@ -1008,8 +1016,8 @@ void Victory( void )
 	{
 		for( line=0; line<2; line++ )
 		{
-			msgSetPoint[picture][line].v = ((dPoint[picture].v == 230)? 100: 400) + (line * 30);
-			msgSetPoint[picture][line].h = 320 - (GetTextWidth( titleFont, messages[picture][line] ) / 2);
+			msgSetPoint[picture][line].y = ((dPoint[picture].y == 230)? 100: 400) + (line * 30);
+			msgSetPoint[picture][line].x = 320 - (GetTextWidth( titleFont, messages[picture][line] ) / 2);
 		}
 
 		for( line=0; line<6; line++ )
@@ -1019,29 +1027,29 @@ void Victory( void )
 			if( line == 0 )
 			{
 				font = titleFont;
-				textPoint.v = 45;
+				textPoint.y = 45;
 			}
 			else
 			{
 				font = textFont;
-				textPoint.v = 65 + (spacing[picture] * line);
+				textPoint.y = 65 + (spacing[picture] * line);
 			}
 
-			textPoint.h = (bubbleFont->width[(int)'*'] - GetTextWidth( font, gameCredits[picture][line] )) / 2;
+			textPoint.x = (bubbleFont->width[(int)'*'] - GetTextWidth( font, gameCredits[picture][line] )) / 2;
 
-			setPoint[picture][line].v = dPoint[picture].v + textPoint.v;
-			setPoint[picture][line].h = dPoint[picture].h + textPoint.h;
+			setPoint[picture][line].y = dPoint[picture].y + textPoint.y;
+			setPoint[picture][line].x = dPoint[picture].x + textPoint.x;
 		}
 
 		minimum = 640;
 		for( line=1; line<6; line++ )
 		{
-			if( setPoint[picture][line].h < minimum ) minimum = setPoint[picture][line].h;
+			if( setPoint[picture][line].x < minimum ) minimum = setPoint[picture][line].x;
 		}
 
 		for( line=1; line<6; line++ )
 		{
-			setPoint[picture][line].h = minimum;
+			setPoint[picture][line].x = minimum;
 		}
 	}
 
@@ -1070,8 +1078,8 @@ void Victory( void )
 			for( line=0; line<2; line++ )
 			{
 				textPoint = msgSetPoint[picture][line];
-				shadowPoint.v = textPoint.v + 1;
-				shadowPoint.h = textPoint.h + 1;
+				shadowPoint.y = textPoint.y + 1;
+				shadowPoint.x = textPoint.x + 1;
 
 				text = messages[picture][line];
 

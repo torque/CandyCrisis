@@ -202,7 +202,7 @@ void ShowHiscore( void )
 	SDL_Rect         fullSDLRect = { 0, 0, 640, 480 };
 	SkittlesFontPtr  font;
 	SDL_Color        anyColor;
-	MPoint            dPoint;
+	SDLU_Point           dPoint;
 	const char*      highScores = "HIGH SCORES";
 	int              r, g, b;
 
@@ -231,8 +231,8 @@ void ShowHiscore( void )
 	anyColor.g = min( 31, anyColor.g + 14 );
 	anyColor.b = min( 31, anyColor.b + 14 );
 
-	dPoint.v = 20;
-	dPoint.h = 225;
+	dPoint.y = 20;
+	dPoint.x = 225;
 	for( count=0; highScores[count]; count++ )
 	{
 		SurfaceBlitCharacter( font, highScores[count], &dPoint, 31, 31, 31, 1 );
@@ -244,8 +244,8 @@ void ShowHiscore( void )
 		g = ((31 * (10-count)) + (anyColor.g * count)) / 10;
 		b = ((31 * (10-count)) + (anyColor.b * count)) / 10;
 
-		dPoint.v = 75 + count * 38;
-		dPoint.h = 85;
+		dPoint.y = 75 + count * 38;
+		dPoint.x = 85;
 
 		if( count<9 )
 		{
@@ -261,18 +261,18 @@ void ShowHiscore( void )
 		SurfaceBlitCharacter( font, ' ', &dPoint, r, g, b, 1 );
 
 		length = 0;
-		while( scores[count].name[length] && dPoint.h < 430 )
+		while( scores[count].name[length] && dPoint.x < 430 )
 		{
 			SurfaceBlitCharacter( font, scores[count].name[length++], &dPoint, r, g, b, 1 );
 		}
 
 
-		while( dPoint.h < 450 )
+		while( dPoint.x < 450 )
 		{
 			SurfaceBlitCharacter( font, '.', &dPoint, r, g, b, 1 );
 		}
 
-		dPoint.h = 470;
+		dPoint.x = 470;
 
 		stringLength = sprintf( myString, "%ld", scores[count].score );
 		for( length=0; length < stringLength; length++ )
@@ -321,7 +321,7 @@ void ShowBestCombo( void )
 	SkittlesFontPtr font;
 	const char *bestCombo = "BEST COMBO", *constScan;
 	char bestInfo[256], *scan;
-	MPoint dPoint;
+	SDLU_Point dPoint;
 	int levelCap;
 
 	font = GetFont( picHiScoreFont );
@@ -345,16 +345,16 @@ void ShowBestCombo( void )
 
 	SDLU_AcquireSurface( backdropSurface );
 
-	dPoint.v = 40;
-	dPoint.h = 225;
+	dPoint.y = 40;
+	dPoint.x = 225;
 	for( constScan = bestCombo; *constScan; constScan++ )
 	{
 		SurfaceBlitCharacter( font, *constScan, &dPoint, 31, 31, 31, 1 );
 	}
 
 	sprintf( bestInfo, "%s (%d points)", best.name, best.value );
-	dPoint.v = 410;
-	dPoint.h = 320 - (GetTextWidth( font, bestInfo ) / 2);
+	dPoint.y = 410;
+	dPoint.x = 320 - (GetTextWidth( font, bestInfo ) / 2);
 
 	for( scan = bestInfo; *scan; scan++ )
 	{

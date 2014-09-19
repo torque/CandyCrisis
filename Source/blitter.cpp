@@ -461,7 +461,7 @@ void SurfaceBlitWeightedDualAlpha( SDL_Surface* back,     SDL_Surface* source,  
 	}
 }
 
-void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, MPoint *dPoint, int r, int g, int b, int alpha )
+void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int alpha )
 {
 	if( alpha == 31 )
 	{
@@ -488,12 +488,12 @@ void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, MPo
 		destSurface = SDLU_GetCurrentSurface();
 		SDLU_SDLRectToMRect( &destSurface->clip_rect, &destBounds );
 
-		if( (dPoint->h + width)  > destBounds.right           ||      // clipped?
-		    (dPoint->v + height) > destBounds.bottom          ||
-		     dPoint->h           < destBounds.left            ||
-		     dPoint->v           < destBounds.top                )
+		if( (dPoint->x + width)  > destBounds.right           ||      // clipped?
+		    (dPoint->y + height) > destBounds.bottom          ||
+		     dPoint->x           < destBounds.left            ||
+		     dPoint->y           < destBounds.top                )
 		{
-			dPoint->h += width;
+			dPoint->x += width;
 			return;                                               // do nothing
 		}
 
@@ -501,7 +501,7 @@ void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, MPo
 		dstRowBytes = destSurface->pitch;
 
 		src = (unsigned char*) font->surface->pixels + across;
-		dst = (unsigned char*) destSurface->pixels + (dPoint->h * 2) + (dPoint->v * dstRowBytes);
+		dst = (unsigned char*) destSurface->pixels + (dPoint->x * 2) + (dPoint->y * dstRowBytes);
 
 		while( height-- )
 		{
@@ -534,11 +534,11 @@ void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, MPo
 			dst = tDst + dstRowBytes;
 		}
 
-		dPoint->h += width;
+		dPoint->x += width;
 	}
 }
 
-void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, MPoint *dPoint, int r, int g, int b, int dropShadow )
+void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int dropShadow )
 {
 	SDL_Surface*    destSurface;
 	unsigned char*  src;
@@ -556,12 +556,12 @@ void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, MPoint *dPo
 	destSurface = SDLU_GetCurrentSurface();
 	SDLU_SDLRectToMRect( &destSurface->clip_rect, &destBounds );
 
-	if( (dPoint->h + width)  > destBounds.right           ||      // clipped?
-	    (dPoint->v + height) > destBounds.bottom          ||
-	     dPoint->h           < destBounds.left            ||
-	     dPoint->v           < destBounds.top                )
+	if( (dPoint->x + width)  > destBounds.right           ||      // clipped?
+	    (dPoint->y + height) > destBounds.bottom          ||
+	     dPoint->x           < destBounds.left            ||
+	     dPoint->y           < destBounds.top                )
 	{
-		dPoint->h += width;
+		dPoint->x += width;
 		return;                                               // do nothing
 	}
 
@@ -569,7 +569,7 @@ void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, MPoint *dPo
 	dstRowBytes = destSurface->pitch;
 
 	src = (unsigned char*) font->surface->pixels + across;
-	dst = (unsigned char*) destSurface->pixels + (dPoint->h * 2) + (dPoint->v * dstRowBytes);
+	dst = (unsigned char*) destSurface->pixels + (dPoint->x * 2) + (dPoint->y * dstRowBytes);
 	rgb555 = (r << 10) | (g << 5) | b;
 
 	switch( dropShadow )
@@ -656,7 +656,7 @@ void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, MPoint *dPo
 				break;
 			}
 	}
-	dPoint->h += width;
+	dPoint->x += width;
 }
 
 void SurfaceBlitColorOver( SDL_Surface* source,     SDL_Surface* dest,
@@ -750,7 +750,7 @@ void SurfaceBlitBlendOver( SDL_Surface* source,     SDL_Surface* dest,
 
 	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
 
-	if( destRect->left   > destBounds.right  ||			// completely clipped?
+	if( destRect->left > destBounds.right  || // completely clipped?
 		destRect->right  < destBounds.left   ||
 		destRect->top    > destBounds.bottom ||
 		destRect->bottom < destBounds.top )

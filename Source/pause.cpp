@@ -72,7 +72,7 @@ enum
 	kTextAlmostWhite
 };
 
-static MPoint DrawRainbowText( SkittlesFontPtr font, const char *line, MPoint dPoint, float wave, int bright )
+static SDLU_Point DrawRainbowText( SkittlesFontPtr font, const char *line, SDLU_Point dPoint, float wave, int bright )
 {
 	int   length, current;
 	int   r,g,b;
@@ -462,14 +462,14 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 
 static void DrawDialogCursor( MRect *pauseRect, int *shade )
 {
-	MPoint p, q;
+	SDLU_Point p, q;
 
 	SDLU_GetMouse( &p );
 
-	if( p.h < (pauseRect->left      ) ) p.h = pauseRect->left;
-	if( p.h > (pauseRect->right  - 5) ) p.h = pauseRect->right  - 5;
-	if( p.v < (pauseRect->top       ) ) p.v = pauseRect->top;
-	if( p.v > (pauseRect->bottom - 5) ) p.v = pauseRect->bottom - 5;
+	if( p.x < (pauseRect->left      ) ) p.x = pauseRect->left;
+	if( p.x > (pauseRect->right  - 5) ) p.x = pauseRect->right  - 5;
+	if( p.y < (pauseRect->top       ) ) p.y = pauseRect->top;
+	if( p.y > (pauseRect->bottom - 5) ) p.y = pauseRect->bottom - 5;
 	q = p;
 
 	SDLU_AcquireSurface( drawSurface );
@@ -526,11 +526,19 @@ enum
 
 static void DrawContinueContents( int *item, int shade )
 {
-	char line[4][50] = { "Do you want to continue?",
-	                     "Yes",
-	                     "No",
-	                     "" };
-	MPoint dPoint[4] = { {233, 210}, {280, 220}, {280, 400}, {335, 400} }, hPoint = {255, 320};
+	char line[4][50] = {
+		"Do you want to continue?",
+		"Yes",
+		"No",
+		""
+	};
+	SDLU_Point dPoint[4] = {
+		{ .y = 233, .x = 210},
+		{ .y = 280, .x = 220},
+		{ .y = 280, .x = 400},
+		{ .y = 335, .x = 400}
+	};
+	SDLU_Point hPoint = { .y = 255, .x = 320};
 	static int lastCountdown = 0;
 	int index, countdown, fade;
 	int r, g, b;
@@ -542,7 +550,7 @@ static void DrawContinueContents( int *item, int shade )
 	for( index=0; index<4; index++ )
 	{
 		DrawRainbowText( smallFont, line[index], dPoint[index], (0.25 * index) + (0.075 * shade),
-		                ( (index == 0)                          ||
+		                 ((index == 0)                          ||
 		                 ((index == 1) && (*item == kContinue)) ||
 		                 ((index == 2) && (*item == kEndGame ))    )? kTextBrightRainbow: kTextRainbow );
 	}
@@ -576,14 +584,14 @@ static void DrawContinueContents( int *item, int shade )
 		b = ((31 * (49 - fade))) / 49;
 
 		countdown = '9' - countdown;
-		hPoint.h -= continueFont->width[countdown] / 2;
+		hPoint.x -= continueFont->width[countdown] / 2;
 
 		for( shade = 4; shade > 0; shade-- )
 		{
-			MPoint hP = hPoint;
+			SDLU_Point hP = hPoint;
 
-			hP.h += 2 * shade;
-			hP.v += 2 * shade;
+			hP.x += 2 * shade;
+			hP.y += 2 * shade;
 
 			SurfaceBlitWeightedCharacter( continueFont, countdown, &hP, 0, 0, 0, 20 - 4*shade );
 		}
@@ -600,8 +608,13 @@ static void DrawContinueContents( int *item, int shade )
 
 static void DrawHiScoreContents( int *item, int shade )
 {
-	MPoint dPoint[3] = { {240, 640}, {260, 640}, {335, 400} }, hPoint = {294, 145};
-	MPoint dashedLinePoint = { 320, 140 };
+	SDLU_Point dPoint[3] = {
+		{ .y = 240, .x = 640},
+		{ .y = 260, .x = 640},
+		{ .y = 335, .x = 400}
+	};
+	SDLU_Point hPoint = { .y = 294, .x = 145};
+	SDLU_Point dashedLinePoint = { .y = 320, .x = 140 };
 	int    index;
 	int    nameLength;
 	char  *line[3], *scan;
@@ -614,14 +627,14 @@ static void DrawHiScoreContents( int *item, int shade )
 	{
 		scan = line[index];
 		while( *scan )
-			dPoint[index].h -= smallFont->width[(int)*scan++];
+			dPoint[index].x -= smallFont->width[(int)*scan++];
 
-		dPoint[index].h /= 2;
+		dPoint[index].x /= 2;
 	}
 
 	SDLU_AcquireSurface( drawSurface );
 
-	while( dashedLinePoint.h < 490 )
+	while( dashedLinePoint.x < 490 )
 	{
 		SurfaceBlitCharacter( dashedLineFont, '.', &dashedLinePoint, 0, 0, 0, 0 );
 	}
@@ -630,7 +643,7 @@ static void DrawHiScoreContents( int *item, int shade )
 	for( index = 0; index < nameLength; index++ )
 	{
 		SurfaceBlitCharacter( bigFont, highScoreName[index], &hPoint, 31, 31, 31, 1 );
-		if( hPoint.h >= 475 )
+		if( hPoint.x >= 475 )
 		{
 			highScoreName[index] = '\0';
 			break;
@@ -651,7 +664,7 @@ static void DrawHiScoreContents( int *item, int shade )
 static void DrawControlsContents( int *item, int shade )
 {
 	bool    highlight;
-	MPoint      dPoint;
+	SDLU_Point      dPoint;
 	int         index;
 	const char* controlName;
 	int         r, g, b;
@@ -667,12 +680,12 @@ static void DrawControlsContents( int *item, int shade )
 	{
 		highlight = (index == (*item - k1PLeft));
 
-		dPoint.v = 229 + ((index & ~1) * 13);
-		dPoint.h = (index & 1)? 325: 130;
+		dPoint.y = 229 + ((index & ~1) * 13);
+		dPoint.x = (index & 1)? 325: 130;
 		DrawRainbowText( smallFont, label[index], dPoint, (0.25 * index) + (0.075 * shade), highlight? kTextBrightRainbow: kTextRainbow );
 
-		dPoint.v = 245 + ((index & ~1) * 13);
-		dPoint.h = (index & 1)? 420: 225;
+		dPoint.y = 245 + ((index & ~1) * 13);
+		dPoint.x = (index & 1)? 420: 225;
 		r = (int)(highlight? 31.0: 0.0);
 		g = b = (int)(highlight? 31.0 - (11.0 * (sin(shade * 0.2) + 1.0)): 0.0);
 		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );
@@ -684,18 +697,18 @@ static void DrawControlsContents( int *item, int shade )
 		controlName = SDL_GetKeyName( playerKeys[index & 1][index >> 1] );
 		if( controlName == NULL ) controlName = "{";
 
-		dPoint.v = 231 + ((index & ~1) * 13);
-		dPoint.h = (index & 1)? 460: 265;
-		dPoint.h -= GetTextWidth( tinyFont, controlName ) / 2;
+		dPoint.y = 231 + ((index & ~1) * 13);
+		dPoint.x = (index & 1)? 460: 265;
+		dPoint.x -= GetTextWidth( tinyFont, controlName ) / 2;
 		DrawRainbowText( tinyFont, controlName, dPoint, (0.1 * shade), (controlToReplace == index)? kTextBlueGlow: kTextWhite );
 	}
 
-	dPoint.h = 200;
-	dPoint.v = 340;
+	dPoint.x = 200;
+	dPoint.y = 340;
 	DrawRainbowText( smallFont, "{ OK", dPoint, 8.0 + (0.075 * shade), (*item == kControlsOK)? kTextBrightRainbow: kTextRainbow );
 
-	dPoint.h = 365;
-	dPoint.v = 340;
+	dPoint.x = 365;
+	dPoint.y = 340;
 	DrawRainbowText( smallFont, "{ Reset", dPoint, 8.25 + (0.075 * shade), (*item == kControlsReset)? kTextBrightRainbow: kTextRainbow );
 
 	SDLU_ReleaseSurface( drawSurface );
@@ -703,7 +716,7 @@ static void DrawControlsContents( int *item, int shade )
 
 static void DrawPauseContents( int *item, int shade )
 {
-	MPoint dPoint;
+	SDLU_Point dPoint;
 	int itemCount = 6;
 	int index;
 	const char *line[7] = { "{ Music [",           "{ End Game",
@@ -720,8 +733,8 @@ static void DrawPauseContents( int *item, int shade )
 
 	for( index=0; index<itemCount; index++ )
 	{
-		dPoint.h = (index & 1)? 340: 180;
-		dPoint.v = 240 + ((index & ~1) * 15);
+		dPoint.x = (index & 1)? 340: 180;
+		dPoint.y = 240 + ((index & ~1) * 15);
 
 		DrawRainbowText( smallFont, line[index], dPoint, (0.25 * index) + (0.075 * shade), (*item == index)? kTextBrightRainbow: kTextRainbow );
 	}
@@ -732,7 +745,7 @@ static void DrawPauseContents( int *item, int shade )
 static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
 	MRect yes = {280, 220, 300, 260}, no = {280, 400, 300, 440};
-	MPoint p;
+	SDLU_Point p;
 
 	if( continueTimeOut )
 	{
@@ -748,8 +761,8 @@ static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 
 	SDLU_GetMouse( &p );
 
-	     if( MPointInMRect( p, &yes ) ) *item = kContinue;
-	else if( MPointInMRect( p, &no  ) ) *item = kEndGame;
+	     if( SDLU_PointInRect( p, &yes ) ) *item = kContinue;
+	else if( SDLU_PointInRect( p, &no  ) ) *item = kEndGame;
 	else *item = kNothing;
 
 	return( SDLU_Button( ) && (*item != kNothing) );
@@ -801,7 +814,7 @@ static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 
 static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
-	MPoint          p;
+	SDLU_Point          p;
 	MRect           dRect;
 	int             index;
 	static bool lastDown = false;
@@ -815,7 +828,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 	down = SDLU_Button();
 	SDLU_GetMouse( &p );
 
-	if( MPointInMRect( p, &okRect ) )
+	if( SDLU_PointInRect( p, &okRect ) )
 	{
 		*item = kControlsOK;
 		if( down )
@@ -825,7 +838,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 			controlToReplace = -1;
 		}
 	}
-	else if( MPointInMRect( p, &resetRect ) )
+	else if( SDLU_PointInRect( p, &resetRect ) )
 	{
 		*item = kControlsReset;
 		if( down && !lastDown )
@@ -843,7 +856,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 			dRect.bottom = dRect.top + 24;
 			dRect.right  = dRect.left + 175;
 
-			if( MPointInMRect( p, &dRect ) )
+			if( SDLU_PointInRect( p, &dRect ) )
 			{
 				*item = k1PLeft + index;
 				if( down && !lastDown && !AnyKeyIsPressed() )
@@ -884,7 +897,7 @@ static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 	static bool lastDown = false;
 	int trigger;
 	int index;
-	MPoint p;
+	SDLU_Point p;
 
 	SDLU_GetMouse( &p );
 
@@ -899,7 +912,7 @@ static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 		*item = kNothing;
 		for( index=0; index<arrsize(targetRect); index++ )
 		{
-			if( MPointInMRect( p, &targetRect[index] ) )
+			if( SDLU_PointInRect( p, &targetRect[index] ) )
 			{
 				*item = index;
 			}

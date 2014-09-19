@@ -27,7 +27,7 @@
 signed char death[2][kGridAcross][kGridDown];
 int zapIteration[2];
 int grenadeFrame[2] = {kBlastFrames + 1, kBlastFrames + 1}, zapScoreFrame[2];
-MPoint zapScorePt[2];
+SDLU_Point zapScorePt[2];
 MRect grenadeRect[2];
 SkittlesFontPtr zapFont, zapOutline;
 char zapScore[2][20] = { "", "" };
@@ -48,8 +48,8 @@ void ZapScoreDisplay( int player, int amount, int multiplier, int x, int y, int 
 	    y >= 0 && y < kGridDown   &&
 	    c >= kFirstBlob && c <= (kLastBlob+1) )
 	{
-		zapScorePt[player].v = y * kBlobVertSize  + 6;
-		zapScorePt[player].h = x * kBlobHorizSize + 6;
+		zapScorePt[player].y = y * kBlobVertSize  + 6;
+		zapScorePt[player].x = x * kBlobHorizSize + 6;
 
 		zapScoreR[player] = glowColors[c][0];
 		zapScoreG[player] = glowColors[c][1];
@@ -68,9 +68,9 @@ void ZapScoreDisplay( int player, int amount, int multiplier, int x, int y, int 
 		scan = zapScore[player];
 		while( *scan ) zapScoreWidth[player] += zapFont->width[(int)*scan++];
 
-		if( (zapScorePt[player].h + zapScoreWidth[player] + 8) > (kGridAcross * kBlobHorizSize) )
+		if( (zapScorePt[player].x + zapScoreWidth[player] + 8) > (kGridAcross * kBlobHorizSize) )
 		{
-			zapScorePt[player].h = (kGridAcross * kBlobHorizSize) - zapScoreWidth[player] - 8;
+			zapScorePt[player].x = (kGridAcross * kBlobHorizSize) - zapScoreWidth[player] - 8;
 		}
 	}
 }
@@ -81,7 +81,7 @@ void ZapBlobs( int player )
 	int zapFocusX = -1, zapFocusY = -1, zapFocusC = 0;
 
 
-	zapScorePt[player].v = 0;
+	zapScorePt[player].y = 0;
 	zapScoreFrame[player] = 0;
 
 	switch( chain[player] )
@@ -204,7 +204,7 @@ void KillBlobs( int player )
 	                                        kGrayBlink3, kGrayBlink3 };
 	MRect myRect;
 	bool busy = false;
-	MPoint dPoint, oPoint;
+	SDLU_Point dPoint, oPoint;
 	char *scan;
 
 	if( blobTime[player] > GameTickCount( ) )
@@ -296,9 +296,9 @@ void KillBlobs( int player )
 
 	if( zapScoreFrame[player] < arrsize(position) )
 	{
-		myRect.top    = zapScorePt[player].v - (position[zapScoreFrame[player]    ]);
-		myRect.left   = zapScorePt[player].h;
-		myRect.bottom = zapScorePt[player].v - (position[zapScoreFrame[player] - 1]) + 15;
+		myRect.top    = zapScorePt[player].y - (position[zapScoreFrame[player]    ]);
+		myRect.left   = zapScorePt[player].x;
+		myRect.bottom = zapScorePt[player].y - (position[zapScoreFrame[player] - 1]) + 15;
 		myRect.right  = myRect.left + zapScoreWidth[player];
 		CleanSpriteArea( player, &myRect );
 
@@ -306,8 +306,8 @@ void KillBlobs( int player )
 		{
 			SDLU_AcquireSurface( playerSpriteSurface[player] );
 
-			dPoint.v = oPoint.v = myRect.top;
-			dPoint.h = oPoint.h = myRect.left;
+			dPoint.y = oPoint.y = myRect.top;
+			dPoint.x = oPoint.x = myRect.left;
 			scan = zapScore[player];
 			while( *scan )
 			{

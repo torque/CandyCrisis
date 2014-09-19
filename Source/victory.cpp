@@ -261,13 +261,13 @@ void DrawTimerCount( int player )
 	SDLU_AcquireSurface( playerSurface[player] );
 
 	{
-		MPoint dPoint  = { (kBlobVertSize * 3), 15 };
+		SDLU_Point dPoint  = { (kBlobVertSize * 3), 15 };
 
 		SurfaceBlitCharacter( victoryFont, 'A', &dPoint,  31, 31, 0, 1  );
 	}
 
 	{
-		MPoint dPoint  = { (kBlobVertSize * 4), kBlobHorizSize };
+		SDLU_Point dPoint  = { (kBlobVertSize * 4), kBlobHorizSize };
 		char seconds[20];
 		char *scan = seconds;
 
@@ -275,10 +275,10 @@ void DrawTimerCount( int player )
 		while( *scan )
 		{
 			SurfaceBlitCharacter( zapFont, *scan++, &dPoint, 31, 31, 31, 1  );
-			dPoint.h--;
+			dPoint.x--;
 		}
 
-		dPoint.h += 6;
+		dPoint.x += 6;
 		SurfaceBlitCharacter( zapFont, 'S', &dPoint,  31, 31, 31, 1  );
 	}
 
@@ -300,9 +300,9 @@ void DrawTimerBonus( int player )
 	SDLU_AcquireSurface( playerSurface[player] );
 
 	{
-		MPoint dPoint  = { (kBlobVertSize * 6),     15     };
+		SDLU_Point dPoint  = { (kBlobVertSize * 6), 15 };
 
-		SurfaceBlitCharacter( victoryFont, 'B', &dPoint,  31, 31, 0, 1  );
+		SurfaceBlitCharacter( victoryFont, 'B', &dPoint, 31, 31, 0, 1  );
 	}
 
 	timer = (endTime - startTime) / 60;
@@ -321,7 +321,7 @@ void DrawTimerBonus( int player )
 	score[player] += bonus;
 
 	{
-		MPoint dPoint  = { (kBlobVertSize * 7), kBlobHorizSize };
+		SDLU_Point dPoint  = { (kBlobVertSize * 7), kBlobHorizSize };
 		char points[20];
 		char *scan = points;
 
@@ -329,10 +329,10 @@ void DrawTimerBonus( int player )
 		while( *scan )
 		{
 			SurfaceBlitCharacter( zapFont, *scan++, &dPoint, 31, 31, 31, 1  );
-			dPoint.h--;
+			dPoint.x--;
 		}
 
-		dPoint.h += 6;
+		dPoint.x += 6;
 		SurfaceBlitCharacter( zapFont, 'P', &dPoint,  31, 31, 31, 1  );
 	}
 

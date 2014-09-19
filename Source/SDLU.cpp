@@ -21,7 +21,7 @@ static SDL_Surface* s_acquireList[k_acquireMax];
 
 // for button and getmouse
 static int          s_mouseButton;
-static MPoint       s_mousePosition;
+static SDLU_Point   s_mousePosition;
 
 // for event loop
 static bool         s_isForeground = true;
@@ -295,8 +295,8 @@ int SDLU_EventFilter( const SDL_Event *event )
 		if( event->button.button == SDL_BUTTON_LEFT )
 			s_mouseButton = true;
 
-		s_mousePosition.v = event->button.y;
-		s_mousePosition.h = event->button.x;
+		s_mousePosition.y = event->button.y;
+		s_mousePosition.x = event->button.x;
 		return 0;
 	}
 
@@ -305,15 +305,15 @@ int SDLU_EventFilter( const SDL_Event *event )
 		if( event->button.button == SDL_BUTTON_LEFT )
 			s_mouseButton = false;
 
-		s_mousePosition.v = event->button.y;
-		s_mousePosition.h = event->button.x;
+		s_mousePosition.y = event->button.y;
+		s_mousePosition.x = event->button.x;
 		return 0;
 	}
 
 	if( event->type == SDL_MOUSEMOTION )
 	{
-		s_mousePosition.v = event->motion.y;
-		s_mousePosition.h = event->motion.x;
+		s_mousePosition.y = event->motion.y;
+		s_mousePosition.x = event->motion.x;
 		s_mouseButton = event->motion.state & SDL_BUTTON(1);
 		return 0;
 	}
@@ -382,7 +382,7 @@ bool SDLU_CheckTyping( char* ascii, SDLKey* sdl )
 }
 
 
-void SDLU_GetMouse( MPoint* pt )
+void SDLU_GetMouse( SDLU_Point* pt )
 {
 	SDLU_PumpEvents();
 	*pt = s_mousePosition;
@@ -417,4 +417,12 @@ void SDLU_ReleaseSurface( SDL_Surface* surface )
 		Error( "SDLU_ReleaseSurface: underflow" );
 
 	s_acquireHead--;
+}
+
+bool SDLU_PointInRect( SDLU_Point p, MRect* r )
+{
+	return (p.x >= r->left)  &&
+	       (p.x <  r->right) &&
+	       (p.y >= r->top)   &&
+	       (p.y <  r->bottom);
 }

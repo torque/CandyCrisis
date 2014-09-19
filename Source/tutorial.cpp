@@ -313,7 +313,7 @@ AutoPattern tutorialPattern[] =
 
 MRect           balloonRect = {0, 0, 190, 210};
 SkittlesFontPtr balloonFont;
-MPoint          balloonPt;
+SDLU_Point      balloonPt;
 char*           balloonChar;
 char            balloonMsg[256];
 int             balloonTime, tutorialTime;
@@ -386,7 +386,7 @@ void StopBalloon( void )
 
 void StartBalloon( const char *message )
 {
-	MPoint      balloonTip, balloonFill;
+	SDLU_Point  balloonTip, balloonFill;
 	int         replace;
 	const char *match[] = { "~~", "||", "``", "{{" };
 	char       *search;
@@ -431,8 +431,8 @@ void StartBalloon( const char *message )
 	              SDL_MapRGB( balloonSurface->format, 0xFF, 0xFF, 0xFF ) );
 	SurfaceCurveEdges( balloonSurface, &balloonContentsRect );
 
-	balloonTip.v = balloonContentsRect.bottom - 2;
-	balloonTip.h = balloonContentsRect.right - 40;
+	balloonTip.y = balloonContentsRect.bottom - 2;
+	balloonTip.x = balloonContentsRect.right - 40;
 	balloonFill = balloonTip;
 
 	SurfaceBlitCharacter( balloonFont, '[', &balloonFill,  0,  0,  0,  0 );
@@ -444,8 +444,8 @@ void StartBalloon( const char *message )
 	SDLU_MRectToSDLRect( &balloonRect, &balloonSDLRect );
 	SDLU_BlitFrontSurface( balloonSurface, &balloonSDLRect, &balloonSDLRect );
 
-	balloonPt.h = balloonRect.left + 10;
-	balloonPt.v = balloonRect.top + 10;
+	balloonPt.x = balloonRect.left + 10;
+	balloonPt.y = balloonRect.top + 10;
 	balloonChar = balloonMsg;
 	balloonTime = GameTickCount( );
 
@@ -472,8 +472,8 @@ void UpdateBalloon( void )
 				break;
 
 			case '\n':
-				balloonPt.h = balloonRect.left + 10;
-				balloonPt.v += 20;
+				balloonPt.x = balloonRect.left + 10;
+				balloonPt.y += 20;
 				break;
 
 			default:

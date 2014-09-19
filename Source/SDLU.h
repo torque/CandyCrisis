@@ -3,6 +3,11 @@
 
 #include "MTypes.h"
 
+typedef struct SDLU_Point
+{
+	int x;
+	int y;
+} SDLU_Point;
 
 SDL_Rect*    SDLU_MRectToSDLRect( const MRect* in, SDL_Rect* out );
 MRect*       SDLU_SDLRectToMRect( const SDL_Rect* in, MRect* out );
@@ -14,7 +19,7 @@ void         SDLU_BlitFrontSurface( SDL_Surface* source, SDL_Rect* sourceSDLRect
 void         SDLU_AcquireSurface( SDL_Surface* surface );
 SDL_Surface* SDLU_GetCurrentSurface();
 void         SDLU_ReleaseSurface( SDL_Surface* surface );
-void         SDLU_GetMouse( MPoint* pt );
+void         SDLU_GetMouse( SDLU_Point* pt );
 int          SDLU_Button();
 void         SDLU_Yield();
 void         SDLU_PumpEvents();
@@ -23,4 +28,4 @@ void         SDLU_StartWatchingTyping();
 void         SDLU_StopWatchingTyping();
 bool         SDLU_CheckTyping( char* ascii, SDLKey* sdl );
 bool         SDLU_IsForeground();
-bool         SDLU_PointInRect( MPoint p, MRect* r );
+bool         SDLU_PointInRect( SDLU_Point p, MRect* r );

@@ -112,7 +112,12 @@ void SurfaceDrawBlob( int player, const MRect *myRect, int blob, int state, int 
 void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
 {
 	int x;
-	MPoint offset[4] = { {-2, 0}, {0, -2}, {2, 0}, {0, 2} };
+	SDLU_Point offset[4] = {
+		{ .y = -2, .x =  0 },
+		{ .y =  0, .x = -2 },
+		{ .y =  2, .x =  0 },
+		{ .y =  0, .x =  2 }
+	};
 
 	if( blob > kEmpty )
 	{
@@ -121,7 +126,7 @@ void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
 		for( x=0; x<4; x++ )
 		{
 			destRect = *myRect;
-			OffsetMRect( &destRect, offset[x].h, offset[x].v );
+			OffsetMRect( &destRect, offset[x].x, offset[x].y );
 
 			CalcBlobRect( state, blob-1, &blobRect );
 			SurfaceBlitColor(  maskSurface,  SDLU_GetCurrentSurface(),
