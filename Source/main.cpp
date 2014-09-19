@@ -1,5 +1,9 @@
 // main.c
 
+#if OSXBUNDLE && !__APPLE__
+#error You can't build an OS X bundle if you aren't on OS X.
+#endif
+
 #if _WIN32
 #include <windows.h>
 #include <io.h> // for _chdir
