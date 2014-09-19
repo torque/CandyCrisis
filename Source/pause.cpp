@@ -608,7 +608,7 @@ static void DrawHiScoreContents( int *item, int shade )
 	char  *line[3], *scan;
 
 	line[0] = highScoreText;
-	line[1] = "Please enter your name and press return:";
+	line[1] = (char *)"Please enter your name and press return:";
 	line[2] = highScoreRank;
 
 	for( index=0; index<2; index++ )
