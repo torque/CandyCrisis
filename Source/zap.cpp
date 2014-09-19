@@ -56,7 +56,14 @@ void ZapScoreDisplay( int player, int amount, int multiplier, int x, int y, int 
 		zapScoreG[player] = glowColors[c][1];
 		zapScoreB[player] = glowColors[c][2];
 
-		sprintf( zapScore[player], (multiplier == 1)? "%d": "%d*%d", amount, multiplier );
+		if( multiplier == 1 )
+		{
+			sprintf( zapScore[player], "%d", amount );
+		}
+		else
+		{
+			sprintf( zapScore[player], "%d*%d", amount, multiplier );
+		}
 
 		zapScoreWidth[player] = 0;
 		scan = zapScore[player];
