@@ -18,6 +18,7 @@ debug: all
 osxbundle: CFLAGS += -DOSXBUNDLE
 osxbundle: LIBS   += -rpath "../Frameworks"
 osxbundle: all
+	@echo BUNDLE
 	@bundle/makeBundle.rb
 
 $(TARGET): $(OBJECTS)
