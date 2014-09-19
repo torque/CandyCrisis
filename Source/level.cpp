@@ -1,34 +1,35 @@
 // level.c
 
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
-#include "main.h"
 #include "level.h"
-#include "score.h"
-#include "random.h"
-#include "grays.h"
-#include "gameticks.h"
-#include "players.h"
-#include "graymonitor.h"
-#include "opponent.h"
-#include "gworld.h"
-#include "graphics.h"
-#include "music.h"
-#include "control.h"
-#include "tweak.h"
-#include "soundfx.h"
-#include "next.h"
-#include "hiscore.h"
-#include "victory.h"
+
 #include "blitter.h"
-#include "zap.h"
+#include "control.h"
+#include "gameticks.h"
+#include "graphics.h"
+#include "graymonitor.h"
+#include "grays.h"
+#include "gworld.h"
+#include "hiscore.h"
 #include "keyselect.h"
-#include "tutorial.h"
+#include "main.h"
+#include "music.h"
+#include "next.h"
+#include "opponent.h"
 #include "pause.h"
+#include "players.h"
+#include "random.h"
+#include "score.h"
+#include "soundfx.h"
+#include "tutorial.h"
+#include "tweak.h"
+#include "victory.h"
+#include "zap.h"
 
 MRect stageWindowZRect, stageWindowRect;
 Character character[2];
