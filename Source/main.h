@@ -4,7 +4,6 @@
 #include <SDL/SDL.h>
 #include "MTypes.h"
 
-
 void Initialize( void );
 void RetrieveResources( void );
 void Error( const char* extra );

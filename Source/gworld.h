@@ -3,7 +3,6 @@
 
 #include <SDL/SDL.h>
 
-
 #define kBlobHorizSize 24
 #define kBlobVertSize 24
 #define kBlobShadowDepth 6

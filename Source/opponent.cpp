@@ -96,10 +96,8 @@ void OpponentPissed( void )
 
 void OpponentChatter( bool on )
 {
-
 	opponentMood = on? 5: 0;
 	opponentTime = GameTickCount();
-
 }
 
 void UpdateOpponent( void )
@@ -124,37 +122,37 @@ void UpdateOpponent( void )
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + RandomBefore(2) + 1;
 				break;
 
-			case 2:					// Blinks
+			case 2: // Blinks
 				opponentTime += 3;
 				opponentMood = 3;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + 3;
 				break;
 
-			case 3:					// Blinks (more)
+			case 3: // Blinks (more)
 				opponentTime += 3;
 				opponentMood = 4;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + 4;
 				break;
 
-			case 4: 				// Blinks (more)
+			case 4: // Blinks (more)
 				opponentTime += 3;
 				opponentMood = 0;
 				opponentFrame = (emotiMap[emotions[1]] * kOppFrames) + 3;
 				break;
 
-			case 5:                 // Chatter (only good for tutorial)
+			case 5: // Chatter (only good for tutorial)
 				opponentTime += 8;
 				opponentMood = 6;
 				opponentFrame = 5;
 				break;
 
-			case 6:					// Chatter 2 (only good for tutorial)
+			case 6: // Chatter 2 (only good for tutorial)
 				opponentTime += 8;
 				opponentMood = 5;
 				opponentFrame = 6;
 				break;
 
-			case 7:					// Pissed (when hit with punishments)
+			case 7: // Pissed (when hit with punishments)
 				opponentTime += 60;
 				opponentFrame = 7;
 				opponentMood = 0;

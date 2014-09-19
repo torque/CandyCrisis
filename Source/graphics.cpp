@@ -21,7 +21,6 @@
 
 SDL_Surface* backdropSurface = NULL;
 
-
 void DrawSpriteBlobs( int player, int type )
 {
 	MRect firstRect, secondRect, thirdRect;

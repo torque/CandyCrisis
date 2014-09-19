@@ -31,14 +31,15 @@
 unsigned long boredTime[2], hintTime[2], fadeCharTime[2], animTime[2], shadowDepth[2], hintGlow, messageTime;
 int emotions[2];
 int glowColors[][3] = { { 0,  0,  0},
-						{13, 26, 31},
-						{13, 29, 13},
-						{31, 18, 31},
-						{31, 14, 18},
-						{31, 31, 15},
-						{31, 21, 13},
-						{30, 22, 30},
-						{20, 20, 20} };
+	{13, 26, 31},
+	{13, 29, 13},
+	{31, 18, 31},
+	{31, 14, 18},
+	{31, 31, 15},
+	{31, 21, 13},
+	{30, 22, 30},
+	{20, 20, 20}
+};
 
 void HandlePlayers( void )
 {

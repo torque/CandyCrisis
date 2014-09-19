@@ -3,7 +3,6 @@
 
 #include <SDL/SDL.h>
 
-
 typedef struct
 {
 	SDL_Surface *surface;
@@ -11,7 +10,6 @@ typedef struct
 	int across[256];
 }
 SkittlesFont, *SkittlesFontPtr;
-
 
 void            InitFont( void );
 SkittlesFontPtr GetFont( int pictID );
