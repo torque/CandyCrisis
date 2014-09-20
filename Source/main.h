@@ -98,10 +98,7 @@ enum
 	picDashedLineFont,
 	picBatsuFont,
 	picTitle = 300,
-	// Keep shareware victory in the enum so the pics after it don't get
-	// the wrong values.
-	picUnused,
-	picGameStart,
+	picGameStart = 302,
 	picGameOver,
 	picVictory1,
 	picVictory2,
