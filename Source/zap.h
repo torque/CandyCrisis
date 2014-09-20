@@ -2,6 +2,7 @@
 #pragma once
 
 #include "font.h"
+#include "main.h"
 
 void ZapScoreDisplay( int player, int amount, int multiplier, int x, int y, int c );
 int  SizeUp( signed char myGrid[kGridAcross][kGridDown], int x, int y, int color );

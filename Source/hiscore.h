@@ -1,6 +1,8 @@
 // hiscore.h
 #pragma once
 
+#include "main.h"
+
 #define kNameLength 40
 
 typedef struct

@@ -1,6 +1,8 @@
 // tweak.h
 #pragma once
 
+#include "MTypes.h"
+
 void TweakFirstBlob( int player, MRect *first );
 void TweakSecondBlob( int player, MRect *second );
 void StartTweak( int player, int direction, int rotate, int fall );

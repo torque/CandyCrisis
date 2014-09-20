@@ -1,6 +1,8 @@
 // random.h
 #pragma once
 
+#include "main.h"
+
 void InitRandom( int numPieces );
 int GetPiece( int player );
 int RandomBefore( int what );

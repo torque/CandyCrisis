@@ -1,6 +1,8 @@
 // grays.h
 #pragma once
 
+#include "main.h"
+
 void InitGrays( void );
 void CalculateGrays( int player, int BlobsToDrop );
 void SetupGrays( int player );

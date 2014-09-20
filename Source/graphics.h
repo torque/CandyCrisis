@@ -3,6 +3,8 @@
 
 #include <SDL/SDL.h>
 
+#include "MTypes.h"
+
 void DrawSpriteBlobs( int player, int type );
 void EraseSpriteBlobs( int player );
 void CleanSpriteArea( int player, MRect *myRect );

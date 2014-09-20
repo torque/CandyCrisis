@@ -1,6 +1,8 @@
 // control.h
 #pragma once
 
+#include "main.h"
+
 void PlayerControl( int player );
 void AIControl( int player );
 void ChooseAIDestination( int player );

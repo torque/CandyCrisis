@@ -4,6 +4,7 @@
 #include <SDL/SDL.h>
 
 #include "font.h"
+#include "main.h"
 
 // SDL type
 void SurfaceBlitMask( SDL_Surface* object,     SDL_Surface* mask,     SDL_Surface* dest,

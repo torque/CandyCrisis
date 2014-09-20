@@ -1,6 +1,8 @@
 // opponent.h
 #pragma once
 
+#include "level.h" // kglows
+
 void InitOpponent( void );
 void BeginOpponent( int which );
 void UpdateOpponent( void );
