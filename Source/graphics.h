@@ -3,12 +3,10 @@
 
 #include <SDL/SDL.h>
 
-#include "MTypes.h"
-
 void DrawSpriteBlobs( int player, int type );
 void EraseSpriteBlobs( int player );
-void CleanSpriteArea( int player, MRect *myRect );
-void CalcBlobRect( int x, int y, MRect *myRect );
+void CleanSpriteArea( int player, SDL_Rect *myRect );
+void CalcBlobRect( int x, int y, SDL_Rect *myRect );
 void DrawBackdrop( void );
 void ShowTitle( void );
 void InitBackdrop( void );

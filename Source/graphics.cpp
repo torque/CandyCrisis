@@ -23,7 +23,7 @@ SDL_Surface* backdropSurface = NULL;
 
 void DrawSpriteBlobs( int player, int type )
 {
-	MRect firstRect, secondRect, thirdRect;
+	SDL_Rect firstRect, secondRect, thirdRect;
 	const int repeat = 0xFF, forever = 0xFE;
 
 	static const unsigned char blobAnimation[6][2][25] =
@@ -68,32 +68,32 @@ void DrawSpriteBlobs( int player, int type )
 	if( blobAnimation[type][0][anim[player]] == repeat  ) anim[player] = 0;
 
 	CalcBlobRect( blobX[player], blobY[player], &firstRect );
-	if( halfway[player] ) OffsetMRect( &firstRect, 0, kBlobVertSize / 2 );
+	if( halfway[player] ) SDLU_OffsetRect( &firstRect, 0, kBlobVertSize / 2 );
 
 	TweakFirstBlob ( player, &firstRect );
 	secondRect = firstRect;
 	TweakSecondBlob( player, &secondRect );
 
 	thirdRect = firstRect;
-	thirdRect.top    -= kBlobShadowError;
-	thirdRect.left   -= kBlobShadowError;
-	thirdRect.right  += kBlobShadowDepth + kBlobShadowError;
-	thirdRect.bottom += kBlobShadowDepth + kBlobShadowError;
+	thirdRect.x -= kBlobShadowError;
+	thirdRect.w += kBlobShadowDepth + 2*kBlobShadowError;
+	thirdRect.y -= kBlobShadowError;
+	thirdRect.h += kBlobShadowDepth + 2*kBlobShadowError;
 	CleanSpriteArea( player, &thirdRect );
 
 	thirdRect = secondRect;
-	thirdRect.top    -= kBlobShadowError;
-	thirdRect.left   -= kBlobShadowError;
-	thirdRect.right  += kBlobShadowDepth + kBlobShadowError;
-	thirdRect.bottom += kBlobShadowDepth + kBlobShadowError;
+	thirdRect.x -= kBlobShadowError;
+	thirdRect.w += kBlobShadowDepth + 2*kBlobShadowError;
+	thirdRect.y -= kBlobShadowError;
+	thirdRect.h += kBlobShadowDepth + 2*kBlobShadowError;
 	CleanSpriteArea( player, &thirdRect );
 
 	thirdRect = firstRect;
-	OffsetMRect( &thirdRect, shadowDepth[player], shadowDepth[player] );
+	SDLU_OffsetRect( &thirdRect, shadowDepth[player], shadowDepth[player] );
 	SurfaceDrawShadow( &thirdRect,  colorA[player], blobAnimation[type][0][anim[player]] );
 
 	thirdRect = secondRect;
-	OffsetMRect( &thirdRect, shadowDepth[player], shadowDepth[player] );
+	SDLU_OffsetRect( &thirdRect, shadowDepth[player], shadowDepth[player] );
 	SurfaceDrawShadow( &thirdRect, colorB[player], blobAnimation[type][1][anim[player]] );
 
 	SurfaceDrawSprite( &firstRect,  colorA[player], blobAnimation[type][0][anim[player]] );
@@ -103,47 +103,43 @@ void DrawSpriteBlobs( int player, int type )
 	SDLU_ReleaseSurface( playerSpriteSurface[player] );
 }
 
-void CleanSpriteArea( int player, MRect *myRect )
+void CleanSpriteArea( int player, SDL_Rect *myRect )
 {
-	SDL_Rect sdlRect;
-
-	SDLU_MRectToSDLRect( myRect, &sdlRect );
-
-	SDLU_BlitSurface( playerSurface[player],       &sdlRect,
-	                  playerSpriteSurface[player], &sdlRect  );
+	SDLU_BlitSurface( playerSurface[player],       &myRect,
+	                  playerSpriteSurface[player], &myRect  );
 
 	SetUpdateRect( player, myRect );
 }
 
 void EraseSpriteBlobs( int player )
 {
-	MRect myRect, secondRect;
+	SDL_Rect myRect, secondRect;
 
 	CalcBlobRect( blobX[player], blobY[player], &myRect );
-	if( halfway[player] ) OffsetMRect( &myRect, 0, kBlobVertSize / 2 );
+	if( halfway[player] ) SDLU_OffsetRect( &myRect, 0, kBlobVertSize / 2 );
 
 	TweakFirstBlob( player, &myRect );
 	secondRect = myRect;
-	secondRect.top    -= kBlobShadowError;
-	secondRect.left   -= kBlobShadowError;
-	secondRect.right  += kBlobShadowDepth + kBlobShadowError;
-	secondRect.bottom += kBlobShadowDepth + kBlobShadowError;
+	secondRect.x -= kBlobShadowError;
+	secondRect.w += kBlobShadowDepth + 2*kBlobShadowError;
+	secondRect.y -= kBlobShadowError;
+	secondRect.h += kBlobShadowDepth + 2*kBlobShadowError;
 	CleanSpriteArea( player, &secondRect );
 
 	TweakSecondBlob( player, &myRect );
-	myRect.top    -= kBlobShadowError;
-	myRect.left   -= kBlobShadowError;
-	myRect.right  += kBlobShadowDepth + kBlobShadowError;
-	myRect.bottom += kBlobShadowDepth + kBlobShadowError;
+	myRect.x -= kBlobShadowError;
+	myRect.w += kBlobShadowDepth + 2*kBlobShadowError;
+	myRect.y -= kBlobShadowError;
+	myRect.h += kBlobShadowDepth + 2*kBlobShadowError;
 	CleanSpriteArea( player, &myRect );
 }
 
-void CalcBlobRect( int x, int y, MRect *myRect )
+void CalcBlobRect( int x, int y, SDL_Rect *blobRect )
 {
-	myRect->top = y * kBlobVertSize;
-	myRect->left = x * kBlobHorizSize;
-	myRect->bottom = myRect->top + kBlobVertSize;
-	myRect->right = myRect->left + kBlobHorizSize;
+	blobRect->x = x * kBlobHorizSize;
+	blobRect->y = y * kBlobVertSize;
+	blobRect->w = kBlobHorizSize;
+	blobRect->h = kBlobVertSize;
 }
 
 void InitBackdrop( void )
@@ -153,7 +149,7 @@ void InitBackdrop( void )
 
 void DrawBackdrop( void )
 {
-	SDL_Rect backdropRect = { 0, 0, 640, 480 };
+	SDL_Rect backdropRect = { .x = 0, .y = 0, .w = 640, .h = 480 };
 
 	SDLU_BlitFrontSurface( backdropSurface, &backdropRect, &backdropRect );
 }
