@@ -26,6 +26,8 @@
 #include "soundfx.h"
 #include "tutorial.h"
 
+#define min(x,y) (((x)<(y))?(x):(y))
+
 Combo defaultBest =
 {
 	/*bestGrid[kGridAcross][kGridDown] = */
@@ -90,13 +92,10 @@ HighScore scores[] = {
 char highScoreName[256];
 char *highScoreText, *highScoreRank;
 
-#define min(x,y) (((x)<(y))?(x):(y))
-
 static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, int start, int end )
 {
 	int       skip, timer, frame, fade, color, direction, fadeStart, fadeEnd;
-	SDL_Rect  destSDLRect;
-	SDL_Rect  fullSDLRect = { 0, 0, 640, 480 };
+	SDL_Rect  fullSDLRect = { .x = 0, .y = 0, .w = 640, .h = 480 };
 	int       black;
 
 	black = SDL_MapRGB( fadeSurface->format, 0, 0, 0 );
@@ -120,7 +119,7 @@ static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, i
 
 	for( frame = start; (direction>0)? (frame <= end): (frame >= end); frame += direction )
 	{
-		MRect drawRect = {0, 0, 15, 640};
+		SDL_Rect drawRect = { .x = 0, .y = 0, .w = 640, .h = 15 };
 		timer += skip;
 
 		for( fade = fadeStart; fade != fadeEnd; fade += direction )
@@ -129,17 +128,15 @@ static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, i
 			if( color <  0 ) color = 0;
 			if( color > 31 ) color = 31;
 
-			SDLU_MRectToSDLRect( &drawRect, &destSDLRect );
-
 			switch( color )
 			{
 				case 0:
-					SDLU_BlitSurface( hiScoreSurface, &destSDLRect,
-					                  fadeSurface,    &destSDLRect  );
+					SDLU_BlitSurface( hiScoreSurface, &drawRect,
+					                  fadeSurface,    &drawRect  );
 					break;
 
 				case 31:
-					SDL_FillRect( fadeSurface, &destSDLRect, black );
+					SDL_FillRect( fadeSurface, &drawRect, black );
 					break;
 
 				default:
@@ -149,7 +146,7 @@ static void FadeScreen( SDL_Surface* hiScoreSurface, SDL_Surface* fadeSurface, i
 					break;
 			}
 
-			OffsetMRect( &drawRect, 0, 15 );
+			SDLU_OffsetRect( &drawRect, 0, 15 );
 		}
 
 		SDLU_BlitFrontSurface( fadeSurface, &fullSDLRect, &fullSDLRect );
@@ -183,11 +180,11 @@ void ShowHiscore( void )
 	const char*      highScores = "HIGH SCORES";
 	int              r, g, b;
 
-	if( /* the delete key is held down */ 0 ) // <-- MUST BE OBSOLETED ... ACTUALLY MUST BE FIXED, BUT I ALWAYS SEARCH FOR OBSOLETE :)
+	// INVESTIGATE: fix this.
+	if( 0 )
 	{
 		// If the user holds delete while opening the high scores,
 		// clear the high score table.
-
 		memcpy( &scores, &defaultScores, sizeof( scores ) );
 		memcpy( &best,   &defaultBest,   sizeof( best   ) );
 	}
