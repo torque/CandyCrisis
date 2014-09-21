@@ -20,17 +20,17 @@
 SDL_Surface* nextSurface;
 SDL_Surface* nextDrawSurface;
 
-MRect nextWindowZRect, nextWindowRect[2];
+SDL_Rect nextWindowZRect, nextWindowRect[2];
 bool nextWindowVisible[2] = {true, true};
 int nextTime[2][2], nextStage[2][2], pullA[2], pullB[2];
 
 void InitNext( void )
 {
 	const double windowLoc[] = {0.46, 0.54};
-	SDL_Rect     sdlRect;
 
-	nextWindowZRect.top = nextWindowZRect.left = 0;
-	nextWindowZRect.bottom = 72; nextWindowZRect.right = 32;
+	nextWindowZRect.y = nextWindowZRect.x = 0;
+	nextWindowZRect.h = 72;
+	nextWindowZRect.w = 32;
 
 	nextWindowRect[0] = nextWindowRect[1] = nextWindowZRect;
 	CenterRectOnScreen( &nextWindowRect[0], windowLoc[0], 0.25 );
@@ -38,7 +38,7 @@ void InitNext( void )
 
 	nextSurface = LoadPICTAsSurface( picNext, 16 );
 
-	nextDrawSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &nextWindowZRect, &sdlRect ), 16 );
+	nextDrawSurface = SDLU_InitSurface( &nextWindowZRect, 16 );
 }
 
 void RefreshNext( int player )
@@ -63,7 +63,7 @@ void PullNext( int player )
 #define kNoDraw 999
 void ShowPull( int player )
 {
-	MRect    srcRect;
+	SDL_Rect    srcRect;
 	int      yank[8] = { 20, 18, 15, 8, -6, -26, -46, -66 };
 	int      slide[8] = { kNoDraw, 66, 48, 36, 29, 26, 24, 23 };
 	int      drawA, drawB, offset, count;
@@ -88,19 +88,19 @@ void ShowPull( int player )
 
 		if( offset != kNoDraw )
 		{
-			MRect blobRect = { 0, 4, 0 + kBlobVertSize, 4 + kBlobHorizSize };
-			MRect shadowRect = { 4, 8, 4 + kBlobVertSize, 8 + kBlobHorizSize };
+			SDL_Rect blobRect =   { .y = 0, .x = 4, .h = kBlobVertSize, .w = kBlobHorizSize };
+			SDL_Rect shadowRect = { .y = 4, .x = 8, .h = kBlobVertSize, .w = kBlobHorizSize };
 
-			OffsetMRect( &blobRect, 0, offset );
-			OffsetMRect( &shadowRect, 0, offset );
+			SDLU_OffsetRect( &blobRect, 0, offset );
+			SDLU_OffsetRect( &shadowRect, 0, offset );
 
 			SurfaceDrawShadow( &shadowRect, drawB, kNoSuction );
 
 			CalcBlobRect( kNoSuction, drawB-1, &srcRect );
 			SurfaceBlitBlob( &srcRect, &blobRect );
 
-			OffsetMRect( &blobRect, 0, kBlobVertSize );
-			OffsetMRect( &shadowRect, 0, kBlobVertSize );
+			SDLU_OffsetRect( &blobRect, 0, kBlobVertSize );
+			SDLU_OffsetRect( &shadowRect, 0, kBlobVertSize );
 
 			SurfaceDrawShadow( &shadowRect, drawA, nextM[player]? kFlashDarkBlob: kNoSuction );
 
@@ -110,10 +110,8 @@ void ShowPull( int player )
 	}
 
 	SDLU_ReleaseSurface( nextDrawSurface );
-
-	SDLU_BlitFrontSurface( nextDrawSurface,
-	                       SDLU_MRectToSDLRect( &nextWindowZRect, &sourceSDLRect ),
-	                       SDLU_MRectToSDLRect( &nextWindowRect[player], &destSDLRect ) );
+	// INVESTIGATE: does not copying the rects wreck shit?
+	SDLU_BlitFrontSurface( nextDrawSurface, &nextWindowZRect, &nextWindowRect[player] );
 }
 
 void UpdateNext( int player )
@@ -164,19 +162,15 @@ void ShowNext( int player )
 {
 	int      jiggle[kJiggleFrames] = { kNoSuction,  kSquish,  kNoSuction,  kSquash,
 	                                   kNoSuction,  kSquish,  kNoSuction,  kSquash   };
-	int      nextFrame = kNoSuction;
-	MRect    blobRect = { 22, 4, 22 + kBlobVertSize, 4 + kBlobHorizSize };
-	MRect    shadowRect = { 26, 8, 26 + kBlobVertSize, 8 + kBlobHorizSize };
-	MRect    srcRect;
+	int      nextFrame  = kNoSuction;
+	SDL_Rect blobRect   = { .y = 22, .x = 4, .h = kBlobVertSize, .w = kBlobHorizSize };
+	SDL_Rect shadowRect = { .y = 26, .x = 8, .h = kBlobVertSize, .w = kBlobHorizSize };
+	SDL_Rect srcRect;
 	SDL_Rect sourceSDLRect, destSDLRect;
 
-	if( !nextWindowVisible[player] ) return;
-
-	if( control[player] == kNobodyControl )
-	{
-	}
-	else
-	{
+	if( !nextWindowVisible[player] || control[player] == kNobodyControl ) {
+		return;
+	}	else {
 		SDLU_AcquireSurface( nextDrawSurface );
 
 		SDLU_BlitSurface( nextSurface,     &nextSurface->clip_rect,
@@ -189,8 +183,8 @@ void ShowNext( int player )
 		CalcBlobRect( nextFrame, nextB[player]-1, &srcRect );
 		SurfaceBlitBlob( &srcRect, &blobRect );
 
-		OffsetMRect( &blobRect, 0, kBlobVertSize );
-		OffsetMRect( &shadowRect, 0, kBlobVertSize );
+		SDLU_OffsetRect( &blobRect, 0, kBlobVertSize );
+		SDLU_OffsetRect( &shadowRect, 0, kBlobVertSize );
 
 		nextFrame = nextG[player]? kNoSuction:
 						(nextM[player]? kFlashDarkBlob: jiggle[nextStage[player][1]]);
@@ -202,8 +196,6 @@ void ShowNext( int player )
 
 		SDLU_ReleaseSurface( nextDrawSurface );
 
-		SDLU_BlitFrontSurface( nextDrawSurface,
-		                       SDLU_MRectToSDLRect( &nextWindowZRect, &sourceSDLRect ),
-		                       SDLU_MRectToSDLRect( &nextWindowRect[player], &destSDLRect ) );
+		SDLU_BlitFrontSurface( nextDrawSurface, &nextWindowZRect, &nextWindowRect[player] );
 	}
 }
