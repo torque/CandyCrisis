@@ -175,13 +175,8 @@ void RefreshAll( void )
 
 void Error( const char* extra )
 {
-	char message[256];
-	sprintf( message, "Sorry, a critical error has occurred. Please report the following error message:\n    %s", extra );
-	#if WIN32
-		MessageBox( NULL, message, "Candy Crisis", MB_OK );
-	#else
-		fprintf(stderr, "Candy Crisis: %s\n", message);
-	#endif
+	// MessageBox( NULL, message, "Candy Crisis", MB_OK );
+	fprintf(stderr, "Bye: %s\n", extra);
 	exit(0);
 }
 
