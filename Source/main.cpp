@@ -52,7 +52,7 @@ int          chain[2];
 long         blobTime[2], startTime, endTime;
 bool         finished = false, pauseKey = false, showStartMenu = true;
 signed char  grid[2][kGridAcross][kGridDown], suction[2][kGridAcross][kGridDown], charred[2][kGridAcross][kGridDown], glow[2][kGridAcross][kGridDown];
-MRect        playerWindowZRect, playerWindowRect[2];
+SDL_Rect     playerWindowZRect, playerWindowRect[2];
 bool         playerWindowVisible[2] = { true, true };
 KeyList      hitKey[2];
 int          backgroundID = -1;
@@ -126,16 +126,14 @@ void NoPaint( void )
 {
 }
 
-void MaskRect( MRect *r )
+void MaskRect( SDL_Rect *r )
 {
-	SDL_Rect sdlRect;
-	SDLU_MRectToSDLRect( r, &sdlRect );
-	SDLU_BlitFrontSurface( backdropSurface, &sdlRect, &sdlRect );
+	SDLU_BlitFrontSurface( backdropSurface, r, r );
 }
 
 void RefreshPlayerWindow( short player )
 {
-	MRect fullUpdate = {0, 0, kGridDown * kBlobVertSize, kGridAcross * kBlobHorizSize };
+	SDL_Rect fullUpdate = { .x = 0, .y = 0, .h = kGridDown * kBlobVertSize, .w = kGridAcross * kBlobHorizSize };
 
 	if( control[player] == kNobodyControl )
 	{
@@ -266,17 +264,16 @@ void RetrieveResources( void )
 	InitTweak( );
 }
 
-
-void CenterRectOnScreen( MRect *rect, double locationX, double locationY )
+void CenterRectOnScreen( SDL_Rect *rect, double locationX, double locationY )
 {
 	SDLU_Point dest = { .x = 0, .y = 0 };
 
-	dest.x = (int)(locationX * (640 - (rect->right - rect->left)));
-	dest.x &= ~3; // force last two bits to be 0? I'm not sure what this accomplishes.
-	dest.y = (int)(locationY * (480 - (rect->bottom - rect->top)));
+	dest.x = (int)(locationX * (640 - (rect->w)));
+	dest.x &= ~3; // floor x position to mod4 for some reason.
+	dest.y = (int)(locationY * (480 - (rect->h)));
 
-	OffsetMRect( rect, -rect->left, -rect->top );
-	OffsetMRect( rect, dest.x, dest.y );
+	SDLU_OffsetRect( rect, -rect->x, -rect->u );
+	SDLU_OffsetRect( rect, dest.x, dest.y );
 }
 
 void ReserveMonitor( void )

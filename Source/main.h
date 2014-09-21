@@ -2,17 +2,16 @@
 #pragma once
 
 #include <SDL/SDL.h>
-#include "MTypes.h"
 
 void Initialize( void );
 void RetrieveResources( void );
 void Error( const char* extra );
-void CenterRectOnScreen( MRect *rect, double locationX, double locationY );
+void CenterRectOnScreen( SDL_Rect *rect, double locationX, double locationY );
 bool AnyKeyIsPressed( void );
 void RefreshAll( void );
 void ReserveMonitor( void );
 void ReleaseMonitor( void );
-void MaskRect( MRect *r );
+void MaskRect( SDL_Rect *r );
 void RefreshPlayerWindow( short player );
 int  Warp( void );
 void WaitForRelease( void );
@@ -275,7 +274,7 @@ extern long blobTime[2], startTime, endTime;
 extern bool finished, pauseKey, showStartMenu;
 extern signed char grid[2][kGridAcross][kGridDown], suction[2][kGridAcross][kGridDown],
     charred[2][kGridAcross][kGridDown], glow[2][kGridAcross][kGridDown];
-extern MRect playerWindowZRect, playerWindowRect[2];
+extern SDL_Rect playerWindowZRect, playerWindowRect[2];
 extern bool playerWindowVisible[2];
 extern KeyList hitKey[2];
 extern int backgroundID;
