@@ -13,7 +13,6 @@
 #include "main.h" // for Error
 #include "music.h"
 
-
 // for acquiresurface
 const int           k_acquireMax = 10;
 static int          s_acquireHead = -1;
@@ -90,32 +89,6 @@ static void SDLUi_SetGrayscaleColors( SDL_Surface* surface )
 
 	SDL_SetColors( surface, grayscalePalette, 0, 256 );
 }
-
-SDL_Rect* SDLU_MRectToSDLRect( const MRect* in, SDL_Rect* out )
-{
-	int t = in->top, l = in->left, b = in->bottom, r = in->right;
-
-	out->x = l;
-	out->y = t;
-	out->w = r - l;
-	out->h = b - t;
-
-	return out;
-}
-
-
-MRect* SDLU_SDLRectToMRect( const SDL_Rect* in, MRect* out )
-{
-	int x = in->x, y = in->y, w = in->w, h = in->h;
-
-	out->top    = y;
-	out->left   = x;
-	out->bottom = y + h;
-	out->right  = x + w;
-
-	return out;
-}
-
 
 int SDLU_BlitSurface( SDL_Surface* src, SDL_Rect* srcrect,
                       SDL_Surface* dst, SDL_Rect* dstrect  )
@@ -258,12 +231,10 @@ void SDLU_PumpEvents()
 	}
 }
 
-
 bool SDLU_IsForeground()
 {
     return s_isForeground;
 }
-
 
 int SDLU_EventFilter( const SDL_Event *event )
 {
@@ -347,7 +318,6 @@ int SDLU_EventFilter( const SDL_Event *event )
 	return 0;
 }
 
-
 void SDLU_StartWatchingTyping()
 {
 	s_interestedInTyping = true;
@@ -356,14 +326,12 @@ void SDLU_StartWatchingTyping()
 	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
 }
 
-
 void SDLU_StopWatchingTyping()
 {
 	s_interestedInTyping = false;
 	SDL_EnableUNICODE( 0 );
 	SDL_EnableKeyRepeat( 0, 0 );
 }
-
 
 bool SDLU_CheckTyping( char* ascii, SDLKey* sdl )
 {
@@ -381,13 +349,11 @@ bool SDLU_CheckTyping( char* ascii, SDLKey* sdl )
 	return false;
 }
 
-
 void SDLU_GetMouse( SDLU_Point* pt )
 {
 	SDLU_PumpEvents();
 	*pt = s_mousePosition;
 }
-
 
 int SDLU_Button()
 {
@@ -395,18 +361,15 @@ int SDLU_Button()
 	return s_mouseButton;
 }
 
-
 void SDLU_AcquireSurface( SDL_Surface* surface )
 {
 	s_acquireList[++s_acquireHead] = surface;
 }
 
-
 SDL_Surface* SDLU_GetCurrentSurface()
 {
 	return s_acquireList[s_acquireHead];
 }
-
 
 void SDLU_ReleaseSurface( SDL_Surface* surface )
 {
@@ -419,10 +382,33 @@ void SDLU_ReleaseSurface( SDL_Surface* surface )
 	s_acquireHead--;
 }
 
-bool SDLU_PointInRect( SDLU_Point p, MRect* r )
+bool SDLU_PointInRect( SDLU_Point p, SDL_Rect* r )
 {
-	return (p.x >= r->left)  &&
-	       (p.x <  r->right) &&
-	       (p.y >= r->top)   &&
-	       (p.y <  r->bottom);
+	return (p.x >= r->x)        &&
+	       (p.x <  r->x + r->w) &&
+	       (p.y >= r->y)        &&
+	       (p.y <  r->y + r->h);
+}
+
+// Returns true if rects do not overlap
+bool SDLU_SeparateRects( const SDL_Rect *a, const SDL_Rect *b ) {
+	return (  a->x > (b->x + b->w) || // a is completely right of b
+	         (a->x + a->w) < b->x  || // a is completely left of b
+	          a->y > (b->y + b->h) || // a is completely below b
+	         (a->y + a->h) < b->y  )  // a is completely above b
+}
+
+// Creates a new SDL_Rect from the largest dimensions of two SDL_Rects.
+void SDLU_UnionRect( const SDL_Rect* a, const SDL_Rect* b, SDL_Rect* u )
+{
+	u->x = ( a->x < b->x )? a->x: b->x
+	u->y = ( a->y < b->y )? a->y: b->y
+	u->w = ( a->w > b->w )? a->w: b->w
+	u->h = ( a->h > b->h )? a->h: b->h
+}
+
+void SDLU_OffsetRect( SDL_Rect* r, int x, int y )
+{
+	r->x += x;
+	r->y += y;
 }
