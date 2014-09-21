@@ -19,12 +19,12 @@ void         DrawPICTInSurface( SDL_Surface* surface, int pictID );
 SDL_Surface* LoadPICTAsSurface( int pictID, int depth );
 bool         PICTExists( int pictID );
 
-void SurfaceDrawBoard( int player, const MRect *myRect );
-void SurfaceDrawShadow( const MRect *myRect, int blob, int state );
-void SurfaceDrawAlpha( const MRect *myRect, int blob, int mask, int state );
-void SurfaceDrawColor( const MRect *myRect, int blob, int state, int r, int g, int b, int w );
-void SurfaceDrawBlob( int player, const MRect *myRect, int blob, int state, int charred );
-void SurfaceDrawSprite( const MRect *myRect, int blob, int state );
+void SurfaceDrawBoard( int player, const SDL_Rect *myRect );
+void SurfaceDrawShadow( const SDL_Rect *myRect, int blob, int state );
+void SurfaceDrawAlpha( const SDL_Rect *myRect, int blob, int mask, int state );
+void SurfaceDrawColor( const SDL_Rect *myRect, int blob, int state, int r, int g, int b, int w );
+void SurfaceDrawBlob( int player, const SDL_Rect *myRect, int blob, int state, int charred );
+void SurfaceDrawSprite( const SDL_Rect *myRect, int blob, int state );
 
 extern SDL_Surface* blobSurface;
 extern SDL_Surface* maskSurface;

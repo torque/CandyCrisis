@@ -23,23 +23,15 @@ SDL_Surface* blastMaskSurface;
 SDL_Surface* playerSurface[2];
 SDL_Surface* playerSpriteSurface[2];
 
-
 void GetBlobGraphics()
 {
-	MRect myRect;
-
-	// Get board
-
-	myRect.top = myRect.left = 0;
-	myRect.right = kBlobHorizSize * kGridAcross;
-	myRect.bottom = kBlobVertSize * (kGridDown-1);
-
 	boardSurface[0] = LoadPICTAsSurface( picBoard, 16 );
 
-	boardSurface[1] = LoadPICTAsSurface( picBoardRight, 16 );
-	if( boardSurface[1] == NULL )
-		boardSurface[1] = LoadPICTAsSurface( picBoard, 16 );
-
+	if ( PICTExists( picBoardRight ) ) {
+		blobSurface[1] = LoadPICTAsSurface( picBoardRight, 16 );
+	} else {
+		blobSurface[1] = LoadPICTAsSurface( picBoard, 16 );
+	}
 	// Get blob worlds
 
 	blobSurface = LoadPICTAsSurface( picBlob, 16 );
@@ -52,52 +44,50 @@ void GetBlobGraphics()
 	blastMaskSurface = LoadPICTAsSurface( picBlastMask, 16 );
 }
 
-
 void InitPlayerWorlds()
 {
-	MRect     myRect;
-	SDL_Rect  sdlRect;
+	SDL_Rect  gridRect;
 	int       count;
 
-	myRect.top = myRect.left = 0;
-	myRect.right = kGridAcross * kBlobHorizSize;
-	myRect.bottom = kGridDown * kBlobVertSize;
-
-	SDLU_MRectToSDLRect( &myRect, &sdlRect );
+	gridRect.y = gridRect.x = 0;
+	gridRect.w = kGridAcross * kBlobHorizSize;
+	gridRect.h = kGridDown * kBlobVertSize;
 
 	for( count=0; count<=1; count++ )
 	{
-		playerSurface[count]       = SDLU_InitSurface( &sdlRect, 16 );
-		playerSpriteSurface[count] = SDLU_InitSurface( &sdlRect, 16 );
+		playerSurface[count]       = SDLU_InitSurface( &gridRect, 16 );
+		playerSpriteSurface[count] = SDLU_InitSurface( &gridRect, 16 );
 	}
 }
 
-
-void SurfaceDrawBoard( int player, const MRect *myRect )
+void SurfaceDrawBoard( int player, const SDL_Rect *myRect )
 {
-	MRect    srcRect, offsetRect;
-	SDL_Rect srcSDLRect, offsetSDLRect;
+	SDL_Rect srcRect, offsetRect;
 
 	srcRect = *myRect;
-	if( srcRect.bottom <= kBlobVertSize ) return;
-	if( srcRect.top < kBlobVertSize ) srcRect.top = kBlobVertSize;
+	// INVESTIGATE
+	if( (srcRect.y + srcRect.h) <= kBlobVertSize ) {
+		return;
+	}
+	if( srcRect.y < kBlobVertSize ) {
+		srcRect.y = kBlobVertSize;
+	}
 
 	offsetRect = srcRect;
-	OffsetMRect( &offsetRect, 0, -kBlobVertSize );
+	SDLU_OffsetRect( &offsetRect, 0, -kBlobVertSize );
 
-	SDLU_BlitSurface( boardSurface[player],     SDLU_MRectToSDLRect( &offsetRect, &offsetSDLRect ),
-	                  SDLU_GetCurrentSurface(), SDLU_MRectToSDLRect( &srcRect, &srcSDLRect )         );
+	SDLU_BlitSurface( boardSurface[player],     &offsetRect,
+	                  SDLU_GetCurrentSurface(), &srcRect     );
 }
 
-
-void SurfaceDrawBlob( int player, const MRect *myRect, int blob, int state, int charred )
+void SurfaceDrawBlob( int player, const SDL_Rect *myRect, int blob, int state, int charred )
 {
 	SurfaceDrawBoard( player, myRect );
 	SurfaceDrawSprite( myRect, blob, state );
 
 	if( charred & 0x0F )
 	{
-		MRect blobRect, charRect, alphaRect;
+		SDL_Rect blobRect, charRect, alphaRect;
 
 		CalcBlobRect( (charred & 0x0F), kBombTop-1, &charRect );
 		CalcBlobRect( (charred & 0x0F), kBombBottom-1, &alphaRect );
@@ -109,7 +99,7 @@ void SurfaceDrawBlob( int player, const MRect *myRect, int blob, int state, int 
 	}
 }
 
-void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
+void SurfaceDrawShadow( const SDL_Rect *myRect, int blob, int state )
 {
 	int x;
 	SDLU_Point offset[4] = {
@@ -121,12 +111,12 @@ void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
 
 	if( blob > kEmpty )
 	{
-		MRect blobRect, destRect;
+		SDL_Rect blobRect, destRect;
 
 		for( x=0; x<4; x++ )
 		{
 			destRect = *myRect;
-			OffsetMRect( &destRect, offset[x].x, offset[x].y );
+			SDL_OffsetRect( &destRect, offset[x].x, offset[x].y );
 
 			CalcBlobRect( state, blob-1, &blobRect );
 			SurfaceBlitColor(  maskSurface,  SDLU_GetCurrentSurface(),
@@ -136,9 +126,9 @@ void SurfaceDrawShadow( const MRect *myRect, int blob, int state )
 	}
 }
 
-void SurfaceDrawColor( const MRect *myRect, int blob, int state, int r, int g, int b, int w )
+void SurfaceDrawColor( const SDL_Rect *myRect, int blob, int state, int r, int g, int b, int w )
 {
-	MRect blobRect;
+	SDL_Rect blobRect;
 	if( blob > kEmpty )
 	{
 		CalcBlobRect( state, blob-1, &blobRect );
@@ -148,11 +138,11 @@ void SurfaceDrawColor( const MRect *myRect, int blob, int state, int r, int g, i
 	}
 }
 
-void SurfaceDrawAlpha( const MRect *myRect, int blob, int mask, int state )
+void SurfaceDrawAlpha( const SDL_Rect *myRect, int blob, int mask, int state )
 {
 	if( blob > kEmpty )
 	{
-		MRect blobRect, alphaRect;
+		SDL_Rect blobRect, alphaRect;
 
 		CalcBlobRect( state, blob-1, &blobRect );
 		CalcBlobRect( state, mask-1, &alphaRect );
@@ -162,16 +152,15 @@ void SurfaceDrawAlpha( const MRect *myRect, int blob, int mask, int state )
 	}
 }
 
-void SurfaceDrawSprite( const MRect *myRect, int blob, int state )
+void SurfaceDrawSprite( const SDL_Rect *myRect, int blob, int state )
 {
-	MRect blobRect;
+	SDL_Rect blobRect;.
 	if( blob > kEmpty )
 	{
 		CalcBlobRect( state, blob-1, &blobRect );
 		SurfaceBlitBlob( &blobRect, myRect );
 	}
 }
-
 
 bool PICTExists( int pictID )
 {
@@ -183,7 +172,6 @@ bool PICTExists( int pictID )
 
 	return false;
 }
-
 
 SDL_Surface* LoadPICTAsSurface( int pictID, int depth )
 {
