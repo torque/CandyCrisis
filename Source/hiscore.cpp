@@ -29,85 +29,62 @@
 Combo defaultBest =
 {
 	/*bestGrid[kGridAcross][kGridDown] = */
-	{ { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,                          1, 1, 1, 2, 2 },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,           1, 1 },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty } },
-
-	/*bestA      = */ 2,
-	/*bestB      = */ 2,
-	/*bestM      = */ false,
-	/*bestG      = */ false,
-	/*bestLv     = */ kTutorialLevel,
-	/*bestX      = */ 1,
-	/*bestR      = */ upRotate,
-	/*bestPlayer = */ 0,
-	/*bestValue  = */ (40*1) + (50*9),
-	/*bestName   = */ "Tutorial"
+	.grid = { { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,      1,      1,      1,      2,      2 },
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,      1,      1 },
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty } },
+	.a  = 2, // blob type of a segment
+	.b  = 2, // blob type of b segment
+	.m  = false,
+	.g  = false,
+	.lv = kTutorialLevel, // level to be displayed on high score playback.
+	.x  = 1,
+	.r  = upRotate,
+	.player = 0,
+	.value = (40*1) + (50*9),
+	.name = "Tutorial"
 };
 
-Combo best =
-{
-	/*bestGrid[kGridAcross][kGridDown] = */
-	{ { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,                          1, 1, 1, 2, 2 },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,           1, 1 },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	  { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty } },
+Combo best = defaultBest;
 
-	/*bestA      = */ 2,
-	/*bestB      = */ 2,
-	/*bestM      = */ false,
-	/*bestG      = */ false,
-	/*bestLv     = */ kTutorialLevel,
-	/*bestX      = */ 1,
-	/*bestR      = */ upRotate,
-	/*bestPlayer = */ 0,
-	/*bestValue  = */ (40*1) + (50*9),
-	/*bestName   = */ "Tutorial"
-};
-
-Combo evenBetter = {{{0}}};
+Combo evenBetter;
 Combo potentialCombo[2];
 
 AutoPattern hiScorePattern[] =
 {
-	{ kIdleTicks,          60, 0,   NULL },
-	{ kBlockUntilDrop,     0,  0,   NULL },
-	{ kBlockUntilComplete, 0,  0,   NULL },
-	{ kIdleTicks,          60, 0,   NULL },
-	{ kComplete,           0,  0,   NULL }
+	{ .command = kIdleTicks,          .d1 = 60, .d2 = 0, .message = NULL },
+	{ .command = kBlockUntilDrop,     .d1 =  0, .d2 = 0, .message = NULL },
+	{ .command = kBlockUntilComplete, .d1 =  0, .d2 = 0, .message = NULL },
+	{ .command = kIdleTicks,          .d1 = 60, .d2 = 0, .message = NULL },
+	{ .command = kComplete,           .d1 =  0, .d2 = 0, .message = NULL }
 };
 
-HighScore scores[10] =
-{
-	{"Leviathan", 40000},
-	{"Dr. Crisis", 36000},
-	{"Angel", 32000},
-	{"Spike", 28000},
-	{"Fox", 24000},
-	{"Raguel", 20000},
-	{"Kumo", 16000},
-	{"Patty", 12000},
-	{"Yuurei", 8000},
-	{"Glurp", 4000}
+HighScore defaultScores[] = {
+	{ .name = "Leviathan",  .score = 40000 },
+	{ .name = "Dr. Crisis", .score = 36000 },
+	{ .name = "Angel",      .score = 32000 },
+	{ .name = "Spike",      .score = 28000 },
+	{ .name = "Fox",        .score = 24000 },
+	{ .name = "Raguel",     .score = 20000 },
+	{ .name = "Kumo",       .score = 16000 },
+	{ .name = "Patty",      .score = 12000 },
+	{ .name = "Yuurei",     .score =  8000 },
+	{ .name = "Glurp",      .score =  4000 }
 };
 
-HighScore defaultScores[10] =
-{
-	{"Leviathan", 40000},
-	{"Dr. Crisis", 36000},
-	{"Angel", 32000},
-	{"Spike", 28000},
-	{"Fox", 24000},
-	{"Raguel", 20000},
-	{"Kumo", 16000},
-	{"Patty", 12000},
-	{"Yuurei", 8000},
-	{"Glurp", 4000}
+HighScore scores[] = {
+	{ .name = "Leviathan",  .score = 40000 },
+	{ .name = "Dr. Crisis", .score = 36000 },
+	{ .name = "Angel",      .score = 32000 },
+	{ .name = "Spike",      .score = 28000 },
+	{ .name = "Fox",        .score = 24000 },
+	{ .name = "Raguel",     .score = 20000 },
+	{ .name = "Kumo",       .score = 16000 },
+	{ .name = "Patty",      .score = 12000 },
+	{ .name = "Yuurei",     .score =  8000 },
+	{ .name = "Glurp",      .score =  4000 }
 };
 
 char highScoreName[256];
