@@ -23,25 +23,25 @@ SDL_Surface* opponentSurface;
 SDL_Surface* opponentMaskSurface;
 SDL_Surface* opponentDrawSurface;
 
-MRect opponentWindowZRect, opponentWindowRect;
+SDL_Rect opponentWindowZRect, opponentWindowRect;
 int opponentMood, opponentFrame;
 int opponentTime, glowTime[kGlows], glowFrame[kGlows], panicTime, panicFrame;
 int heavyGlowArray[kGlowArraySize], glowArray[kGlowArraySize], lightGlowArray[kGlowArraySize];
 
 void InitOpponent( void )
 {
-	MRect    littleRect = {0, 0, 64, 64}, bigRect = {0, 0, 64, 64*(kOppFrames*3) };
-	SDL_Rect sdlRect;
+	SDL_Rect littleRect = { .y = 0, .x = 0, .h = 64, .w = 64};
+	SDL_Rect bigRect    = { .y = 0, .x = 0, .h = 64, .w = 64*(kOppFrames*3) };
 	double   index, value;
 
-	opponentDrawSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &littleRect, &sdlRect ), 16 );
-	opponentSurface     = SDLU_InitSurface( SDLU_MRectToSDLRect( &bigRect, &sdlRect ), 16 );
+	opponentDrawSurface = SDLU_InitSurface( &littleRect, 16 );
+	opponentSurface     = SDLU_InitSurface( &bigRect, 16 );
 
-	bigRect.bottom *= kGlows + 1;
-	opponentMaskSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &bigRect, &sdlRect ), 1 );
+	bigRect.h *= kGlows + 1;
+	opponentMaskSurface = SDLU_InitSurface( &bigRect, 1 );
 
-	opponentWindowZRect.top = opponentWindowZRect.left = 0;
-	opponentWindowZRect.bottom = opponentWindowZRect.right = 64;
+	opponentWindowZRect.y = opponentWindowZRect.x = 0;
+	opponentWindowZRect.h = opponentWindowZRect.w = 64;
 	opponentWindowRect = opponentWindowZRect;
 	CenterRectOnScreen( &opponentWindowRect, 0.5, 0.5 );
 
@@ -78,14 +78,11 @@ void BeginOpponent( int which )
 
 void DrawFrozenOpponent( void )
 {
-	SDL_Rect   sourceSDLRect, destSDLRect;
-	MRect      myRect = {0, 0, 64, 64};
+	SDL_Rect   myRect = { .y = 0, .x = 0, .h = 64, .w = 64 };
 
-	OffsetMRect( &myRect, opponentFrame * 64, 0 );
+	OffsetRect( &myRect, opponentFrame * 64, 0 );
 
-	SDLU_BlitFrontSurface( opponentSurface,
-	                       SDLU_MRectToSDLRect( &myRect, &sourceSDLRect ),
-	                       SDLU_MRectToSDLRect( &opponentWindowRect, &destSDLRect ) );
+	SDLU_BlitFrontSurface( opponentSurface, &myRect, &opponentWindowRect );
 }
 
 void OpponentPissed( void )
@@ -102,9 +99,11 @@ void OpponentChatter( bool on )
 
 void UpdateOpponent( void )
 {
-	MRect    myRect = {0,0,64,64}, dstRect = {0,0,64,64}, maskRect;
-	int      emotiMap[] = {0, 1, 2, 1}, draw = false, count;
-	SDL_Rect srcSDLRect, dstSDLRect;
+	SDL_Rect myRect  = { .x = 0, .y = 0, .w = 64, .h = 64}
+	SDL_Rect dstRect = { .x = 0, .y = 0, .w = 64, .h = 64};
+	SDL_Rect maskRect;
+	int      emotiMap[] = {0, 1, 2, 1}, count;
+	bool     draw = false
 
 	if( GameTickCount( ) > opponentTime )
 	{
@@ -197,17 +196,20 @@ void UpdateOpponent( void )
 
 	if( draw )
 	{
-		OffsetMRect( &myRect, 64*opponentFrame, 0 );
+		SDLU_OffsetRect( &myRect, 64*opponentFrame, 0 );
 
-		SDLU_AcquireSurface( opponentDrawSurface );
+		// INVESTIGATE: SDLU_GetCurrentSurface() doesn't appear to be used
+		// at all before this is released. Is it even used?
+		// SDLU_AcquireSurface( opponentDrawSurface );
 
-		SDLU_BlitSurface( opponentSurface,     SDLU_MRectToSDLRect( &myRect, &srcSDLRect ),
-		                  opponentDrawSurface, SDLU_MRectToSDLRect( &dstRect, &dstSDLRect )  );
+		SDLU_BlitSurface( opponentSurface,     &myRect,
+		                  opponentDrawSurface, &dstRect, );
 
 		maskRect = myRect;
 		for( count=0; count<kGlows; count++ )
 		{
-			OffsetMRect( &maskRect, 0, 64 );
+			// maskRect is for blitting the glowing parts.
+			SDLU_OffsetRect( &maskRect, 0, 64 );
 
 			if( glowFrame[count] )
 			{
@@ -239,10 +241,8 @@ void UpdateOpponent( void )
 			                   31, 31, 22, glowArray[panicFrame] );
 		}
 
-		SDLU_ReleaseSurface( opponentDrawSurface );
+		// SDLU_ReleaseSurface( opponentDrawSurface );
 
-		SDLU_BlitFrontSurface( opponentDrawSurface,
-		                       SDLU_MRectToSDLRect( &opponentWindowZRect, &srcSDLRect ),
-		                       SDLU_MRectToSDLRect( &opponentWindowRect,  &dstSDLRect )  );
+		SDLU_BlitFrontSurface( opponentDrawSurface, &opponentWindowZRect, &opponentWindowRect );
 	}
 }

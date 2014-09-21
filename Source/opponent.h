@@ -26,4 +26,4 @@ extern int opponentMood, opponentFrame;
 extern int opponentTime, glowTime[kGlows], glowFrame[kGlows], panicTime, panicFrame;
 extern int glowArray[kGlowArraySize], lightGlowArray[kGlowArraySize];
 
-extern MRect opponentWindowZRect, opponentWindowRect;
+extern SDL_Rect opponentWindowZRect, opponentWindowRect;
