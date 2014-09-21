@@ -49,7 +49,7 @@ void InitGrays( void )
 void BlinkGrays( int player )
 {
 	int x, y, currentBlinkGraphic;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	if( blinkTime[player] > GameTickCount( ) )
 		return;
@@ -185,7 +185,7 @@ void SetupGrays( int player )
 
 void DropGrays( int player )
 {
-	MRect myRect;
+	SDL_Rect myRect;
 	int count, grayX;
 
 	if( blobTime[player] > GameTickCount( ) )
@@ -197,10 +197,10 @@ void DropGrays( int player )
 	{
 		if( grays[player][grayX] > 0 )
 		{
-			myRect.bottom = grayAir[player][grayX];
-			myRect.left = kBlobHorizSize * grayX;
-			myRect.top = myRect.bottom - (kBlobVertSize * grays[player][grayX]);
-			myRect.right = myRect.left + kBlobHorizSize;
+			myRect.h = (kBlobVertSize * grays[player][grayX]);
+			myRect.y = grayAir[player][grayX] - myRect.h;
+			myRect.x = kBlobHorizSize * grayX;
+			myRect.w = kBlobHorizSize;
 			CleanSpriteArea( player, &myRect );
 
 			grayAir[player][grayX] += 4;
@@ -213,14 +213,14 @@ void DropGrays( int player )
 			}
 			else
 			{
-				myRect.top = grayAir[player][grayX];
-				myRect.bottom = myRect.top + kBlobVertSize;
+				myRect.y = grayAir[player][grayX];
+				myRect.h = kBlobVertSize;
 
 				SDLU_AcquireSurface( playerSpriteSurface[player] );
 
 				for( count=0; count<grays[player][grayX]; count++ )
 				{
-					OffsetMRect( &myRect, 0, -kBlobVertSize );
+					SDLU_OffsetRect( &myRect, 0, -kBlobVertSize );
 					CleanSpriteArea( player, &myRect );
 					SurfaceDrawAlpha( &myRect, kGray, kLight, kGrayNoBlink );
 				}
@@ -257,7 +257,7 @@ bool BusyDroppingGrays( int player )
 void PlaceGrayRow( int player, int grayX )
 {
 	int grayY;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	if( player == 1 ) OpponentPissed( );
 
@@ -288,7 +288,7 @@ void PlaceGrayRow( int player, int grayX )
 void Bounce( int player )
 {
 	int x, y, bounce, suck, blob, rows, currentBlinkGraphic;
-	MRect blobRect;
+	SDL_Rect blobRect;
 	double blobTop, compress;
 	const double compressList[kZapFrames+1] = {
 		-kBlobVertSize + 0.83,
@@ -334,12 +334,19 @@ void Bounce( int player )
 				rows = GetRowHeight( player, x );
 
 				CalcBlobRect( x, rows, &blobRect );
-				blobRect.bottom = kBlobVertSize * kGridDown;
+
+				// INVESTIGATE
+				// Previously, this line appeared to set the bottom of blobRect
+				// equal to the bottom of the grid. I am not sure  what this
+				// accomplished.
+				blobRect.h = kBlobVertSize * kGridDown - blobRect.y;
 				SurfaceDrawBoard( player, &blobRect );
 				SetUpdateRect( player, &blobRect );
 
-				blobRect.top = kBlobVertSize * (kGridDown-1);
-				blobTop = kBlobVertSize * (kGridDown-1);
+				// This sets the top of blobRect to the bottom, minus one,
+				// meaning blobRect should now have a height of kBlobVertSize.
+				blobRect.y = kBlobVertSize * (kGridDown-1);
+				blobRect.h = kBlobVertSize;
 
 				for( y=kGridDown-1; y>=rows; y-- )
 				{
@@ -354,9 +361,8 @@ void Bounce( int player )
 					if( blob == kGray )	SurfaceDrawAlpha( &blobRect, kGray, kLight, currentBlinkGraphic );
 					else SurfaceDrawBlob( player, &blobRect, blob, suck, charred[player][x][y] );
 
-					blobTop += compress;
-					blobRect.top = (short) blobTop;
-					blobRect.bottom = blobRect.top + kBlobVertSize;
+					blobRect.y += compress;
+					blobRect.h  = kBlobVertSize;
 				}
 			}
 		}
