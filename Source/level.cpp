@@ -31,7 +31,8 @@
 #include "victory.h"
 #include "zap.h"
 
-MRect stageWindowZRect, stageWindowRect;
+static SDL_Rect stageWindowZRect, stageWindowRect;
+stageWindowZRect = stageWindowRect = { .x = 0, .y = 0, .w = 64, .h = 32}
 Character character[2];
 int level, players, credits, difficulty[2] = {kHardLevel, kHardLevel};
 int difficultyTicks, backdropTicks, backdropFrame;
@@ -46,21 +47,20 @@ int difficultyTicks, backdropTicks, backdropFrame;
 #define min(x,y) (((x)<(y))?(x):(y))
 #define max(x,y) (((x)>(y))?(x):(y))
 
-
-const  int   startSkip = 1;
-static bool  shouldFullRepaint = false;
-static int   startMenuTime = 0;
-static int   splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats];
-static MRect splatBlob[kNumSplats];
-static int   glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
-static MRect titleRect[kTitleItems] = {
-	{ 155, 203, 207, 426 }, // tutorial
-	{ 225, 179, 281, 451 }, // 1p
-	{ 297, 182, 352, 454 }, // 2p
-	{ 358, 183, 428, 458 }, // solitaire
-	{ 429, 280, 478, 390 }, // high scores
-	{ 433, 390, 477, 446 }, // quit
-	{ 430, 187, 479, 280 }, // controls
+const  int      startSkip = 1;
+static bool     shouldFullRepaint = false;
+static int      startMenuTime = 0;
+static int      splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats];
+static SDL_Rect splatBlob[kNumSplats];
+static int      glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
+static SDL_Rect titleRect[kTitleItems] = {
+	{ .y = 155, .x = 203, .h = 52, .w = 223 }, // tutorial
+	{ .y = 225, .x = 179, .h = 56, .w = 272 }, // 1p
+	{ .y = 297, .x = 182, .h = 55, .w = 272 }, // 2p
+	{ .y = 358, .x = 183, .h = 70, .w = 275 }, // solitaire
+	{ .y = 429, .x = 280, .h = 49, .w = 110 }, // high scores
+	{ .y = 433, .x = 390, .h = 44, .w = 56 }, // quit
+	{ .y = 430, .x = 187, .h = 49, .w = 93 }, // controls
 };
 
 const int kCursorWidth  = 32;
@@ -69,8 +69,10 @@ const int kCursorHeight = 32;
 static void InsertCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
 {
 	SkittlesFontPtr cursorFont = GetFont( picFont );
-	SDL_Rect        cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
-	SDL_Rect        cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
+	// INVESTIGATE
+	// See if cursorFrontSDLRect is actually redundant.
+	SDL_Rect        cursorBackSDLRect =  { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
+	SDL_Rect        cursorFrontSDLRect = { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
 	SDLU_Point      mouseHereToo = mouseHere;
 
 	cursorFrontSDLRect.x = mouseHere.x;
@@ -87,8 +89,8 @@ static void InsertCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surfac
 
 static void RemoveCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
 {
-	SDL_Rect      cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
-	SDL_Rect      cursorFrontSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
+	SDL_Rect      cursorBackSDLRect =  { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
+	SDL_Rect      cursorFrontSDLRect = { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
 
 	cursorFrontSDLRect.x = mouseHere.x;
 	cursorFrontSDLRect.y = mouseHere.y;
@@ -109,10 +111,13 @@ void GameStartMenu( void )
 	SDL_Surface*    gameStartSurface;
 	SDL_Surface*    gameStartDrawSurface;
 	SDL_Surface*    cursorBackSurface;
-	SDL_Rect        backdropSDLRect = { 0, 0, 640, 480 };
-	SDL_Rect        cursorBackSDLRect = { 0, 0, kCursorWidth, kCursorHeight };
-	SDL_Rect        destSDLRect;
-	MRect           drawRect[4], chunkRect, tempRect;
+	SDL_Rect        backdropSDLRect = { .x = 0, .y = 0, .w = 640, .h = 480 };
+	SDL_Rect        cursorBackSDLRect = { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
+	SDL_Rect        meterRect[2] = {
+		{ .x =  30, .y = 360, .y = 110, .h = 20 },
+		{ .x = 530, .y = 360, .y = 110, .h = 20 }
+	};
+	SDL_Rect        destSDLRect, drawRect[4], chunkRect, tempRect;
 	int             blob, count, oldGlow, splat, chunkType, selected;
 	int             skip;
 	SDLU_Point      mouse;
@@ -122,7 +127,6 @@ void GameStartMenu( void )
 	int             combo[2], comboBright[2], missBright[2];
 	SkittlesFontPtr smallFont = GetFont( picFont );
 	SkittlesFontPtr tinyFont = GetFont( picTinyFont );
-	SDL_Rect        meterRect[2] = { { 30, 360, 110, 20 }, { 530, 360, 110, 20 } };
 
 	const int       kLeftSide = 0, kRightSide = 1, kGlow = 2, kCursor = 3;
 
@@ -192,10 +196,10 @@ redo:
 				if( splatState[blob] == kIdleSplat )
 				{
 					splatSide[blob] = RandomBefore(2);
-					splatBlob[blob].top = -24 - RandomBefore(15);
-					splatBlob[blob].left = (splatSide[blob] == 0)? RandomBefore( 110 ): 640 - kBlobHorizSize - RandomBefore( 110 );
-					splatBlob[blob].bottom = splatBlob[blob].top + kBlobVertSize;
-					splatBlob[blob].right = splatBlob[blob].left + kBlobHorizSize;
+					splatBlob[blob].y = -24 - RandomBefore(15);
+					splatBlob[blob].x = (splatSide[blob] == 0)? RandomBefore( 110 ): 640 - kBlobHorizSize - RandomBefore( 110 );
+					splatBlob[blob].h = kBlobVertSize;
+					splatBlob[blob].w = kBlobHorizSize;
 					splatColor[blob] = ((startMenuTime >> 2) % kBlobTypes) + 1;
 					splatState[blob] = kFallingSplat;
 
@@ -210,30 +214,35 @@ redo:
 
 		// Take the cursor out of the scene
 		RemoveCursor( mouse, cursorBackSurface, gameStartDrawSurface );
-		drawRect[kCursor].top    = mouse.y;
-		drawRect[kCursor].left   = mouse.x;
-		drawRect[kCursor].bottom = mouse.y + kCursorHeight;
-		drawRect[kCursor].right  = mouse.x + kCursorWidth;
+		drawRect[kCursor].y = mouse.y;
+		drawRect[kCursor].x = mouse.x;
+		drawRect[kCursor].h = kCursorHeight;
+		drawRect[kCursor].w = kCursorWidth;
 
-		// is this a hack? maybe. but it works!
-		drawRect[kLeftSide].top    = drawRect[kRightSide].top    = drawRect[kGlow].top    =
-		drawRect[kLeftSide].left   = drawRect[kRightSide].left   = drawRect[kGlow].left   = 9999;
-		drawRect[kLeftSide].bottom = drawRect[kRightSide].bottom = drawRect[kGlow].bottom =
-		drawRect[kLeftSide].right  = drawRect[kRightSide].right  = drawRect[kGlow].right  = -9999;
+		// INVESTIGATE: does this actually do anything?
+		drawRect[kLeftSide].y = drawRect[kRightSide].y = drawRect[kGlow].y =
+		drawRect[kLeftSide].x = drawRect[kRightSide].x = drawRect[kGlow].x = 0;
+		drawRect[kLeftSide].h = drawRect[kRightSide].h = drawRect[kGlow].h =
+		drawRect[kLeftSide].w = drawRect[kRightSide].w = drawRect[kGlow].w = -1;
 
 		// Get cursor position
 		SDLU_GetMouse( &mouse );
-        if( mouse.y > 460 ) mouse.y = 460;
+		if( mouse.y > 460 ) {
+			mouse.y = 460;
+		}
 
 		// Erase falling blobs
 		for( blob=0; blob<kNumSplats; blob++ )
 		{
 			if( splatState[blob] == kFallingSplat )
 			{
-				SDL_FillRect( gameStartDrawSurface, SDLU_MRectToSDLRect( &splatBlob[blob], &destSDLRect ), black );
-				UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
+				// INVESTIGATE
+				// Does calling FillRect with splatBlob directly instead of a
+				// rect copied using MRectToSDLRect cause problems?
+				SDL_FillRect( gameStartDrawSurface, &splatBlob[blob], black );
+				SDLU_UnionRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 
-				OffsetMRect( &splatBlob[blob], 0, startSkip * (6 + (splatBlob[blob].bottom / 20)) );
+				SDLU_OffsetRect( &splatBlob[blob], 0, startSkip * (6 + (splatBlob[blob].y + splatBlob[blob].h) / 20)) );
 			}
 			else if( splatState[blob] >= kIncrementPerFrame )
 			{
@@ -243,18 +252,17 @@ redo:
 					{
 						chunkRect = splatBlob[blob];
 						GetZapStyle( 0, &chunkRect, &splatColor[blob], &chunkType, splat, splatState[blob]-kIncrementPerFrame, kSplatType );
-						SDL_FillRect( gameStartDrawSurface, SDLU_MRectToSDLRect( &chunkRect, &destSDLRect ), black );
-						UnionMRect( &drawRect[splatSide[blob]], &chunkRect, &drawRect[splatSide[blob]] );
+						SDL_FillRect( gameStartDrawSurface, &chunkRect, black );
+						SDLU_UnionRect( &drawRect[splatSide[blob]], &chunkRect, &drawRect[splatSide[blob]] );
 					}
 				}
 
-				SDL_FillRect( gameStartDrawSurface, SDLU_MRectToSDLRect( &splatBlob[blob], &destSDLRect ), black );
-				UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
+				SDL_FillRect( gameStartDrawSurface, &splatBlob[blob], black );
+				SDLU_UnionRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 			}
 		}
 
-		// Draw combo meters (GEEK!!!!!)
-
+		// Draw combo meters
 		for( count=0; count<2; count++ )
 		{
 			int bright = comboBright[count];
@@ -262,7 +270,7 @@ redo:
 			if( bright || mBright )
 			{
 				SDL_FillRect( gameStartDrawSurface, &meterRect[count], black );
-				UnionMRect( &drawRect[count], SDLU_SDLRectToMRect( &meterRect[count], &tempRect ), &drawRect[count] );
+				SDLU_UnionRect( &drawRect[count], &meterRect[count], &drawRect[count] );
 
 				if( mBright > 1 )
 				{
@@ -310,24 +318,26 @@ redo:
 		{
 			if( splatState[blob] == kFallingSplat )
 			{
-				if( splatBlob[blob].bottom >= 480 )
+				// splatBlob[blob].h is kBlobVertSize
+				if( splatBlob[blob].y >= 480 - kBlobVertSize )
 				{
-					splatBlob[blob].top = 480 - kBlobVertSize;
-					splatBlob[blob].bottom = 480;
+					splatBlob[blob].y = 480 - kBlobVertSize;
 					splatState[blob] = 1;
 
 					// Process combos
 					if( mouse.y > 420 &&
-						mouse.x >= (splatBlob[blob].left - 30) &&
-						mouse.x <= (splatBlob[blob].right + 10)    )
+						mouse.x >= (splatBlob[blob].x - 30) &&
+						// splatBlob[blob].w is kBlobHorizSize
+						mouse.x <= (splatBlob[blob].x + kBlobHorizSize + 10)    )
 					{
 						combo[splatSide[blob]]++;
 						comboBright[splatSide[blob]] = 31;
 					}
 					else
 					{
-						if( combo[splatSide[blob]] >= 10 )
+						if( combo[splatSide[blob]] >= 10 ) {
 							missBright[splatSide[blob]] = 31;
+						}
 						combo[splatSide[blob]] = 0;
 						comboBright[splatSide[blob]] = 0;
 					}
@@ -335,7 +345,7 @@ redo:
 				else
 				{
 					SurfaceDrawSprite( &splatBlob[blob], splatColor[blob], kNoSuction );
-					UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
+					SDLU_UnionRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 				}
 			}
 
@@ -350,12 +360,12 @@ redo:
 							chunkRect = splatBlob[blob];
 							GetZapStyle( 0, &chunkRect, &splatColor[blob], &chunkType, splat, splatState[blob], kSplatType );
 							SurfaceDrawSprite( &chunkRect, splatColor[blob], chunkType );
-							UnionMRect( &drawRect[splatSide[blob]], &chunkRect, &drawRect[splatSide[blob]] );
+							SDLU_UnionRect( &drawRect[splatSide[blob]], &chunkRect, &drawRect[splatSide[blob]] );
 						}
 					}
 
 					SurfaceDrawSprite( &splatBlob[blob], splatColor[blob], chunkType );
-					UnionMRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
+					SDLU_UnionRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 				}
 
 				splatState[blob] += kIncrementPerFrame;
@@ -412,10 +422,9 @@ redo:
 
 		// Reinsert the cursor into the scene
 		InsertCursor( mouse, cursorBackSurface, gameStartDrawSurface );
-		drawRect[kCursor].top    = min( drawRect[kCursor].top,    mouse.y );
-		drawRect[kCursor].left   = min( drawRect[kCursor].left,   mouse.x );
-		drawRect[kCursor].bottom = max( drawRect[kCursor].bottom, mouse.y + kCursorHeight );
-		drawRect[kCursor].right  = max( drawRect[kCursor].right,  mouse.x + kCursorWidth );
+		drawRect[kCursor].y = min( drawRect[kCursor].y, mouse.y );
+		drawRect[kCursor].x = min( drawRect[kCursor].x, mouse.x );
+		// INVESTIGATE: cursor rect probably doesn't need to change size
 
 		// Copy down everything
 		if( shouldFullRepaint )
@@ -427,10 +436,12 @@ redo:
 		{
 			for( count=0; count<4; count++ )
 			{
-				if( drawRect[count].left < drawRect[count].right )
+				// INVESTIGATE: is this related to setting rects to large
+				// positive/negative values above, and if so, should it be
+				// changed?
+				if( drawRect[count].w > 0 )
 				{
-					SDLU_MRectToSDLRect( &drawRect[count], &destSDLRect );
-					SDLU_BlitFrontSurface( gameStartDrawSurface, &destSDLRect, &destSDLRect );
+					SDLU_BlitFrontSurface( gameStartDrawSurface, &drawRect[count], &drawRect[count] );
 				}
 			}
 		}
@@ -446,7 +457,7 @@ redo:
 			skip = 1;
 			while( startMenuTime > MTickCount( ) )
 			{
-                SDLU_Yield();
+				SDLU_Yield();
 			}
 		}
 	}
@@ -540,18 +551,13 @@ void ShowGameOverScreen( void )
 
 void InitStage( void )
 {
-	stageWindowZRect.top = stageWindowZRect.left = 0;
-	stageWindowZRect.bottom = 32; stageWindowZRect.right = 64;
-
-	stageWindowRect = stageWindowZRect;
 	CenterRectOnScreen( &stageWindowRect, 0.5, 0.65 );
 }
 
 void DrawStage( void )
 {
 	SDL_Surface* levelSurface;
-	SDL_Rect     sourceSDLRect, destSDLRect;
-	MRect        numberRect = { 0, kNumberHorizSize/8, kNumberVertSize, kNumberHorizSize*9/8 };
+	SDL_Rect     numberRect = { .y = 0, .x = kNumberHorizSize/8, .h = kNumberVertSize, .w = kNumberHorizSize };
 
 	switch( players )
 	{
@@ -560,39 +566,36 @@ void DrawStage( void )
 			break;
 
 		case 1:
-			SDLU_MRectToSDLRect( &stageWindowZRect, &sourceSDLRect );
-			SDLU_MRectToSDLRect( &stageWindowRect,  &destSDLRect );
-
-			levelSurface = SDLU_InitSurface( &sourceSDLRect, 16 );
+			levelSurface = SDLU_InitSurface( &stageWindowZRect, 16 );
 
 			SDLU_AcquireSurface( levelSurface );
 
-			SDLU_BlitSurface( boardSurface[0], &sourceSDLRect,
-			                  levelSurface,    &sourceSDLRect   );
+			SDLU_BlitSurface( boardSurface[0], &stageWindowZRect,
+			                  levelSurface,    &stageWindowZRect   );
 
 			if( level < 10 )
 			{
-				OffsetMRect( &numberRect, kNumberHorizSize*3/8, 0 );
+				SDLU_OffsetRect( &numberRect, kNumberHorizSize*3/8, 0 );
 			}
 
 			DrawCharacter( kCharacterStage,   &numberRect );
-			OffsetMRect( &numberRect, kNumberHorizSize, 0 );
+			SDLU_OffsetRect( &numberRect, kNumberHorizSize, 0 );
 			DrawCharacter( kCharacterStage+1, &numberRect );
 
 			if( level < 10 )
 			{
-				OffsetMRect( &numberRect, kNumberHorizSize, 0 );
+				SDLU_OffsetRect( &numberRect, kNumberHorizSize, 0 );
 				DrawCharacter( level + '0', &numberRect );
 			}
 			else
 			{
-				OffsetMRect( &numberRect, kNumberHorizSize*3/4, 0 );
+				SDLU_OffsetRect( &numberRect, kNumberHorizSize*3/4, 0 );
 				DrawCharacter( (level / 10) + '0', &numberRect );
-				OffsetMRect( &numberRect, kNumberHorizSize, 0 );
+				SDLU_OffsetRect( &numberRect, kNumberHorizSize, 0 );
 				DrawCharacter( (level % 10) + '0', &numberRect );
 			}
 
-			SDLU_BlitFrontSurface( levelSurface, &sourceSDLRect, &destSDLRect );
+			SDLU_BlitFrontSurface( levelSurface, &stageWindowZRect, &stageWindowRect );
 
 			SDL_FreeSurface( levelSurface );
 
@@ -690,7 +693,7 @@ void PrepareStageGraphics( int type )
 {
 	int player;
 
-	MRect blobBoard = { 0, 0, kGridDown * kBlobVertSize, kGridAcross * kBlobHorizSize };
+	SDL_Rect blobBoard = { .x = 0, .y = 0, .h = kGridDown * kBlobVertSize, .w = kGridAcross * kBlobHorizSize };
 
 	backgroundID = type * 100;
 
@@ -700,8 +703,10 @@ void PrepareStageGraphics( int type )
 	// side over to the right side. This way, if DrawPICTInSurface flunks,
 	// we still have a valid picture.
 
-	SDLU_BlitSurface( boardSurface[0], &boardSurface[0]->clip_rect,
-	                  boardSurface[1], &boardSurface[1]->clip_rect  );
+	// INVESTIGATE: this is theoretically handled during loading the
+	// images as surfaces, so copying here should be redundant.
+	// SDLU_BlitSurface( boardSurface[0], &boardSurface[0]->clip_rect,
+	//                   boardSurface[1], &boardSurface[1]->clip_rect  );
 
 	DrawPICTInSurface( boardSurface[1], picBoardRight + backgroundID );
 
@@ -846,11 +851,11 @@ void SelectRandomLevel( void )
 
 void InitDifficulty( )
 {
-	MRect blobBoard = { 0, 0, kGridDown * kBlobVertSize, kGridAcross * kBlobHorizSize };
+	SDL_Rect blobBoard = { .x = 0, .y = 0, .h = kGridDown * kBlobVertSize, .w = kGridAcross * kBlobHorizSize };
 	int player;
 	const int selectionRow = 5;
 	int count;
-	MRect blobRect;
+	SDL_Rect blobRect;
 
 	for( player=0; player<=1; player++ )
 	{
@@ -893,12 +898,12 @@ void InitDifficulty( )
 		SurfaceDrawBlob( player, &blobRect, kGray, kHardGray, kNoCharring );
 
 		CalcBlobRect( 1, selectionRow, &blobRect );
-		blobRect.top -= 4; blobRect.bottom += 4;
-		blobRect.left += 4; blobRect.right -= 4;
+		blobRect.y -= 4; blobRect.h += 8;
+		blobRect.x += 4; blobRect.w -= 8;
 		for( count=1; count<=4; count++ )
 		{
 			DrawCharacter( count + '0', &blobRect );
-			OffsetMRect( &blobRect, kBlobHorizSize, 0 );
+			SDLU_OffsetRect( &blobRect, kBlobHorizSize, 0 );
 		}
 
 		SDLU_ReleaseSurface( playerSurface[player] );
@@ -910,7 +915,7 @@ void InitDifficulty( )
 
 void ChooseDifficulty( int player )
 {
-	MRect blobBoard = { 0, 0, kGridDown * kBlobVertSize, kGridAcross * kBlobHorizSize };
+	SDL_Rect blobBoard = { .x = 0, .y = 0, .h = kGridDown * kBlobVertSize, .w = kGridAcross * kBlobHorizSize };
 	const int selectionRow = 5;
 	const int difficultyMap[kGridAcross] = {kEasyLevel, kEasyLevel, kMediumLevel, kHardLevel, kUltraLevel, kUltraLevel};
 	const int fallingSpeed[kGridAcross] = {0, 15, 9, 7, 4, 0};
