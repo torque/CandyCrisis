@@ -194,11 +194,6 @@ SDL_Surface* SDLU_InitSurface( SDL_Rect* rect, int depth )
 		return NULL;
 	}
 
-	// SDL BUG!! SDL_FillRect blows up with 1-depth surfaces. WORKAROUND: don't auto-clear them. Seems OK.
-	//           (Next step is always to copy a PNG into them.)
-	if( depth >= 8 )
-		SDL_FillRect( surface, rect, SDL_MapRGB( surface->format, 0xFF, 0xFF, 0xFF ) );
-
 	return surface;
 }
 
