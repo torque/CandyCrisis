@@ -236,12 +236,12 @@ redo:
 		{
 			if( splatState[blob] == kFallingSplat )
 			{
-				// INVESTIGATE
-				// Does calling FillRect with splatBlob directly instead of a
-				// rect copied using MRectToSDLRect cause problems?
-				SDL_FillRect( gameStartDrawSurface, &splatBlob[blob], black );
-				SDLU_UnionRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
-
+				// Copy blob rect here because it gets modified by SDL_FillRect.
+				// x: 583, y: -26, w: 24, h: 24 becomes
+				// x: 583, y:   0, w: 24, h:  0
+				SDL_Rect blobCopy = splatBlob[blob];
+				SDL_FillRect( gameStartDrawSurface, &blobCopy, black );
+				SDLU_UnionRect( &drawRect[splatSide[blob]], &blobCopy, &drawRect[splatSide[blob]] );
 				SDLU_OffsetRect( &splatBlob[blob], 0, startSkip * (6 + (splatBlob[blob].y + splatBlob[blob].h) / 20) );
 			}
 			else if( splatState[blob] >= kIncrementPerFrame )
