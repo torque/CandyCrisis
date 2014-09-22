@@ -30,15 +30,16 @@
 
 unsigned long boredTime[2], hintTime[2], fadeCharTime[2], animTime[2], shadowDepth[2], hintGlow, messageTime;
 int emotions[2];
-int glowColors[][3] = { { 0,  0,  0},
-	{13, 26, 31},
-	{13, 29, 13},
-	{31, 18, 31},
-	{31, 14, 18},
-	{31, 31, 15},
-	{31, 21, 13},
-	{30, 22, 30},
-	{20, 20, 20}
+int glowColors[][3] = {
+	{  0,  0,  0 },
+	{ 13, 26, 31 },
+	{ 13, 29, 13 },
+	{ 31, 18, 31 },
+	{ 31, 14, 18 },
+	{ 31, 31, 15 },
+	{ 31, 21, 13 },
+	{ 30, 22, 30 },
+	{ 20, 20, 20 }
 };
 
 void HandlePlayers( void )
@@ -243,7 +244,7 @@ void JiggleBlobs( int player )
 
 void PlaceGrenade( int player )
 {
-	MRect myRect;
+	SDL_Rect myRect;
 	int x, y, atX, atY, color, delay = -6;
 	int currentX = blobX[player], currentY = blobY[player];
 	int charTypes[3][5] = { { kDarkChar | kChar11, kDarkChar | kChar12, kDarkChar | kChar13, kDarkChar | kChar14, kNoCharring         },
@@ -254,10 +255,10 @@ void PlaceGrenade( int player )
 	int multiplier = 0;
 
 	grenadeFrame[player] = 0;
-	grenadeRect [player].top    = (currentY * kBlobVertSize ) - (kBlastHeight/2);
-	grenadeRect [player].left   = (currentX * kBlobHorizSize) + (kBlobHorizSize/2) - (kBlastWidth/2);
-	grenadeRect [player].bottom = grenadeRect[player].top  + kBlastHeight;
-	grenadeRect [player].right  = grenadeRect[player].left + kBlastWidth ;
+	grenadeRect [player].y = (currentY * kBlobVertSize ) - (kBlastHeight/2);
+	grenadeRect [player].x = (currentX * kBlobHorizSize) + (kBlobHorizSize/2) - (kBlastWidth/2);
+	grenadeRect [player].h = kBlastHeight;
+	grenadeRect [player].w = kBlastWidth;
 
 	SDLU_AcquireSurface( playerSurface[player] );
 
@@ -370,7 +371,7 @@ void PlaceGrenade( int player )
 
 void PlaceBlobs( int player )
 {
-	MRect myRect;
+	SDL_Rect myRect;
 	int x, y, height;
 	int currentX = blobX[player], currentY = blobY[player];
 
@@ -453,7 +454,7 @@ void PlaceBlobs( int player )
 		CleanSpriteArea( player, &myRect );
 	}
 
-	OffsetMRect( &myRect, x * kBlobHorizSize, y * kBlobVertSize );
+	SDLU_OffsetRect( &myRect, x * kBlobHorizSize, y * kBlobVertSize );
 	currentX += x;
 	currentY += y;
 
@@ -483,7 +484,7 @@ void DropBlobs( int player )
 	                           kNoSuction, kSquash,
 	                           kNoSuction, kSquish,
 	                           kNoSuction, kSquash };
-	MRect myRect;
+	SDL_Rect myRect;
 	int x, y;
 
 	if( GameTickCount( ) < blobTime[player] )
@@ -510,7 +511,7 @@ void DropBlobs( int player )
 				if( tempG[y] == kEmpty && tempG[y-1] != kEmpty )
 				{
 					CalcBlobRect( x, y, &myRect );
-					OffsetMRect( &myRect, 0, -kBlobVertSize/2 );
+					SDLU_OffsetRect( &myRect, 0, -kBlobVertSize/2 );
 
 					if( tempG[y-1] == kGray )
 					{
@@ -529,7 +530,7 @@ void DropBlobs( int player )
 
 					CleanSpriteArea( player, &myRect );
 
-					OffsetMRect( &myRect, 0, -kBlobVertSize );
+					SDLU_OffsetRect( &myRect, 0, -kBlobVertSize );
 					SurfaceDrawBoard( player, &myRect );
 					CleanSpriteArea( player, &myRect );
 				}
@@ -576,7 +577,7 @@ void DropBlobs( int player )
 
 					CleanSpriteArea( player, &myRect );
 
-					OffsetMRect( &myRect, 0, -kBlobVertSize );
+					SDLU_OffsetRect( &myRect, 0, -kBlobVertSize );
 					SurfaceDrawBoard( player, &myRect );
 					CleanSpriteArea( player, &myRect );
 
@@ -610,7 +611,7 @@ void DropBlobs( int player )
 void RedrawBoardContents( int player )
 {
 	int x, y;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	SDLU_AcquireSurface( playerSurface[player] );
 
@@ -639,7 +640,7 @@ void RedrawBoardContents( int player )
 void ResolveSuction( int player )
 {
 	int x, y, suck, actualSuck, color;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	SDLU_AcquireSurface( playerSurface[player] );
 
@@ -941,7 +942,7 @@ void ConsiderGlow( int player, int color, int x, int y )
 void GlowBlobs( int player )
 {
 	int x, y, color, suck;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	if( (!character[player].hints) || (GameTickCount() < hintTime[player]) )
 		return;
@@ -978,7 +979,7 @@ void GlowBlobs( int player )
 void FadeCharred( int player )
 {
 	int x, y;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	if( GameTickCount() < fadeCharTime[player] || role[player] != kFalling ) return;
 
@@ -1009,7 +1010,7 @@ void FadeCharred( int player )
 
 void BlinkBored( int player )
 {
-	MRect myRect;
+	SDL_Rect myRect;
 	int which, x, y, count;
 
 	if( GameTickCount() < boredTime[player] )
@@ -1072,8 +1073,9 @@ void InitPlayers( void )
 {
 	const double windowLoc[ ] = { kLeftPlayerWindowCenter, kRightPlayerWindowCenter };
 
-	playerWindowZRect.top = playerWindowZRect.left = 0;
-	playerWindowZRect.bottom = 288; playerWindowZRect.right = 144;
+	playerWindowZRect.y = playerWindowZRect.x = 0;
+	playerWindowZRect.h = 288;
+	playerWindowZRect.w = 144;
 
 	playerWindowRect[0] = playerWindowRect[1] = playerWindowZRect;
 	CenterRectOnScreen( &playerWindowRect[0], windowLoc[0], 0.5 );
