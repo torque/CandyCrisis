@@ -1,10 +1,8 @@
 // tweak.h
 #pragma once
 
-#include "MTypes.h"
-
-void TweakFirstBlob( int player, MRect *first );
-void TweakSecondBlob( int player, MRect *second );
+void TweakFirstBlob( int player, SDL_Rect *first );
+void TweakSecondBlob( int player, SDL_Rect *second );
 void StartTweak( int player, int direction, int rotate, int fall );
 void UpdateTweak( int player, int suction );
 void InitTweak( void );

@@ -36,27 +36,27 @@ void InitTweak( void )
 	}
 }
 
-void TweakFirstBlob( int player, MRect *first )
+void TweakFirstBlob( int player, SDL_Rect *first )
 {
 	int tweakValues[] = {0, -1, -2, -3, -6, -12};
 
 	if( xTweak[player] > 0 )
 	{
-		OffsetMRect( first, xDirection[player] * tweakValues[xTweak[player]], 0 );
+		SDLU_OffsetRect( first, xDirection[player] * tweakValues[xTweak[player]], 0 );
 	}
 
 	if( yTweak[player] > 0 )
 	{
-		OffsetMRect( first, 0, tweakValues[yTweak[player]] );
+		SDLU_OffsetRect( first, 0, tweakValues[yTweak[player]] );
 	}
 }
 
-void TweakSecondBlob( int player, MRect *second )
+void TweakSecondBlob( int player, SDL_Rect *second )
 {
 	int x, y;
 
 	CalcSecondBlobOffset( player, &x, &y );
-	OffsetMRect( second,
+	SDLU_OffsetRect( second,
 	             tweakOffsetX[blobR[player]][rTweak[player]],
 	             tweakOffsetY[blobR[player]][rTweak[player]] );
 }
