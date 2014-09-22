@@ -1,5 +1,6 @@
 // score.c
 
+#include <stdio.h>
 #include <string.h>
 
 #include <SDL/SDL.h>
@@ -19,7 +20,7 @@ SDL_Surface* scoreSurface;
 SDL_Surface* numberSurface;
 SDL_Surface* numberMaskSurface;
 
-MRect scoreWindowZRect, scoreWindowRect[2];
+SDL_Rect scoreWindowZRect = { .x = 0, .y = 0, .w = 144, .h = 32 }, scoreWindowRect[2];
 bool scoreWindowVisible[2] = {true, true};
 long roundStartScore[2], score[2], displayedScore[2], scoreTime[2];
 const char characterList[] =
@@ -35,14 +36,11 @@ void InitScore( void )
 	const double windowLoc[ ] = { 0.16, 0.84 };
 	SDL_Rect     sdlRect;
 
-	scoreWindowZRect.top = scoreWindowZRect.left = 0;
-	scoreWindowZRect.bottom = 32; scoreWindowZRect.right = 144;
-
 	scoreWindowRect[0] = scoreWindowRect[1] = scoreWindowZRect;
 	CenterRectOnScreen( &scoreWindowRect[0], windowLoc[0], 0.89 );
 	CenterRectOnScreen( &scoreWindowRect[1], windowLoc[1], 0.89 );
 
-	scoreSurface = SDLU_InitSurface( SDLU_MRectToSDLRect( &scoreWindowZRect, &sdlRect ), 16 );
+	scoreSurface = SDLU_InitSurface( &scoreWindowZRect, 16 );
 	DrawPICTInSurface( scoreSurface, picBoard );
 
 	numberSurface = LoadPICTAsSurface( picNumber, 16 );
@@ -86,7 +84,7 @@ void UpdateScore( int player )
 void ShowScore( int player )
 {
 	SDL_Rect   sourceSDLRect, destSDLRect;
-	MRect      myRect;
+	SDL_Rect   myRect;
 	char       myString[256];
 	int        count;
 
@@ -102,35 +100,33 @@ void ShowScore( int player )
 	SDLU_BlitSurface( boardSurface[player], &scoreSurface->clip_rect,
 	                  scoreSurface,         &scoreSurface->clip_rect   );
 
-	myRect.top    = 0;
-	myRect.left   = 2;
-	myRect.bottom = kNumberVertSize;
-	myRect.right  = myRect.left + kNumberHorizSize;
+	myRect.y = 0;
+	myRect.x = 2;
+	myRect.h = kNumberVertSize;
+	myRect.w = kNumberHorizSize;
 	DrawCharacter( kCharacterScore,   &myRect );
-	OffsetMRect( &myRect, kNumberHorizSize, 0 );
+	SDLU_OffsetRect( &myRect, kNumberHorizSize, 0 );
 	DrawCharacter( kCharacterScore+1, &myRect );
 
 	myRect = scoreWindowZRect;
-	myRect.right -= 2;
-	myRect.left = myRect.right - kNumberHorizSize;
+	myRect.x = myRect.w - 2 - kNumberHorizSize;
+	myRect.w = kNumberHorizSize;
 	for( count = strlen(myString) - 1; count >= 0; count-- )
 	{
 		DrawCharacter( myString[count], &myRect );
-		OffsetMRect( &myRect, -kNumberHorizSize - 1, 0 );
+		SDLU_OffsetRect( &myRect, -kNumberHorizSize - 1, 0 );
 	}
 
 	SDLU_ReleaseSurface( scoreSurface );
 
-	SDLU_BlitFrontSurface( scoreSurface,
-	                       SDLU_MRectToSDLRect( &scoreWindowZRect, &sourceSDLRect ),
-	                       SDLU_MRectToSDLRect( &scoreWindowRect[player], &destSDLRect ) );
+	SDLU_BlitFrontSurface( scoreSurface, &scoreWindowZRect, &scoreWindowRect[player] );
 
 }
 
-void DrawCharacter( char which, const MRect *myRect )
+void DrawCharacter( char which, const SDL_Rect *myRect )
 {
-	MRect   srcRect;
-	char    count, result;
+	SDL_Rect srcRect;
+	char     count, result;
 
 	result = -1;
 	for( count = 0; count < kNumberAmount; count++ )
@@ -144,10 +140,10 @@ void DrawCharacter( char which, const MRect *myRect )
 
 	if( result == -1 ) return;
 
-	srcRect.top    = 0;
-	srcRect.left   = result * kNumberHorizSize;
-	srcRect.bottom = kNumberVertSize;
-	srcRect.right  = srcRect.left + kNumberHorizSize;
+	srcRect.y = 0;
+	srcRect.x = result * kNumberHorizSize;
+	srcRect.h = kNumberVertSize;
+	srcRect.w = kNumberHorizSize;
 
 	SurfaceBlitMask(  numberSurface,  numberMaskSurface,  SDLU_GetCurrentSurface(),
 	                 &srcRect,       &srcRect,            myRect );

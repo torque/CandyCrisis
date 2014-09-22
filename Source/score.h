@@ -4,13 +4,13 @@
 void InitScore( void );
 void UpdateScore( int player );
 void ShowScore( int player );
-void DrawCharacter( char which, const MRect *myRect );
+void DrawCharacter( char which, const SDL_Rect *myRect );
 
 #define kNumberHorizSize 16
 #define kNumberVertSize 32
 #define kNumberAmount 41
 
-extern MRect scoreWindowZRect, scoreWindowRect[2];
+extern SDL_Rect scoreWindowZRect, scoreWindowRect[2];
 extern bool scoreWindowVisible[2];
 extern long roundStartScore[2], score[2], displayedScore[2];
 
