@@ -50,7 +50,7 @@ bool continueTimeOut;
 
 static int dialogType, dialogStage, dialogTimer, dialogTarget, dialogShade, dialogItem;
 static float colorWrap = 0, colorInc;
-static MRect logoRect = {0, 0, 111, 246}, lastPauseRect;
+static SDL_Rect logoRect = { .x = 0, .y = 0, .h = 111, .w = 246}, lastPauseRect;
 static bool dialogStageComplete;
 static bool timeToRedraw = false;
 
@@ -134,21 +134,21 @@ static SDLU_Point DrawRainbowText( SkittlesFontPtr font, const char *line, SDLU_
 #define kEdgeSize 8
 static short edge[4][kEdgeSize][kEdgeSize];
 
-void SurfaceGetEdges( SDL_Surface* edgeSurface, const MRect *rect )
+void SurfaceGetEdges( SDL_Surface* edgeSurface, const SDL_Rect *rect )
 {
 	unsigned char* src[4];
-	int            srcRowBytes, width, height, count;
+	int            srcRowBytes, height, count;
 
 	src[0] = src[1] = src[2] = src[3] = (unsigned char*) edgeSurface->pixels;
 	srcRowBytes = edgeSurface->pitch;
 
-	width  = rect->right  - rect->left;
-	height = rect->bottom - rect->top;
-
-	src[0] += (srcRowBytes * (rect->top               )) + ((rect->left             ) * 2);
-	src[1] += (srcRowBytes * (rect->top               )) + ((rect->right - kEdgeSize) * 2);
-	src[2] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->left             ) * 2);
-	src[3] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->right - kEdgeSize) * 2);
+	width  = rect->w;
+	height = rect->h;
+	// INVESTIGATE: can this be simplified?
+	src[0] += (srcRowBytes * rect->y) + (rect->x * 2);
+	src[1] += (srcRowBytes * rect->y) + ((rect->x + width - kEdgeSize) * 2);
+	src[2] += (srcRowBytes * (rect->y + height - kEdgeSize)) + (rect->x * 2);
+	src[3] += (srcRowBytes * (rect->y + height - kEdgeSize)) + ((rect->x + width - kEdgeSize) * 2);
 
 	for( count=0; count<4; count++ )
 	{
@@ -161,7 +161,7 @@ void SurfaceGetEdges( SDL_Surface* edgeSurface, const MRect *rect )
 }
 
 
-void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
+void SurfaceCurveEdges( SDL_Surface* edgeSurface, const SDL_Rect *rect )
 {
 	unsigned char* src[4];
 	int srcRowBytes, width, height, count;
@@ -203,10 +203,10 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 	src[0] = src[1] = src[2] = src[3] = (unsigned char*) edgeSurface->pixels;
 	srcRowBytes = edgeSurface->pitch;
 
-	src[0] += (srcRowBytes * (rect->top               )) + ((rect->left             ) * 2);
-	src[1] += (srcRowBytes * (rect->top               )) + ((rect->right - kEdgeSize) * 2);
-	src[2] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->left             ) * 2);
-	src[3] += (srcRowBytes * (rect->bottom - kEdgeSize)) + ((rect->right - kEdgeSize) * 2);
+	src[0] += (srcRowBytes * rect->y) + (rect->x * 2);
+	src[1] += (srcRowBytes * rect->y) + ((rect->x + width - kEdgeSize) * 2);
+	src[2] += (srcRowBytes * (rect->y + height - kEdgeSize)) + (rect->x * 2);
+	src[3] += (srcRowBytes * (rect->y + height - kEdgeSize)) + ((rect->x + width - kEdgeSize) * 2);
 
 	// Draw top/bottom border
 	{
@@ -215,7 +215,7 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 		short *srcT2 = srcT1 + (srcRowBytes/2);
 		short *srcB2 = srcB1 - (srcRowBytes/2);
 
-		for( width = rect->right - rect->left - (kEdgeSize * 2); width > 0; width-- )
+		for( width = rect->w - (kEdgeSize * 2); width > 0; width-- )
 		{
 			*srcT1 = 0; srcT1++;
 			*srcB1 = 0; srcB1++;
@@ -232,7 +232,7 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 		unsigned char *srcL2 = srcL1 + 2;
 		unsigned char *srcR2 = srcR1 - 2;
 
-		for( height = rect->bottom - rect->top - (kEdgeSize * 2); height > 0; height-- )
+		for( height = rect->h - (kEdgeSize * 2); height > 0; height-- )
 		{
 			*(short*)srcL1 = 0;
 			*(short*)srcR1 = 0;
@@ -257,11 +257,11 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const MRect *rect )
 			{
 				switch( edgeMap[count][height][width] )
 				{
-					case ' ': 	*srcS = edge[count][height][width]; break;
-					case '.': 	*srcS = 0; break;
-					case 'x': 	*srcS = (*srcS >> 1) & 0x3DEF; break;
-					case '-':	*srcS = (edge[count][height][width] >> 1) & 0x3DEF; break;
-					case 'X': 	break;
+					case ' ': *srcS = edge[count][height][width]; break;
+					case '.': *srcS = 0; break;
+					case 'x': *srcS = (*srcS >> 1) & 0x3DEF; break;
+					case '-': *srcS = (edge[count][height][width] >> 1) & 0x3DEF; break;
+					case 'X': break;
 				}
 				srcS++;
 			}
@@ -281,92 +281,92 @@ enum
 	kClosing
 };
 
-static bool DrawDialogBox( bool larger, int animationType, int *target, int skip, float *colorWrap, float colorInc, MRect *pauseRect )
+static bool DrawDialogBox( bool larger, int animationType, int *target, int skip, float *colorWrap, float colorInc, SDL_Rect *pauseRect )
 {
 	bool animationStageComplete = false;
-	MRect normalRect[2][19]     = { { { 240 - 10,  320 - 30,  240 + 10,  320 + 30  },
-	                                  { 240 - 40,  320 - 120, 240 + 40,  320 + 120 },
-	                                  { 240 - 60,  320 - 180, 240 + 60,  320 + 180 },
-	                                  { 240 - 70,  320 - 210, 240 + 70,  320 + 210 },
-	                                  { 240 - 80,  320 - 230, 240 + 80,  320 + 230 },
-	                                  { 240 - 88,  320 - 245, 240 + 88,  320 + 245 },
-	                                  { 240 - 95,  320 - 252, 240 + 95,  320 + 252 },
-	                                  { 240 - 101, 320 - 255, 240 + 101, 320 + 255 },
-	                                  { 240 - 106, 320 - 252, 240 + 106, 320 + 252 },
-	                                  { 240 - 110, 320 - 245, 240 + 110, 320 + 245 },
-	                                  { 240 - 113, 320 - 238, 240 + 113, 320 + 238 },
-	                                  { 240 - 115, 320 - 232, 240 + 115, 320 + 232 },
-	                                  { 240 - 116, 320 - 228, 240 + 116, 320 + 228 },
-	                                  { 240 - 118, 320 - 232, 240 + 118, 320 + 230 },
-	                                  { 240 - 118, 320 - 238, 240 + 118, 320 + 232 },
-	                                  { 240 - 119, 320 - 242, 240 + 119, 320 + 242 },
-	                                  { 240 - 119, 320 - 244, 240 + 119, 320 + 244 },
-	                                  { 240 - 119, 320 - 242, 240 + 119, 320 + 242 },
-	                                  { 240 - 120, 320 - 240, 240 + 120, 320 + 240 }  },
-	                                { { 240 - 110, 320 - 220, 240 + 110, 320 + 220 },
-	                                  { 240 - 105, 320 - 210, 240 + 105, 320 + 210 },
-	                                  { 240 - 100, 320 - 200, 240 + 100, 320 + 200 },
-	                                  { 240 - 95,  320 - 190, 240 + 95,  320 + 190 },
-	                                  { 240 - 90,  320 - 180, 240 + 90,  320 + 180 },
-	                                  { 240 - 85,  320 - 170, 240 + 85,  320 + 170 },
-	                                  { 240 - 80,  320 - 160, 240 + 80,  320 + 160 },
-	                                  { 240 - 75,  320 - 150, 240 + 75,  320 + 150 },
-	                                  { 240 - 70,  320 - 140, 240 + 70,  320 + 140 },
-	                                  { 240 - 65,  320 - 130, 240 + 65,  320 + 130 },
-	                                  { 240 - 60,  320 - 120, 240 + 60,  320 + 120 },
-	                                  { 240 - 55,  320 - 110, 240 + 55,  320 + 110 },
-	                                  { 240 - 50,  320 - 100, 240 + 50,  320 + 100 },
-	                                  { 240 - 45,  320 - 90,  240 + 45,  320 + 90  },
-	                                  { 240 - 40,  320 - 80,  240 + 40,  320 + 80  },
-	                                  { 240 - 35,  320 - 70,  240 + 35,  320 + 70  },
-	                                  { 240 - 30,  320 - 60,  240 + 30,  320 + 60  },
-	                                  { 240 - 25,  320 - 50,  240 + 25,  320 + 50  },
-	                                  { 240 - 20,  320 - 40,  240 + 20,  320 + 40  }  }
+	SDL_Rect normalRect[2][19]  = { { { .y = 240 - 10,  .x = 320 - 30,  .h = 2 * 10,  .w = 2 * 30  },
+	                                  { .y = 240 - 40,  .x = 320 - 120, .h = 2 * 40,  .w = 2 * 120 },
+	                                  { .y = 240 - 60,  .x = 320 - 180, .h = 2 * 60,  .w = 2 * 180 },
+	                                  { .y = 240 - 70,  .x = 320 - 210, .h = 2 * 70,  .w = 2 * 210 },
+	                                  { .y = 240 - 80,  .x = 320 - 230, .h = 2 * 80,  .w = 2 * 230 },
+	                                  { .y = 240 - 88,  .x = 320 - 245, .h = 2 * 88,  .w = 2 * 245 },
+	                                  { .y = 240 - 95,  .x = 320 - 252, .h = 2 * 95,  .w = 2 * 252 },
+	                                  { .y = 240 - 101, .x = 320 - 255, .h = 2 * 101, .w = 2 * 255 },
+	                                  { .y = 240 - 106, .x = 320 - 252, .h = 2 * 106, .w = 2 * 252 },
+	                                  { .y = 240 - 110, .x = 320 - 245, .h = 2 * 110, .w = 2 * 245 },
+	                                  { .y = 240 - 113, .x = 320 - 238, .h = 2 * 113, .w = 2 * 238 },
+	                                  { .y = 240 - 115, .x = 320 - 232, .h = 2 * 115, .w = 2 * 232 },
+	                                  { .y = 240 - 116, .x = 320 - 228, .h = 2 * 116, .w = 2 * 228 },
+	                                  { .y = 240 - 118, .x = 320 - 232, .h = 2 * 118, .w = 2 * 230 },
+	                                  { .y = 240 - 118, .x = 320 - 238, .h = 2 * 118, .w = 2 * 232 },
+	                                  { .y = 240 - 119, .x = 320 - 242, .h = 2 * 119, .w = 2 * 242 },
+	                                  { .y = 240 - 119, .x = 320 - 244, .h = 2 * 119, .w = 2 * 244 },
+	                                  { .y = 240 - 119, .x = 320 - 242, .h = 2 * 119, .w = 2 * 242 },
+	                                  { .y = 240 - 120, .x = 320 - 240, .h = 2 * 120, .w = 2 * 240 }  },
+	                                { { .y = 240 - 110, .x = 320 - 220, .h = 2 * 110, .w = 2 * 220 },
+	                                  { .y = 240 - 105, .x = 320 - 210, .h = 2 * 105, .w = 2 * 210 },
+	                                  { .y = 240 - 100, .x = 320 - 200, .h = 2 * 100, .w = 2 * 200 },
+	                                  { .y = 240 - 95,  .x = 320 - 190, .h = 2 * 95,  .w = 2 * 190 },
+	                                  { .y = 240 - 90,  .x = 320 - 180, .h = 2 * 90,  .w = 2 * 180 },
+	                                  { .y = 240 - 85,  .x = 320 - 170, .h = 2 * 85,  .w = 2 * 170 },
+	                                  { .y = 240 - 80,  .x = 320 - 160, .h = 2 * 80,  .w = 2 * 160 },
+	                                  { .y = 240 - 75,  .x = 320 - 150, .h = 2 * 75,  .w = 2 * 150 },
+	                                  { .y = 240 - 70,  .x = 320 - 140, .h = 2 * 70,  .w = 2 * 140 },
+	                                  { .y = 240 - 65,  .x = 320 - 130, .h = 2 * 65,  .w = 2 * 130 },
+	                                  { .y = 240 - 60,  .x = 320 - 120, .h = 2 * 60,  .w = 2 * 120 },
+	                                  { .y = 240 - 55,  .x = 320 - 110, .h = 2 * 55,  .w = 2 * 110 },
+	                                  { .y = 240 - 50,  .x = 320 - 100, .h = 2 * 50,  .w = 2 * 100 },
+	                                  { .y = 240 - 45,  .x = 320 - 90,  .h = 2 * 45,  .w = 2 * 90  },
+	                                  { .y = 240 - 40,  .x = 320 - 80,  .h = 2 * 40,  .w = 2 * 80  },
+	                                  { .y = 240 - 35,  .x = 320 - 70,  .h = 2 * 35,  .w = 2 * 70  },
+	                                  { .y = 240 - 30,  .x = 320 - 60,  .h = 2 * 30,  .w = 2 * 60  },
+	                                  { .y = 240 - 25,  .x = 320 - 50,  .h = 2 * 25,  .w = 2 * 50  },
+	                                  { .y = 240 - 20,  .x = 320 - 40,  .h = 2 * 20,  .w = 2 * 40  }  }
 	                              };
 
-	MRect largerRect[2][19]     = { { { 240 - 11,  320 - 30,  240 + 11,  320 + 30  },
-	                                  { 240 - 44,  320 - 120, 240 + 44,  320 + 120 },
-	                                  { 240 - 66,  320 - 180, 240 + 66,  320 + 180 },
-	                                  { 240 - 77,  320 - 210, 240 + 77,  320 + 210 },
-	                                  { 240 - 88,  320 - 230, 240 + 88,  320 + 230 },
-	                                  { 240 - 97,  320 - 245, 240 + 97,  320 + 245 },
-	                                  { 240 - 104, 320 - 252, 240 + 104, 320 + 252 },
-	                                  { 240 - 111, 320 - 255, 240 + 111, 320 + 255 },
-	                                  { 240 - 117, 320 - 252, 240 + 117, 320 + 252 },
-	                                  { 240 - 121, 320 - 245, 240 + 121, 320 + 245 },
-	                                  { 240 - 124, 320 - 238, 240 + 124, 320 + 238 },
-	                                  { 240 - 126, 320 - 232, 240 + 126, 320 + 232 },
-	                                  { 240 - 128, 320 - 228, 240 + 128, 320 + 228 },
-	                                  { 240 - 130, 320 - 232, 240 + 130, 320 + 230 },
-	                                  { 240 - 130, 320 - 238, 240 + 130, 320 + 232 },
-	                                  { 240 - 131, 320 - 242, 240 + 131, 320 + 242 },
-	                                  { 240 - 131, 320 - 244, 240 + 131, 320 + 244 },
-	                                  { 240 - 131, 320 - 242, 240 + 131, 320 + 242 },
-	                                  { 240 - 132, 320 - 240, 240 + 132, 320 + 240 }  },
-	                                { { 240 - 121, 320 - 220, 240 + 121, 320 + 220 },
-	                                  { 240 - 115, 320 - 210, 240 + 115, 320 + 210 },
-	                                  { 240 - 110, 320 - 200, 240 + 110, 320 + 200 },
-	                                  { 240 - 104, 320 - 190, 240 + 104, 320 + 190 },
-	                                  { 240 - 99,  320 - 180, 240 + 99,  320 + 180 },
-	                                  { 240 - 93,  320 - 170, 240 + 93,  320 + 170 },
-	                                  { 240 - 88,  320 - 160, 240 + 88,  320 + 160 },
-	                                  { 240 - 82,  320 - 150, 240 + 82,  320 + 150 },
-	                                  { 240 - 77,  320 - 140, 240 + 77,  320 + 140 },
-	                                  { 240 - 71,  320 - 130, 240 + 71,  320 + 130 },
-	                                  { 240 - 66,  320 - 120, 240 + 66,  320 + 120 },
-	                                  { 240 - 60,  320 - 110, 240 + 60,  320 + 110 },
-	                                  { 240 - 55,  320 - 100, 240 + 55,  320 + 100 },
-	                                  { 240 - 49,  320 - 90,  240 + 49,  320 + 90  },
-	                                  { 240 - 44,  320 - 80,  240 + 44,  320 + 80  },
-	                                  { 240 - 38,  320 - 70,  240 + 38,  320 + 70  },
-	                                  { 240 - 33,  320 - 60,  240 + 33,  320 + 60  },
-	                                  { 240 - 27,  320 - 50,  240 + 27,  320 + 50  },
-	                                  { 240 - 22,  320 - 40,  240 + 22,  320 + 40  }  }
+	SDL_Rect largerRect[2][19]  = { { { .y = 240 - 11,  .x = 320 - 30,  .h = 2 * 11,  .w = 2 * 30  },
+	                                  { .y = 240 - 44,  .x = 320 - 120, .h = 2 * 44,  .w = 2 * 120 },
+	                                  { .y = 240 - 66,  .x = 320 - 180, .h = 2 * 66,  .w = 2 * 180 },
+	                                  { .y = 240 - 77,  .x = 320 - 210, .h = 2 * 77,  .w = 2 * 210 },
+	                                  { .y = 240 - 88,  .x = 320 - 230, .h = 2 * 88,  .w = 2 * 230 },
+	                                  { .y = 240 - 97,  .x = 320 - 245, .h = 2 * 97,  .w = 2 * 245 },
+	                                  { .y = 240 - 104, .x = 320 - 252, .h = 2 * 104, .w = 2 * 252 },
+	                                  { .y = 240 - 111, .x = 320 - 255, .h = 2 * 111, .w = 2 * 255 },
+	                                  { .y = 240 - 117, .x = 320 - 252, .h = 2 * 117, .w = 2 * 252 },
+	                                  { .y = 240 - 121, .x = 320 - 245, .h = 2 * 121, .w = 2 * 245 },
+	                                  { .y = 240 - 124, .x = 320 - 238, .h = 2 * 124, .w = 2 * 238 },
+	                                  { .y = 240 - 126, .x = 320 - 232, .h = 2 * 126, .w = 2 * 232 },
+	                                  { .y = 240 - 128, .x = 320 - 228, .h = 2 * 128, .w = 2 * 228 },
+	                                  { .y = 240 - 130, .x = 320 - 232, .h = 2 * 130, .w = 2 * 230 },
+	                                  { .y = 240 - 130, .x = 320 - 238, .h = 2 * 130, .w = 2 * 232 },
+	                                  { .y = 240 - 131, .x = 320 - 242, .h = 2 * 131, .w = 2 * 242 },
+	                                  { .y = 240 - 131, .x = 320 - 244, .h = 2 * 131, .w = 2 * 244 },
+	                                  { .y = 240 - 131, .x = 320 - 242, .h = 2 * 131, .w = 2 * 242 },
+	                                  { .y = 240 - 132, .x = 320 - 240, .h = 2 * 132, .w = 2 * 240 }  },
+	                                { { .y = 240 - 121, .x = 320 - 220, .h = 2 * 121, .w = 2 * 220 },
+	                                  { .y = 240 - 115, .x = 320 - 210, .h = 2 * 115, .w = 2 * 210 },
+	                                  { .y = 240 - 110, .x = 320 - 200, .h = 2 * 110, .w = 2 * 200 },
+	                                  { .y = 240 - 104, .x = 320 - 190, .h = 2 * 104, .w = 2 * 190 },
+	                                  { .y = 240 - 99,  .x = 320 - 180, .h = 2 * 99,  .w = 2 * 180 },
+	                                  { .y = 240 - 93,  .x = 320 - 170, .h = 2 * 93,  .w = 2 * 170 },
+	                                  { .y = 240 - 88,  .x = 320 - 160, .h = 2 * 88,  .w = 2 * 160 },
+	                                  { .y = 240 - 82,  .x = 320 - 150, .h = 2 * 82,  .w = 2 * 150 },
+	                                  { .y = 240 - 77,  .x = 320 - 140, .h = 2 * 77,  .w = 2 * 140 },
+	                                  { .y = 240 - 71,  .x = 320 - 130, .h = 2 * 71,  .w = 2 * 130 },
+	                                  { .y = 240 - 66,  .x = 320 - 120, .h = 2 * 66,  .w = 2 * 120 },
+	                                  { .y = 240 - 60,  .x = 320 - 110, .h = 2 * 60,  .w = 2 * 110 },
+	                                  { .y = 240 - 55,  .x = 320 - 100, .h = 2 * 55,  .w = 2 * 100 },
+	                                  { .y = 240 - 49,  .x = 320 - 90,  .h = 2 * 49,  .w = 2 * 90  },
+	                                  { .y = 240 - 44,  .x = 320 - 80,  .h = 2 * 44,  .w = 2 * 80  },
+	                                  { .y = 240 - 38,  .x = 320 - 70,  .h = 2 * 38,  .w = 2 * 70  },
+	                                  { .y = 240 - 33,  .x = 320 - 60,  .h = 2 * 33,  .w = 2 * 60  },
+	                                  { .y = 240 - 27,  .x = 320 - 50,  .h = 2 * 27,  .w = 2 * 50  },
+	                                  { .y = 240 - 22,  .x = 320 - 40,  .h = 2 * 22,  .w = 2 * 40  }  }
 	                              };
 
 	int      colorInt, shading;
 	float    colorFrac, nColorFrac;
-	MRect    newRect;
+	SDL_Rect newRect;
 	SDL_Rect sdlRect;
 
 	if( *target > 18 )
@@ -378,6 +378,7 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 	colorInt  = (int) floor( *colorWrap );
 	colorFrac = *colorWrap - colorInt;
 
+	// newRect is the current animation frame
 	newRect = larger? largerRect[animationType][*target]: normalRect[animationType][*target];
 	shading = ((animationType == 0) ? (*target * 24 / 18): (24 - (*target * 2 / 3)));
 
@@ -407,44 +408,48 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 		                      (int)((b3 * nColorFrac) + (b4 * colorFrac)),
 		                       shading );
 
-		if( pauseRect->left < newRect.left )
+		if( pauseRect->x < newRect.x )
 		{
-			MRect eraseRect = *pauseRect;
-			pauseRect->left = eraseRect.right = newRect.left;
+			SDL_Rect eraseRect = *pauseRect;
+			// INVESTIGATE: ugh
+			// pauseRect->w -= newRect.x - pauseRect->x;
+			// pauseRect->x = newRect.x;
+			eraseRect.w = newRect.x - eraseRect.x;
 
-			SDLU_MRectToSDLRect( &eraseRect, &sdlRect );
-			SDLU_BlitSurface( backSurface, &sdlRect,
-			                  drawSurface, &sdlRect  );
+			SDLU_BlitSurface( backSurface, &eraseRect,
+			                  drawSurface, &eraseRect  );
 		}
 
-		if( pauseRect->right > newRect.right )
+		if( (pauseRect->x + pauseRect->w) > (newRect.x + newRect.w) )
 		{
-			MRect eraseRect = *pauseRect;
-			pauseRect->right = eraseRect.left = newRect.right;
+			SDL_Rect eraseRect = *pauseRect;
+			// pauseRect->w = newRect.w + newRect.x - pauseRect->x;
+			eraseRect.w -= newRect.x - eraseRect.x;
+			eraseRect.x = newRect.w + newRect.x;
 
-			SDLU_MRectToSDLRect( &eraseRect, &sdlRect );
-			SDLU_BlitSurface( backSurface, &sdlRect,
-			                  drawSurface, &sdlRect  );
+			SDLU_BlitSurface( backSurface, &eraseRect,
+			                  drawSurface, &eraseRect  );
 		}
 
-		if( pauseRect->top < newRect.top )
+		if( pauseRect->y < newRect.y )
 		{
-			MRect eraseRect = *pauseRect;
-			pauseRect->top = eraseRect.bottom = newRect.top;
+			SDL_Rect eraseRect = *pauseRect;
+			// pauseRect->h -= newRect.y - pauseRect->y
+			// pauseRect->y = newRect.y;
+			eraseRect.h = newRect.y - eraseRect.y;
 
-			SDLU_MRectToSDLRect( &eraseRect, &sdlRect );
-			SDLU_BlitSurface( backSurface, &sdlRect,
-			                  drawSurface, &sdlRect  );
+			SDLU_BlitSurface( backSurface, &eraseRect,
+			                  drawSurface, &eraseRect  );
 		}
 
-		if( pauseRect->bottom > newRect.bottom )
+		if( (pauseRect->y + pauseRect->h) > (newRect.y + newRect.h) )
 		{
-			MRect eraseRect = *pauseRect;
-			pauseRect->bottom = eraseRect.top = newRect.bottom;
+			SDL_Rect eraseRect = *pauseRect;
+			eraseRect.h -= newRect.y - eraseRect.y
+			eraseRect.y = newRect.y + newRect.h;
 
-			SDLU_MRectToSDLRect( &eraseRect, &sdlRect );
-			SDLU_BlitSurface( backSurface, &sdlRect,
-			                  drawSurface, &sdlRect  );
+			SDLU_BlitSurface( backSurface, &eraseRect,
+			                  drawSurface, &eraseRect  );
 		}
 
 		SDLU_ReleaseSurface( drawSurface );
@@ -460,16 +465,23 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 	return animationStageComplete;
 }
 
-static void DrawDialogCursor( MRect *pauseRect, int *shade )
+static void DrawDialogCursor( SDL_Rect *pauseRect, int *shade )
 {
 	SDLU_Point p, q;
 
 	SDLU_GetMouse( &p );
 
-	if( p.x < (pauseRect->left      ) ) p.x = pauseRect->left;
-	if( p.x > (pauseRect->right  - 5) ) p.x = pauseRect->right  - 5;
-	if( p.y < (pauseRect->top       ) ) p.y = pauseRect->top;
-	if( p.y > (pauseRect->bottom - 5) ) p.y = pauseRect->bottom - 5;
+	if( p.x < pauseRect->x ) {
+		p.x = pauseRect->x;
+	} else if( p.x > (pauseRect->x + pauseRect->w - 5) ) {
+		p.x = pauseRect->x + pauseRect->w - 5;
+	}
+
+	if( p.y < pauseRect->y ) {
+		p.y = pauseRect->y;
+	} else if( p.y > (pauseRect->y + pauseRect->h - 5) ) {
+		p.y = pauseRect->y + pauseRect->h - 5;
+	}
 	q = p;
 
 	SDLU_AcquireSurface( drawSurface );
@@ -480,15 +492,15 @@ static void DrawDialogCursor( MRect *pauseRect, int *shade )
 	SDLU_ReleaseSurface( drawSurface );
 }
 
-static void DrawDialogLogo( MRect *pauseRect, int shade )
+static void DrawDialogLogo( SDL_Rect *pauseRect, int shade )
 {
-	MRect drawRect;
+	SDL_Rect drawRect;
 	int alpha;
 
-	drawRect.left   = (pauseRect->left + ((pauseRect->right - pauseRect->left) * 1 / 2) ) - (logoRect.right / 2);
-	drawRect.top    = (pauseRect->top + 14);
-	drawRect.bottom = drawRect.top + logoRect.bottom;
-	drawRect.right  = drawRect.left + logoRect.right;
+	drawRect.x = pauseRect->x + (pauseRect->w - logoRect.w) / 2;
+	drawRect.y = pauseRect->y + 14;
+	drawRect.h = logoRect.h;
+	drawRect.w = logoRect.w;
 
 	SDLU_AcquireSurface( drawSurface );
 
@@ -744,7 +756,8 @@ static void DrawPauseContents( int *item, int shade )
 
 static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
-	MRect yes = {280, 220, 300, 260}, no = {280, 400, 300, 440};
+	SDL_Rect yes = { .y = 280, .x = 220, .h = 20, .w = 40 }
+	SDL_Rect no  = { .y = 280, .x = 400, .h = 20, .w = 40 };
 	SDLU_Point p;
 
 	if( continueTimeOut )
@@ -814,14 +827,14 @@ static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 
 static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
-	SDLU_Point          p;
-	MRect           dRect;
-	int             index;
+	SDLU_Point  p;
+	SDL_Rect    dRect;
+	int         index;
 	static bool lastDown = false;
 	bool        down;
-	MRect           okRect = { 340, 200, 360, 255 };
-	MRect           resetRect = { 340, 365, 360, 450 };
-	int             returnValue = 0;
+	SDL_Rect    okRect = { .y = 340, .x = 200, .h = 20, .w = 55 };
+	SDL_Rect    resetRect = { .y = 340, .x = 365, .h = 20, .w = 85 };
+	int         returnValue = 0;
 
 	*item = kNothing;
 
@@ -851,10 +864,10 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 	{
 		for( index=0; index<8; index++ )
 		{
-			dRect.top    = 229 + ((index & ~1) * 13);
-			dRect.left   = (index & 1)? 325: 130;
-			dRect.bottom = dRect.top + 24;
-			dRect.right  = dRect.left + 175;
+			dRect.y = 229 + ((index & ~1) * 13);
+			dRect.x = (index & 1)? 325: 130;
+			dRect.h = 24;
+			dRect.w = 175;
 
 			if( SDLU_PointInRect( p, &dRect ) )
 			{
@@ -882,16 +895,16 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 
 static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
-	MRect targetRect[] =
+	SDL_Rect targetRect[] =
 	{
-		{ 240, 180, 260, 320 },
-		{ 240, 340, 260, 480 },
-		{ 270, 180, 290, 320 },
-		{ 270, 340, 290, 480 },
-		{ 300, 180, 320, 320 },
-		{ 300, 340, 320, 480 },
-		{ 330, 180, 350, 320 },
-		{ 120, 550, 130, 560 }
+		{ .y = 240, .x = 180, .h = 20, .w = 140 },
+		{ .y = 240, .x = 340, .h = 20, .w = 140 },
+		{ .y = 270, .x = 180, .h = 20, .w = 140 },
+		{ .y = 270, .x = 340, .h = 20, .w = 140 },
+		{ .y = 300, .x = 180, .h = 20, .w = 140 },
+		{ .y = 300, .x = 340, .h = 20, .w = 140 },
+		{ .y = 330, .x = 180, .h = 20, .w = 140 },
+		{ .y = 120, .x = 550, .h = 10, .w = 10 }
 	};
 
 	static bool lastDown = false;
@@ -970,14 +983,14 @@ static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 void HandleDialog( int type )
 {
 	const float    lighten[4] = { 12.0f, 6.0f, 1.0f, 6.0f };
-	const MRect    boardWorldZRect = {0, 0, kBlobVertSize * (kGridDown-1), kBlobHorizSize * kGridAcross};
-	SDL_Rect       fullSDLRect = { 0, 0, 640, 480 };
+	const SDL_Rect boardWorldZRect = { .y = 0, .x = 0, .h = kBlobVertSize * (kGridDown-1), .w = kBlobHorizSize * kGridAcross };
+	SDL_Rect       fullSDLRect = { .x = 0, .y = 0, .w = 640, .h = 480 };
 	SDL_Rect       joinSDLRect;
 	int            skip = 1;
 	int            count;
 	char           inASCII;
 	SDLKey         inSDLKey;
-	MRect          pauseRect, joinRect;
+	SDL_Rect       pauseRect, joinRect;
 
 	// Clear state
 	controlToReplace = -1;
@@ -1000,7 +1013,7 @@ void HandleDialog( int type )
 	{
 		SDL_Color inColor;
 
-		SDLU_GetPixel( boardSurface[0], RandomBefore( boardWorldZRect.right ), RandomBefore( boardWorldZRect.bottom ), &inColor );
+		SDLU_GetPixel( boardSurface[0], RandomBefore( boardWorldZRect.w ), RandomBefore( boardWorldZRect.h ), &inColor );
 
 		backColor[count].red   = inColor.r * (32.0f / 256.0f);
 		backColor[count].green = inColor.g * (32.0f / 256.0f);
@@ -1033,8 +1046,9 @@ void HandleDialog( int type )
 	dialogShade = 0;
 	dialogStageComplete = false;
 	dialogItem = kNothing;
-	lastPauseRect.top = lastPauseRect.left = 9999;
-	lastPauseRect.bottom = lastPauseRect.right = -9999;
+	// INVESTIGATE: this hack looks familiar
+	lastPauseRect.y = lastPauseRect.x = 9999;
+	lastPauseRect.h = lastPauseRect.w = -1;
 
 	SDLU_StartWatchingTyping();
 
@@ -1106,9 +1120,8 @@ void HandleDialog( int type )
 		SurfaceCurveEdges( drawSurface, &pauseRect );
 
 		// Draw new animation on screen
-		UnionMRect( &lastPauseRect, &pauseRect, &joinRect );
-		SDLU_MRectToSDLRect( &joinRect, &joinSDLRect );
-		SDLU_BlitFrontSurface( drawSurface, &joinSDLRect, &joinSDLRect );
+		SDLU_UnionRect( &lastPauseRect, &pauseRect, &joinRect );
+		SDLU_BlitFrontSurface( drawSurface, &joinRect, &joinRect );
 
 		lastPauseRect = pauseRect;
 
