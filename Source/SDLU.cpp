@@ -148,7 +148,7 @@ void SDLU_ChangeSurfaceDepth( SDL_Surface** surface, int depth )
 }
 
 
-SDL_Surface* SDLU_InitSurface( SDL_Rect* rect, int depth )
+SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 {
 	SDL_Surface*    surface = NULL;
 	SDL_Color       k_oneBitPalette[2] = { { 0xFF, 0xFF, 0xFF, 0x00 },
@@ -207,13 +207,13 @@ void SDLU_BlitFrontSurface( SDL_Surface* source, SDL_Rect* sourceSDLRect, SDL_Re
 	SDL_UpdateRect( frontSurface, destSDLRect->x, destSDLRect->y, destSDLRect->w, destSDLRect->h );
 }
 
-void SDLU_Yield()
+void SDLU_Yield( void )
 {
 	SDL_Delay( 2 );
 	SDL_PumpEvents();
 }
 
-void SDLU_PumpEvents()
+void SDLU_PumpEvents( void )
 {
 	static unsigned long lastPump = 0;
 	unsigned long time = MTickCount();
@@ -226,9 +226,9 @@ void SDLU_PumpEvents()
 	}
 }
 
-bool SDLU_IsForeground()
+bool SDLU_IsForeground( void )
 {
-    return s_isForeground;
+	return s_isForeground;
 }
 
 int SDLU_EventFilter( const SDL_Event *event )
@@ -313,7 +313,7 @@ int SDLU_EventFilter( const SDL_Event *event )
 	return 0;
 }
 
-void SDLU_StartWatchingTyping()
+void SDLU_StartWatchingTyping( void )
 {
 	s_interestedInTyping = true;
 	s_keyBufferFilled = s_keyBufferPullFrom = s_keyBufferPutAt = 0;
@@ -321,7 +321,7 @@ void SDLU_StartWatchingTyping()
 	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
 }
 
-void SDLU_StopWatchingTyping()
+void SDLU_StopWatchingTyping( void )
 {
 	s_interestedInTyping = false;
 	SDL_EnableUNICODE( 0 );
@@ -350,7 +350,7 @@ void SDLU_GetMouse( SDLU_Point* pt )
 	*pt = s_mousePosition;
 }
 
-int SDLU_Button()
+int SDLU_Button( void )
 {
 	SDLU_PumpEvents();
 	return s_mouseButton;
@@ -361,7 +361,7 @@ void SDLU_AcquireSurface( SDL_Surface* surface )
 	s_acquireList[++s_acquireHead] = surface;
 }
 
-SDL_Surface* SDLU_GetCurrentSurface()
+SDL_Surface* SDLU_GetCurrentSurface( void )
 {
 	return s_acquireList[s_acquireHead];
 }
