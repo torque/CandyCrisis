@@ -93,7 +93,7 @@ void Lose( int player )
 {
 	int       gameTime = GameTickCount();
 	int       skip = 1;
-	MRect     boardRect;
+	SDL_Rect  boardRect;
 
 	if( gameTime < loseTime )
 		return;
@@ -114,9 +114,9 @@ void Lose( int player )
 	{
 		loseStage = 122;
 
-		boardRect.top    = boardRect.left = 0;
-		boardRect.bottom = playerSurface[player]->h;
-		boardRect.bottom = playerSurface[player]->w;
+		boardRect.y = boardRect.x = 0;
+		boardRect.h = playerSurface[player]->h;
+		boardRect.w = playerSurface[player]->w;
 
 		SDLU_AcquireSurface( playerSurface[player] );
 		SurfaceDrawBoard( player, &boardRect );
@@ -153,7 +153,7 @@ void DropLosers( int player, int skip )
 	int x, y, suck;
 	int beginDrop[] = { 28, 14, 0, 7, 21, 35 };
 	float thisDrop;
-	MRect myRect;
+	SDL_Rect myRect;
 
 	SDLU_AcquireSurface( playerSpriteSurface[player] );
 
@@ -164,18 +164,19 @@ void DropLosers( int player, int skip )
 			thisDrop = last[x] + ( (float)(skip) * ( 0.7 + last[x] / 12.0 ) );
 
 			CalcBlobRect( x, 0, &myRect );
-			myRect.top = (int) last[x];
-			myRect.bottom = kGridDown * kBlobVertSize;
+			myRect.y = (int) last[x];
+			// INVESTIGATE
+			myRect.h = kGridDown * kBlobVertSize - myRect.y;
 			SurfaceDrawBoard( player, &myRect );
 			SetUpdateRect( player, &myRect );
 
 			if( thisDrop <  (kGridDown*kBlobVertSize) )
 			{
-				myRect.top = (int) thisDrop;
-				myRect.bottom = myRect.top + kBlobVertSize;
+				myRect.y = (int) thisDrop;
+				myRect.h = kBlobVertSize;
 
 				y=0;
-				while( myRect.top < (kGridDown*kBlobVertSize) )
+				while( myRect.y < (kGridDown*kBlobVertSize) )
 				{
 					if( grid[player][x][y] >= kFirstBlob &&
 						grid[player][x][y] <= kLastBlob )
@@ -189,7 +190,7 @@ void DropLosers( int player, int skip )
 						SurfaceDrawAlpha( &myRect, kGray, kLight, kGrayNoBlink );
 					}
 
-					OffsetMRect( &myRect, 0, kBlobVertSize );
+					SDLU_OffsetRect( &myRect, 0, kBlobVertSize );
 					y++;
 				}
 
@@ -256,7 +257,7 @@ void Win( int player )
 
 void DrawTimerCount( int player )
 {
-	MRect playerRect;
+	SDL_Rect playerRect;
 
 	SDLU_AcquireSurface( playerSurface[player] );
 
@@ -282,9 +283,9 @@ void DrawTimerCount( int player )
 		SurfaceBlitCharacter( zapFont, 'S', &dPoint,  31, 31, 31, 1  );
 	}
 
-	playerRect.top    = playerRect.left = 0;
-	playerRect.bottom = playerSurface[player]->h;
-	playerRect.right  = playerSurface[player]->w;
+	playerRect.y = playerRect.x = 0;
+	playerRect.h = playerSurface[player]->h;
+	playerRect.w = playerSurface[player]->w;
 
 	CleanSpriteArea( player, &playerRect );
 	PlayStereo( player, kSplop );
@@ -294,7 +295,7 @@ void DrawTimerCount( int player )
 
 void DrawTimerBonus( int player )
 {
-	MRect playerRect;
+	SDL_Rect playerRect;
 	int timer, bonus;
 
 	SDLU_AcquireSurface( playerSurface[player] );
@@ -306,15 +307,15 @@ void DrawTimerBonus( int player )
 	}
 
 	timer = (endTime - startTime) / 60;
-	     if( timer <= 10 ) bonus = 30000;
-	else if( timer <= 20 ) bonus = 10000;
-	else if( timer <= 30 ) bonus =  5000;
-	else if( timer <= 45 ) bonus =  4000;
-	else if( timer <= 60 ) bonus =  3000;
-	else if( timer <= 80 ) bonus =  2000;
-	else if( timer <=100 ) bonus =  1000;
-	else if( timer <=120 ) bonus =   500;
-	else                   bonus =     0;
+	     if( timer <=  10 ) bonus = 30000;
+	else if( timer <=  20 ) bonus = 10000;
+	else if( timer <=  30 ) bonus =  5000;
+	else if( timer <=  45 ) bonus =  4000;
+	else if( timer <=  60 ) bonus =  3000;
+	else if( timer <=  80 ) bonus =  2000;
+	else if( timer <= 100 ) bonus =  1000;
+	else if( timer <= 120 ) bonus =   500;
+	else                    bonus =     0;
 
 	if( players == 1 ) bonus *= level;
 
@@ -336,9 +337,9 @@ void DrawTimerBonus( int player )
 		SurfaceBlitCharacter( zapFont, 'P', &dPoint,  31, 31, 31, 1  );
 	}
 
-	playerRect.top    = playerRect.left = 0;
-	playerRect.bottom = playerSurface[player]->h;
-	playerRect.right  = playerSurface[player]->w;
+	playerRect.y = playerRect.x = 0;
+	playerRect.h = playerSurface[player]->h;
+	playerRect.w = playerSurface[player]->w;
 
 	CleanSpriteArea( player, &playerRect );
 	PlayStereo( player, kSplop );
