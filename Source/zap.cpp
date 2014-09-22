@@ -28,7 +28,7 @@ signed char death[2][kGridAcross][kGridDown];
 int zapIteration[2];
 int grenadeFrame[2] = {kBlastFrames + 1, kBlastFrames + 1}, zapScoreFrame[2];
 SDLU_Point zapScorePt[2];
-MRect grenadeRect[2];
+SDL_Rect grenadeRect[2];
 SkittlesFontPtr zapFont, zapOutline;
 char zapScore[2][20] = { "", "" };
 int zapScoreWidth[2];
@@ -189,9 +189,15 @@ void RemoveBlobs( int player, int x, int y, int color, int generation )
 void KillBlobs( int player )
 {
 	int x,y;
-	const int   position[] = { 0, 15, 27, 39, 51, 63, 72, 81, 90, 99, 105,111,117,123,126,129,131,132,133,134,135,135,136,136,137,137,138,138,138,139,139,139,139,140,140,140 };
-	const int   shading [] = {20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 30, 29, 28, 26, 24, 21, 18, 15, 12, 9,  6,  3,  0   };
-	const int   blobGraphic[kZapFrames] = { kDying,   kDying,   kDying,   kDying,   kSquish1,
+	const int   position[] = {  0, 15, 27, 39, 51, 63, 72, 81, 90, 99,105,
+	                          111,117,123,126,129,131,132,133,134,135,135,
+	                          136,136,137,137,138,138,138,139,139,139,139,
+	                          140,140,140 },
+	            shading [] = {20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+	                          31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+	                          31, 30, 29, 28, 26, 24, 21, 18, 15, 12, 9,
+	                           6,  3,  0 },
+	            blobGraphic[kZapFrames] = { kDying,   kDying,   kDying,   kDying,   kSquish1,
 	                                        kSquish1, kSquish1, kSquish1, kSquish2, kSquish2,
 	                                        kSquish2, kSquish2, kSquish3, kSquish3, kSquish3,
 	                                        kSquish3, kSquish4, kSquish4, kSquish4, kSquish4 },
@@ -202,7 +208,7 @@ void KillBlobs( int player )
 	                                        kGrayBlink3, kGrayBlink3, kGrayBlink3,
 	                                        kGrayBlink3, kGrayBlink3, kGrayBlink3,
 	                                        kGrayBlink3, kGrayBlink3 };
-	MRect myRect;
+	SDL_Rect myRect;
 	bool busy = false;
 	SDLU_Point dPoint, oPoint;
 	char *scan;
@@ -296,18 +302,18 @@ void KillBlobs( int player )
 
 	if( zapScoreFrame[player] < arrsize(position) )
 	{
-		myRect.top    = zapScorePt[player].y - (position[zapScoreFrame[player]    ]);
-		myRect.left   = zapScorePt[player].x;
-		myRect.bottom = zapScorePt[player].y - (position[zapScoreFrame[player] - 1]) + 15;
-		myRect.right  = myRect.left + zapScoreWidth[player];
+		myRect.y = zapScorePt[player].y - (position[zapScoreFrame[player]    ]);
+		myRect.x = zapScorePt[player].x;
+		myRect.h = 15 - (position[zapScoreFrame[player] - 1]);
+		myRect.w = zapScoreWidth[player];
 		CleanSpriteArea( player, &myRect );
 
 		if( zapScoreFrame[player] < arrsize(position)-1 )
 		{
 			SDLU_AcquireSurface( playerSpriteSurface[player] );
 
-			dPoint.y = oPoint.y = myRect.top;
-			dPoint.x = oPoint.x = myRect.left;
+			dPoint.y = oPoint.y = myRect.y;
+			dPoint.x = oPoint.x = myRect.x;
 			scan = zapScore[player];
 			while( *scan )
 			{
@@ -347,10 +353,10 @@ void KillBlobs( int player )
 
 		SDLU_AcquireSurface( playerSpriteSurface[player] );
 
-		myRect.top = grenadeFrame[player] * kBlastHeight;
-		myRect.left = 0;
-		myRect.bottom = myRect.top + kBlastHeight;
-		myRect.right = kBlastWidth;
+		myRect.y = grenadeFrame[player] * kBlastHeight;
+		myRect.x = 0;
+		myRect.h = kBlastHeight;
+		myRect.w = kBlastWidth;
 
 		SurfaceBlitAlpha(  playerSpriteSurface[player],  blastSurface,  blastMaskSurface,  playerSpriteSurface[player],
 		                  &grenadeRect[player],         &myRect,       &myRect,           &grenadeRect[player]          );
@@ -429,7 +435,7 @@ void CleanSize( signed char myGrid[kGridAcross][kGridDown], int x, int y, int co
 void CleanChunks( int player, int x, int y, int level, int style )
 {
 	int count, color, type;
-	MRect chunkRect;
+	SDL_Rect chunkRect;
 
 	if( flashyAnimation )
 	{
@@ -462,7 +468,7 @@ void CleanChunks( int player, int x, int y, int level, int style )
 void DrawChunks( int player, int x, int y, int level, int style )
 {
 	int count, color, type;
-	MRect chunkRect;
+	SDL_Rect chunkRect;
 
 	if( flashyAnimation )
 	{
@@ -486,7 +492,7 @@ void DrawChunks( int player, int x, int y, int level, int style )
 void CleanSplat( int player, int x, int y, int level )
 {
 	int count, color, type;
-	MRect chunkRect;
+	SDL_Rect chunkRect;
 
 	if( flashyAnimation )
 	{
@@ -519,7 +525,7 @@ void CleanSplat( int player, int x, int y, int level )
 void DrawSplat( int player, int x, int y, int level )
 {
 	int count, color = kGray, type;
-	MRect chunkRect;
+	SDL_Rect chunkRect;
 
 	if( flashyAnimation )
 	{
@@ -562,7 +568,7 @@ void InitZapStyle( void )
 }
 
 
-void GetZapStyle( int player, MRect *myRect, int *color, int *type, int which, int level, int style )
+void GetZapStyle( int player, SDL_Rect *myRect, int *color, int *type, int which, int level, int style )
 {
 	const int chunkGraphic[] = { kSquish1, kSquish1, kSquish1, kSquish1, kSquish1,
 	                             kSquish2, kSquish2, kSquish2, kSquish2, kSquish2,
@@ -578,7 +584,7 @@ void GetZapStyle( int player, MRect *myRect, int *color, int *type, int which, i
 			const int direction[7][2] = { {0, -2}, {-2,-1}, {-2,1}, {0,0}, {2,-1}, {2,1}, {0, 2} };
 			const int position[kZapFrames] = {0, 5, 9, 13, 17, 21, 24, 26, 30, 33, 35, 37, 39, 41, 42, 43, 43, 44, 44, 44 };
 
-			OffsetMRect( myRect, direction[which+3][0] * position[level],
+			SDLU_OffsetRect( myRect, direction[which+3][0] * position[level],
 								direction[which+3][1] * position[level] );
 			break;
 		}
@@ -591,7 +597,7 @@ void GetZapStyle( int player, MRect *myRect, int *color, int *type, int which, i
 			                                        { -4, -7, -10, -14, -18, -21, -23, -25, -26, -27, -27, -27, -26, -25, -23, -21, -18, -14, -10, -7 },
 			                                        { -2, -4, -5, -6, -7, -8, -9, -10, -10, -11, -11, -11, -10, -9, -8, -7, -6, -5, -3, -1 } };
 
-			OffsetMRect( myRect, xVelocity * level * which, yOffset[abs(which)-1][level] );
+			SDLU_OffsetRect( myRect, xVelocity * level * which, yOffset[abs(which)-1][level] );
 
 			break;
 		}
@@ -600,20 +606,20 @@ void GetZapStyle( int player, MRect *myRect, int *color, int *type, int which, i
 		{
 			const int position[kZapFrames] = {0, 5, 9, 13, 17, 21, 24, 27, 30, 33, 35, 37, 39, 41, 42, 43, 43, 44, 44, 44 };
 
-			OffsetMRect( myRect, 0, position[level] * which );
+			SDLU_OffsetRect( myRect, 0, position[level] * which );
 			break;
 		}
 
 		case 3:
 		{
 			double fLevel = ((double)level) / 2;
-			OffsetMRect( myRect, (int)((player? -1.0: 1.0) * abs(which) * fLevel * (fLevel-1)), (int)((which-3) * fLevel) );
+			SDLU_OffsetRect( myRect, (int)((player? -1.0: 1.0) * abs(which) * fLevel * (fLevel-1)), (int)((which-3) * fLevel) );
 			break;
 		}
 
 		case 4:
 		{
-			OffsetMRect( myRect, zapOffsetX[which+3][level],
+			SDLU_OffsetRect( myRect, zapOffsetX[which+3][level],
 			             zapOffsetY[which+3][level] );
 
 			break;
