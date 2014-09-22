@@ -272,7 +272,7 @@ void CenterRectOnScreen( SDL_Rect *rect, double locationX, double locationY )
 	dest.x &= ~3; // floor x position to mod4 for some reason.
 	dest.y = (int)(locationY * (480 - (rect->h)));
 
-	SDLU_OffsetRect( rect, -rect->x, -rect->u );
+	SDLU_OffsetRect( rect, -rect->x, -rect->y );
 	SDLU_OffsetRect( rect, dest.x, dest.y );
 }
 
@@ -281,7 +281,7 @@ void ReserveMonitor( void )
 	SDL_Surface* icon;
 	SDL_Surface* mask;
 
-	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE );
+	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE | SDL_DOUBLEBUF );
 
 	icon = LoadPICTAsSurface( 10000, 16 );
 	mask = LoadPICTAsSurface( 10001, 1 );

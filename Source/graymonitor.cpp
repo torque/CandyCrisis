@@ -29,7 +29,7 @@ void InitGrayMonitors( void )
 	CenterRectOnScreen( &grayMonitorRect[0], windowLoc[0], 0.11 );
 	CenterRectOnScreen( &grayMonitorRect[1], windowLoc[1], 0.11 );
 
-	smallGrayDrawSurface = SDLU_InitSurface( grayMonitorZRect, 16 );
+	smallGrayDrawSurface = SDLU_InitSurface( &grayMonitorZRect, 16 );
 	DrawPICTInSurface( smallGrayDrawSurface, picBoard );
 }
 
@@ -80,7 +80,7 @@ void ShowGrayMonitor( short player )
 		SDLU_ReleaseSurface( smallGrayDrawSurface );
 
 		SDLU_BlitFrontSurface( smallGrayDrawSurface,
-		                       &grayMonitorZRect
+		                       &grayMonitorZRect,
 		                       &grayMonitorRect[player] );
 	}
 }

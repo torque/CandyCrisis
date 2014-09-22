@@ -6,6 +6,8 @@
 ///  John Stiles, 2002/10/12
 ///
 
+#include <stdio.h>
+
 #include <SDL/SDL.h>
 #include "SDLU.h"
 
@@ -158,7 +160,7 @@ SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 	{
 		case 16:
 			surface = SDL_CreateRGBSurface(
-							SDL_SWSURFACE,
+							SDL_HWSURFACE,
 							rect->w,
 							rect->h,
 							15,
@@ -167,7 +169,7 @@ SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 
 		case 8:
 			surface = SDL_CreateRGBSurface(
-							SDL_SWSURFACE,
+							SDL_HWSURFACE,
 							rect->w,
 							rect->h,
 							8,
@@ -178,7 +180,7 @@ SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 
 		case 1:
 			surface = SDL_CreateRGBSurface(
-							SDL_SWSURFACE,
+							SDL_HWSURFACE,
 							rect->w,
 							rect->h,
 							1,
@@ -390,16 +392,16 @@ bool SDLU_SeparateRects( const SDL_Rect *a, const SDL_Rect *b ) {
 	return (  a->x > (b->x + b->w) || // a is completely right of b
 	         (a->x + a->w) < b->x  || // a is completely left of b
 	          a->y > (b->y + b->h) || // a is completely below b
-	         (a->y + a->h) < b->y  )  // a is completely above b
+	         (a->y + a->h) < b->y  ); // a is completely above b
 }
 
 // Creates a new SDL_Rect from the largest dimensions of two SDL_Rects.
 void SDLU_UnionRect( const SDL_Rect* a, const SDL_Rect* b, SDL_Rect* u )
 {
-	u->x = ( a->x < b->x )? a->x: b->x
-	u->y = ( a->y < b->y )? a->y: b->y
-	u->w = ( a->w > b->w )? a->w: b->w
-	u->h = ( a->h > b->h )? a->h: b->h
+	u->x = ( a->x < b->x )? a->x: b->x;
+	u->y = ( a->y < b->y )? a->y: b->y;
+	u->w = ( a->w > b->w )? a->w: b->w;
+	u->h = ( a->h > b->h )? a->h: b->h;
 }
 
 void SDLU_OffsetRect( SDL_Rect* r, int x, int y )

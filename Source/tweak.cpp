@@ -2,6 +2,9 @@
 
 #include <math.h>
 
+#include <SDL/SDL.h>
+#include "SDLU.h"
+
 #include "tweak.h"
 
 #include "gameticks.h"

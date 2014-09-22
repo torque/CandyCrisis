@@ -34,14 +34,13 @@ void InitBlitter( void )
 
 void UpdatePlayerWindow( int player )
 {
-	SDL_Rect fullSDLRect, offsetSDLRect;
-	int      x, y;
+	int x, y;
 
 	if( control[player] == kNobodyControl ) return;
 
 	if( playerWindowVisible[player] && refresh[player] )
 	{
-		MRect updateRect = {0, 0, 0, 0}, fullRect, offsetRect;
+		SDL_Rect updateRect = { .x = 0, .y = 0, .w = 0, .h = 0}, fullRect, offsetRect;
 		bool first = true;
 
 		for( x=0; x<kGridAcross; x++ )
@@ -50,10 +49,10 @@ void UpdatePlayerWindow( int player )
 			{
 				if( update[player][x][y] )
 				{
-					updateRect.top    = y * kBlobVertSize;
-					updateRect.left   = x * kBlobHorizSize;
-					updateRect.bottom = updateRect.top  + kBlobVertSize;
-					updateRect.right  = updateRect.left + kBlobHorizSize;
+					updateRect.y = y * kBlobVertSize;
+					updateRect.x = x * kBlobHorizSize;
+					updateRect.h = kBlobVertSize;
+					updateRect.w = kBlobHorizSize;
 					if( first )
 					{
 						fullRect = updateRect;
@@ -61,7 +60,7 @@ void UpdatePlayerWindow( int player )
 					}
 					else
 					{
-						UnionMRect( &fullRect, &updateRect, &fullRect );
+						SDLU_UnionRect( &fullRect, &updateRect, &fullRect );
 					}
 
 					update[player][x][y] = false;
@@ -72,30 +71,28 @@ void UpdatePlayerWindow( int player )
 		if( !first )
 		{
 			offsetRect = fullRect;
-			OffsetMRect( &offsetRect, playerWindowRect[player].left, playerWindowRect[player].top - kBlobVertSize );
+			SDLU_OffsetRect( &offsetRect, playerWindowRect[player].x, playerWindowRect[player].y - kBlobVertSize );
 
-			SDLU_BlitFrontSurface( playerSpriteSurface[player],
-			                       SDLU_MRectToSDLRect( &fullRect, &fullSDLRect ),
-			                       SDLU_MRectToSDLRect( &offsetRect, &offsetSDLRect ) );
+			SDLU_BlitFrontSurface( playerSpriteSurface[player], &fullRect, &offsetRect );
 		}
 	}
 }
 
-void SetUpdateRect( int player, MRect *where )
+void SetUpdateRect( int player, SDL_Rect *where )
 {
 	int x,y;
 	int xMin, xMax, yMin, yMax;
 
-	xMin = where->left / kBlobHorizSize;
-	xMax = ( where->right + kBlobHorizSize - 1 ) / kBlobHorizSize;
+	xMin = where->x / kBlobHorizSize;
+	xMax = ( where->x + where->w + kBlobHorizSize - 1 ) / kBlobHorizSize;
 
 	if( xMin < 0 ) xMin = 0;
 	if( xMin > (kGridAcross-1) ) xMin = kGridAcross-1;
 	if( xMax < 0 ) xMax = 0;
 	if( xMax > kGridAcross ) xMax = kGridAcross;
 
-	yMin = where->top / kBlobVertSize;
-	yMax = ( where->bottom + kBlobVertSize - 1 ) / kBlobVertSize;
+	yMin = where->y / kBlobVertSize;
+	yMax = ( where->y + where->h + kBlobVertSize - 1 ) / kBlobVertSize;
 
 	if( yMin < 0 ) yMin = 0;
 	if( yMin > (kGridDown-1) ) yMin = kGridDown-1;
@@ -114,25 +111,33 @@ void SetUpdateRect( int player, MRect *where )
 }
 
 
-void SurfaceBlitMask( SDL_Surface* object,     SDL_Surface* mask,     SDL_Surface* dest,
-                      const MRect*  objectRect, const MRect*  maskRect, const MRect*  destRect )
+void SurfaceBlitMask( SDL_Surface*    object,     SDL_Surface*    mask,     SDL_Surface*    dest,
+                      const SDL_Rect* objectRect, const SDL_Rect* maskRect, const SDL_Rect* destRect )
 {
 	int            startX = 0, startY = 0, endX, endY, x, y, srcRowBytes, mskRowBytes, dstRowBytes;
 	unsigned long  bit, startBit, maskBits;
 	unsigned char *src, *msk, *dst;
-	MRect          destBounds;
+	SDL_Rect       destBounds = dest->clip_rect;
 
-	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
-
-	endX = objectRect->right - objectRect->left;
-	endY = objectRect->bottom - objectRect->top;
-
-	if( destRect->left   > destBounds.right  ||			// completely clipped?
-	    destRect->right  < destBounds.left   ||
-	    destRect->top    > destBounds.bottom ||
-	    destRect->bottom < destBounds.top )
+	if( SDLU_SeparateRects( destRect, &dest->clip_rect ) )
 	{
-		return; 												// do nothing
+		return; // do nothing
+	}
+
+	endX = objectRect->w;
+	endY = objectRect->h;
+
+	if( destRect->x < destBounds.x ) {
+		startX -= destRect->x - destBounds.x;
+	}
+	if( (destRect->x + destRect->w) > (destBounds.x + destBounds.w) ){
+		endX   -= (destRect->x + destRect->w) - (destBounds.x + destBounds.w);
+	}
+	if( destRect->y < destBounds.y ) {
+		startY -= destRect->y - destBounds.y;
+	}
+	if( (destRect->y + destRect->h) > (destBounds.y + destBounds.h) ) {
+		endY   -= (destRect->y + destRect->h) - (destBounds.y + destBounds.h);
 	}
 
 	src         = (unsigned char*) object->pixels;
@@ -142,14 +147,9 @@ void SurfaceBlitMask( SDL_Surface* object,     SDL_Surface* mask,     SDL_Surfac
 	mskRowBytes = mask->pitch;
 	dstRowBytes = dest->pitch;
 
-	src += (objectRect->top * srcRowBytes) + (objectRect->left * 2);
-	msk += (maskRect->top   * mskRowBytes) + (maskRect->left   / 8);
-	dst += (destRect->top   * dstRowBytes) + (destRect->left   * 2);
-
-	if( destRect->left   < destBounds.left   ) startX -= destRect->left - destBounds.left;
-	if( destRect->right  > destBounds.right  ) endX   -= destRect->right - destBounds.right;
-	if( destRect->top    < destBounds.top    ) startY -= destRect->top - destBounds.top;
-	if( destRect->bottom > destBounds.bottom ) endY   -= destRect->bottom - destBounds.bottom;
+	src += (objectRect->y * srcRowBytes) + (objectRect->x * 2);
+	msk += (maskRect->y   * mskRowBytes) + (maskRect->x   / 8);
+	dst += (destRect->y   * dstRowBytes) + (destRect->x   * 2);
 
 	startBit = 0x80000000 >> (startX & 31);
 	msk += (mskRowBytes * startY) + ((startX & ~31) / 8);
@@ -181,33 +181,27 @@ void SurfaceBlitMask( SDL_Surface* object,     SDL_Surface* mask,     SDL_Surfac
 }
 
 
-void SurfaceBlitBlob( const MRect* blobRect, const MRect* destRect )
+void SurfaceBlitBlob( const SDL_Rect* blobRect, const SDL_Rect* destRect )
 {
 	SurfaceBlitMask( blobSurface, maskSurface, SDLU_GetCurrentSurface(),
 	                 blobRect,    blobRect,    destRect                  );
 }
 
-
-void SurfaceBlitColor( SDL_Surface* mask,     SDL_Surface* dest,
-                       const MRect* maskRect, const MRect* destRect,
+void SurfaceBlitColor( SDL_Surface*    mask,     SDL_Surface*    dest,
+                       const SDL_Rect* maskRect, const SDL_Rect* destRect,
                        int r, int g, int b, int weight )
 {
 	int            startX = 0, startY = 0, endX, endY, x, y, mskRowBytes, dstRowBytes;
 	unsigned long  bit, startBit, maskBits;
 	unsigned char *msk, *dst;
-	MRect          destBounds;
+	SDL_Rect       destBounds = dest->clip_rect;
 
-	endX = maskRect->right - maskRect->left;
-	endY = maskRect->bottom - maskRect->top;
+	endX = maskRect->w;
+	endY = maskRect->h;
 
-	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
-
-	if( destRect->left   > destBounds.right  ||			// completely clipped?
-		destRect->right  < destBounds.left   ||
-		destRect->top    > destBounds.bottom ||
-		destRect->bottom < destBounds.top )
+	if( SDLU_SeparateRects( destRect, &dest->clip_rect ) )
 	{
-		return; 												// do nothing
+		return;
 	}
 
 	msk         = (unsigned char*) mask->pixels;
@@ -215,13 +209,21 @@ void SurfaceBlitColor( SDL_Surface* mask,     SDL_Surface* dest,
 	mskRowBytes = mask->pitch;
 	dstRowBytes = dest->pitch;
 
-	msk += (maskRect->top * mskRowBytes) + (maskRect->left / 8);
-	dst += (destRect->top * dstRowBytes) + (destRect->left * 2);
+	msk += (maskRect->y * mskRowBytes) + (maskRect->x / 8);
+	dst += (destRect->y * dstRowBytes) + (destRect->x * 2);
 
-	if( destRect->left   < destBounds.left   ) startX -= destRect->left - destBounds.left;
-	if( destRect->right  > destBounds.right  ) endX   -= destRect->right - destBounds.right;
-	if( destRect->top    < destBounds.top    ) startY -= destRect->top - destBounds.top;
-	if( destRect->bottom > destBounds.bottom ) endY   -= destRect->bottom - destBounds.bottom;
+	if( destRect->x < destBounds.x ) {
+		startX -= destRect->x - destBounds.x;
+	}
+	if( (destRect->x + destRect->w) > (destBounds.x + destBounds.w) ){
+		endX   -= (destRect->x + destRect->w) - (destBounds.x + destBounds.w);
+	}
+	if( destRect->y < destBounds.y ) {
+		startY -= destRect->y - destBounds.y;
+	}
+	if( (destRect->y + destRect->h) > (destBounds.y + destBounds.h) ) {
+		endY   -= (destRect->y + destRect->h) - (destBounds.y + destBounds.h);
+	}
 
 	startBit = 0x80000000 >> (startX & 31);
 	msk += (mskRowBytes * startY) + ((startX & ~31) / 8);
@@ -252,7 +254,11 @@ void SurfaceBlitColor( SDL_Surface* mask,     SDL_Surface* dest,
 				*(short*)dst = (workR & 0x7C00) | (workG & 0x03E0) | (workB & 0x001F);
 			}
 
-			if( !(bit >>= 1) ) { msk += 4; maskBits = SDL_SwapBE32( *(unsigned long*)msk ); bit = 0x80000000; }
+			if( !(bit >>= 1) ) {
+				msk += 4;
+				maskBits = SDL_SwapBE32( *(unsigned long*)msk );
+				bit = 0x80000000;
+			}
 			dst += 2;
 		}
 
@@ -262,25 +268,21 @@ void SurfaceBlitColor( SDL_Surface* mask,     SDL_Surface* dest,
 }
 
 
-void SurfaceBlitAlpha( SDL_Surface* back,     SDL_Surface* source,     SDL_Surface* alpha,     SDL_Surface* dest,
-                       const MRect* backRect, const MRect* sourceRect, const MRect* alphaRect, const MRect* destRect )
+void SurfaceBlitAlpha( SDL_Surface* back,        SDL_Surface* source,        SDL_Surface* alpha,        SDL_Surface* dest,
+                       const SDL_Rect* backRect, const SDL_Rect* sourceRect, const SDL_Rect* alphaRect, const SDL_Rect* destRect )
 {
 	int startX = 0, startY = 0, endX, endY, x, y, srcRowBytes, alfRowBytes, dstRowBytes, bckRowBytes;
 	unsigned char *bck, *src, *alf, *dst;
-	MRect destBounds;
+	SDL_Rect destBounds = dest->clip_rect;
 
-	endX = sourceRect->right - sourceRect->left;
-	endY = sourceRect->bottom - sourceRect->top;
+	endX = sourceRect->w;
+	endY = sourceRect->h;
 
-	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
-
-	if( destRect->left   > destBounds.right  ||			// completely clipped?
-		destRect->right  < destBounds.left   ||
-		destRect->top    > destBounds.bottom ||
-		destRect->bottom < destBounds.top )
+	if( SDLU_SeparateRects( destRect, &dest->clip_rect ) )
 	{
-		return; 												// do nothing
+		return; // do nothing
 	}
+
 
 	bck         = (unsigned char*) back->pixels;
 	src         = (unsigned char*) source->pixels;
@@ -291,15 +293,23 @@ void SurfaceBlitAlpha( SDL_Surface* back,     SDL_Surface* source,     SDL_Surfa
 	alfRowBytes = alpha->pitch;
 	dstRowBytes = dest->pitch;
 
-	bck += (backRect->top   * bckRowBytes) + (backRect->left   * 2);
-	src += (sourceRect->top * srcRowBytes) + (sourceRect->left * 2);
-	alf += (alphaRect->top  * alfRowBytes) + (alphaRect->left  * 2);
-	dst += (destRect->top   * dstRowBytes) + (destRect->left   * 2);
+	bck += (backRect->y   * bckRowBytes) + (backRect->x   * 2);
+	src += (sourceRect->y * srcRowBytes) + (sourceRect->x * 2);
+	alf += (alphaRect->y  * alfRowBytes) + (alphaRect->x  * 2);
+	dst += (destRect->y   * dstRowBytes) + (destRect->x   * 2);
 
-	if( destRect->left   < destBounds.left   ) startX -= destRect->left   - destBounds.left;
-	if( destRect->right  > destBounds.right  ) endX   -= destRect->right  - destBounds.right;
-	if( destRect->top    < destBounds.top    ) startY -= destRect->top    - destBounds.top;
-	if( destRect->bottom > destBounds.bottom ) endY   -= destRect->bottom - destBounds.bottom;
+	if( destRect->x < destBounds.x ) {
+		startX -= destRect->x - destBounds.x;
+	}
+	if( (destRect->x + destRect->w) > (destBounds.x + destBounds.w) ){
+		endX   -= (destRect->x + destRect->w) - (destBounds.x + destBounds.w);
+	}
+	if( destRect->y < destBounds.y ) {
+		startY -= destRect->y - destBounds.y;
+	}
+	if( (destRect->y + destRect->h) > (destBounds.y + destBounds.h) ) {
+		endY   -= (destRect->y + destRect->h) - (destBounds.y + destBounds.h);
+	}
 
 	bck += (bckRowBytes * startY) + (startX * 2);
 	src += (srcRowBytes * startY) + (startX * 2);
@@ -351,27 +361,22 @@ void SurfaceBlitAlpha( SDL_Surface* back,     SDL_Surface* source,     SDL_Surfa
 }
 
 
-void SurfaceBlitWeightedDualAlpha( SDL_Surface* back,     SDL_Surface* source,     SDL_Surface* mask,     SDL_Surface* alpha,     SDL_Surface* dest,
-                                   const MRect* backRect, const MRect* sourceRect, const MRect* maskRect, const MRect* alphaRect, const MRect* destRect,
+void SurfaceBlitWeightedDualAlpha( SDL_Surface* back,        SDL_Surface* source,        SDL_Surface* mask,        SDL_Surface* alpha,        SDL_Surface* dest,
+                                   const SDL_Rect* backRect, const SDL_Rect* sourceRect, const SDL_Rect* maskRect, const SDL_Rect* alphaRect, const SDL_Rect* destRect,
                                    int inWeight )
 {
 	int startX = 0, startY = 0, endX, endY, x, y,
 	    srcRowBytes, alfRowBytes, mskRowBytes, dstRowBytes, bckRowBytes;
 	unsigned long  bit, startBit, maskBits;
 	unsigned char *bck, *src, *alf, *msk, *dst;
-	MRect destBounds;
+	SDL_Rect destBounds = dest->clip_rect;
 
-	endX = sourceRect->right - sourceRect->left;
-	endY = sourceRect->bottom - sourceRect->top;
+	endX = sourceRect->w;
+	endY = sourceRect->h;
 
-	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
-
-	if( destRect->left   > destBounds.right  ||			// completely clipped?
-		destRect->right  < destBounds.left   ||
-		destRect->top    > destBounds.bottom ||
-		destRect->bottom < destBounds.top )
+	if( SDLU_SeparateRects( destRect, &dest->clip_rect ) )
 	{
-		return; 												// do nothing
+		return; // do nothing
 	}
 
 	bck = (unsigned char*) back->pixels;
@@ -386,16 +391,24 @@ void SurfaceBlitWeightedDualAlpha( SDL_Surface* back,     SDL_Surface* source,  
 	alfRowBytes = alpha->pitch;
 	dstRowBytes = dest->pitch;
 
-	bck += (backRect->top   * bckRowBytes) + (backRect->left   * 2);
-	src += (sourceRect->top * srcRowBytes) + (sourceRect->left * 2);
-	alf += (alphaRect->top  * alfRowBytes) + (alphaRect->left  * 2);
-	dst += (destRect->top   * dstRowBytes) + (destRect->left   * 2);
-	msk += (maskRect->top   * mskRowBytes) + (maskRect->left   / 8);
+	bck += (backRect->y   * bckRowBytes) + (backRect->x   * 2);
+	src += (sourceRect->y * srcRowBytes) + (sourceRect->x * 2);
+	alf += (alphaRect->y  * alfRowBytes) + (alphaRect->x  * 2);
+	dst += (destRect->y   * dstRowBytes) + (destRect->x   * 2);
+	msk += (maskRect->y   * mskRowBytes) + (maskRect->x   / 8);
 
-	if( destRect->left   < destBounds.left   ) startX -= destRect->left - destBounds.left;
-	if( destRect->right  > destBounds.right  ) endX   -= destRect->right - destBounds.right;
-	if( destRect->top    < destBounds.top    ) startY -= destRect->top - destBounds.top;
-	if( destRect->bottom > destBounds.bottom ) endY   -= destRect->bottom - destBounds.bottom;
+	if( destRect->x < destBounds.x ) {
+		startX -= destRect->x - destBounds.x;
+	}
+	if( (destRect->x + destRect->w) > (destBounds.x + destBounds.w) ){
+		endX   -= (destRect->x + destRect->w) - (destBounds.x + destBounds.w);
+	}
+	if( destRect->y < destBounds.y ) {
+		startY -= destRect->y - destBounds.y;
+	}
+	if( (destRect->y + destRect->h) > (destBounds.y + destBounds.h) ) {
+		endY   -= (destRect->y + destRect->h) - (destBounds.y + destBounds.h);
+	}
 
 	bck += (bckRowBytes * startY) + (startX * 2);
 	src += (srcRowBytes * startY) + (startX * 2);
@@ -473,28 +486,25 @@ void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDL
 	}
 	else
 	{
-		SDL_Surface*   destSurface;
+		SDL_Surface*   destSurface = SDLU_GetCurrentSurface();
 		unsigned char* src;
 		unsigned char* dst;
 		int            srcRowBytes;
 		int            dstRowBytes;
 		int            index;
-		MRect          destBounds;
+		SDL_Rect       destBounds = destSurface->clip_rect;
 
 		int height = font->surface->h;
 		int width  = font->width[text];
 		int across = font->across[text];
 
-		destSurface = SDLU_GetCurrentSurface();
-		SDLU_SDLRectToMRect( &destSurface->clip_rect, &destBounds );
-
-		if( (dPoint->x + width)  > destBounds.right           ||      // clipped?
-		    (dPoint->y + height) > destBounds.bottom          ||
-		     dPoint->x           < destBounds.left            ||
-		     dPoint->y           < destBounds.top                )
+		if( (dPoint->x + width)  > (destBounds.x + destBounds.w) ||
+		    (dPoint->y + height) > (destBounds.y + destBounds.h) ||
+		     dPoint->x           < destBounds.x ||
+		     dPoint->y           < destBounds.y  )
 		{
 			dPoint->x += width;
-			return;                                               // do nothing
+			return; // do nothing
 		}
 
 		srcRowBytes = font->surface->pitch;
@@ -540,29 +550,26 @@ void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDL
 
 void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int dropShadow )
 {
-	SDL_Surface*    destSurface;
+	SDL_Surface*    destSurface = SDLU_GetCurrentSurface();
 	unsigned char*  src;
 	unsigned char*  dst;
 	int             srcRowBytes;
 	int             dstRowBytes;
 	int             index;
 	int             rgb555;
-	MRect           destBounds;
+	SDL_Rect        destBounds = destSurface->clip_rect;
 
 	int height = font->surface->h;
 	int width  = font->width[text];
 	int across = font->across[text];
 
-	destSurface = SDLU_GetCurrentSurface();
-	SDLU_SDLRectToMRect( &destSurface->clip_rect, &destBounds );
-
-	if( (dPoint->x + width)  > destBounds.right           ||      // clipped?
-	    (dPoint->y + height) > destBounds.bottom          ||
-	     dPoint->x           < destBounds.left            ||
-	     dPoint->y           < destBounds.top                )
+	if( (dPoint->x + width)  > (destBounds.x + destBounds.w) ||
+	    (dPoint->y + height) > (destBounds.y + destBounds.h) ||
+	     dPoint->x           < destBounds.x ||
+	     dPoint->y           < destBounds.y  )
 	{
 		dPoint->x += width;
-		return;                                               // do nothing
+		return; // do nothing
 	}
 
 	srcRowBytes = font->surface->pitch;
@@ -659,26 +666,21 @@ void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point 
 	dPoint->x += width;
 }
 
-void SurfaceBlitColorOver( SDL_Surface* source,     SDL_Surface* dest,
-                           const MRect* sourceRect, const MRect* destRect,
+void SurfaceBlitColorOver( SDL_Surface* source,        SDL_Surface* dest,
+                           const SDL_Rect* sourceRect, const SDL_Rect* destRect,
                            int r, int g, int b, int weight )
 {
 	int            startX = 0, startY = 0, endX, endY, x, y, dstRowBytes, srcRowBytes;
 	unsigned char* src;
 	unsigned char* dst;
-	MRect          destBounds;
+	SDL_Rect       destBounds = dest->clip_rect;
 
-	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
+	endX = destRect->w;
+	endY = destRect->h;
 
-	endX = destRect->right - destRect->left;
-	endY = destRect->bottom - destRect->top;
-
-	if( destRect->left   > destBounds.right  ||			// completely clipped?
-		destRect->right  < destBounds.left   ||
-		destRect->top    > destBounds.bottom ||
-		destRect->bottom < destBounds.top )
+	if( SDLU_SeparateRects( destRect, &dest->clip_rect ) )
 	{
-		return; 												// do nothing
+		return; // do nothing
 	}
 
 	src         = (unsigned char*) source->pixels;
@@ -686,13 +688,21 @@ void SurfaceBlitColorOver( SDL_Surface* source,     SDL_Surface* dest,
 	srcRowBytes = source->pitch;
 	dstRowBytes = dest->pitch;
 
-	src += (sourceRect->top * srcRowBytes) + (sourceRect->left * 2);
-	dst += (destRect->top * dstRowBytes) + (destRect->left * 2);
+	src += (sourceRect->y * srcRowBytes) + (sourceRect->x * 2);
+	dst += (destRect->y * dstRowBytes) + (destRect->x * 2);
 
-	if( destRect->left   < destBounds.left   ) startX -= destRect->left - destBounds.left;
-	if( destRect->right  > destBounds.right  ) endX   -= destRect->right - destBounds.right;
-	if( destRect->top    < destBounds.top    ) startY -= destRect->top - destBounds.top;
-	if( destRect->bottom > destBounds.bottom ) endY   -= destRect->bottom - destBounds.bottom;
+	if( destRect->x < destBounds.x ) {
+		startX -= destRect->x - destBounds.x;
+	}
+	if( (destRect->x + destRect->w) > (destBounds.x + destBounds.w) ){
+		endX   -= (destRect->x + destRect->w) - (destBounds.x + destBounds.w);
+	}
+	if( destRect->y < destBounds.y ) {
+		startY -= destRect->y - destBounds.y;
+	}
+	if( (destRect->y + destRect->h) > (destBounds.y + destBounds.h) ) {
+		endY   -= (destRect->y + destRect->h) - (destBounds.y + destBounds.h);
+	}
 
 	src += (srcRowBytes * startY) + (startX * 2);
 	dst += (dstRowBytes * startY) + (startX * 2);
@@ -728,8 +738,8 @@ void SurfaceBlitColorOver( SDL_Surface* source,     SDL_Surface* dest,
 // NOTE: due to rounding error, there should never be a case of transitioning all the way from 0 to 31.
 // You'll overflow and get weird glitches on the edges.
 
-void SurfaceBlitBlendOver( SDL_Surface* source,     SDL_Surface* dest,
-                           const MRect* sourceRect, const MRect* destRect,
+void SurfaceBlitBlendOver( SDL_Surface* source,        SDL_Surface* dest,
+                           const SDL_Rect* sourceRect, const SDL_Rect* destRect,
                            int r1, int g1, int b1,
                            int r2, int g2, int b2,
                            int r3, int g3, int b3,
@@ -745,34 +755,37 @@ void SurfaceBlitBlendOver( SDL_Surface* source,     SDL_Surface* dest,
 	int weight16, ditherDiff;
 	int width, height, dstRowBytes, srcRowBytes;
 	unsigned char *src, *dst;
-	MRect destBounds;
+	SDL_Rect destBounds = dest->clip_rect;
 	bool oddX = false;
 
-	SDLU_SDLRectToMRect( &dest->clip_rect, &destBounds );
-
-	if( destRect->left > destBounds.right  || // completely clipped?
-		destRect->right  < destBounds.left   ||
-		destRect->top    > destBounds.bottom ||
-		destRect->bottom < destBounds.top )
+	if( SDLU_SeparateRects( destRect, &dest->clip_rect ) )
 	{
-		return; 												// do nothing
+		return; // do nothing
 	}
 
-	endX = destRect->right - destRect->left;
-	endY = destRect->bottom - destRect->top;
+	endX = destRect->w;
+	endY = destRect->h;
 
 	src         = (unsigned char*) source->pixels;
 	dst         = (unsigned char*) dest->pixels;
 	srcRowBytes = source->pitch;
 	dstRowBytes = dest->pitch;
 
-	src += (sourceRect->top * srcRowBytes) + (sourceRect->left * 2);
-	dst += (destRect->top * dstRowBytes)   + (destRect->left * 2);
+	src += (sourceRect->y * srcRowBytes) + (sourceRect->x * 2);
+	dst += (destRect->y * dstRowBytes)   + (destRect->x * 2);
 
-	if( destRect->left   < destBounds.left   ) startX -= destRect->left - destBounds.left;
-	if( destRect->right  > destBounds.right  ) endX   -= destRect->right - destBounds.right;
-	if( destRect->top    < destBounds.top    ) startY -= destRect->top - destBounds.top;
-	if( destRect->bottom > destBounds.bottom ) endY   -= destRect->bottom - destBounds.bottom;
+	if( destRect->x < destBounds.x ) {
+		startX -= destRect->x - destBounds.x;
+	}
+	if( (destRect->x + destRect->w) > (destBounds.x + destBounds.w) ){
+		endX   -= (destRect->x + destRect->w) - (destBounds.x + destBounds.w);
+	}
+	if( destRect->y < destBounds.y ) {
+		startY -= destRect->y - destBounds.y;
+	}
+	if( (destRect->y + destRect->h) > (destBounds.y + destBounds.h) ) {
+		endY   -= (destRect->y + destRect->h) - (destBounds.y + destBounds.h);
+	}
 
 	src += (srcRowBytes * startY) + (startX * 2);
 	dst += (dstRowBytes * startY) + (startX * 2);

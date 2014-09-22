@@ -31,8 +31,8 @@
 #include "victory.h"
 #include "zap.h"
 
-static SDL_Rect stageWindowZRect, stageWindowRect;
-stageWindowZRect = stageWindowRect = { .x = 0, .y = 0, .w = 64, .h = 32}
+static SDL_Rect stageWindowZRect = { .x = 0, .y = 0, .w = 64, .h = 32};
+static SDL_Rect stageWindowRect  = { .x = 0, .y = 0, .w = 64, .h = 32};
 Character character[2];
 int level, players, credits, difficulty[2] = {kHardLevel, kHardLevel};
 int difficultyTicks, backdropTicks, backdropFrame;
@@ -114,8 +114,8 @@ void GameStartMenu( void )
 	SDL_Rect        backdropSDLRect = { .x = 0, .y = 0, .w = 640, .h = 480 };
 	SDL_Rect        cursorBackSDLRect = { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
 	SDL_Rect        meterRect[2] = {
-		{ .x =  30, .y = 360, .y = 110, .h = 20 },
-		{ .x = 530, .y = 360, .y = 110, .h = 20 }
+		{ .x =  30, .y = 360, .w = 110, .h = 20 },
+		{ .x = 530, .y = 360, .w = 110, .h = 20 }
 	};
 	SDL_Rect        destSDLRect, drawRect[4], chunkRect, tempRect;
 	int             blob, count, oldGlow, splat, chunkType, selected;
@@ -242,7 +242,7 @@ redo:
 				SDL_FillRect( gameStartDrawSurface, &splatBlob[blob], black );
 				SDLU_UnionRect( &drawRect[splatSide[blob]], &splatBlob[blob], &drawRect[splatSide[blob]] );
 
-				SDLU_OffsetRect( &splatBlob[blob], 0, startSkip * (6 + (splatBlob[blob].y + splatBlob[blob].h) / 20)) );
+				SDLU_OffsetRect( &splatBlob[blob], 0, startSkip * (6 + (splatBlob[blob].y + splatBlob[blob].h) / 20) );
 			}
 			else if( splatState[blob] >= kIncrementPerFrame )
 			{

@@ -261,10 +261,7 @@ void ShowHiscore( void )
 	SDL_Flip( frontSurface );
 
 	FadeScreen( hiScoreSurface, fadeSurface, 31, -32 );
-	do
-	{
-	}
-	while( !AnyKeyIsPressed( ) && !SDLU_Button() );
+	do { } while( !AnyKeyIsPressed( ) && !SDLU_Button() );
 	FadeScreen( hiScoreSurface, fadeSurface, -31, 32 );
 
 	SDL_FreeSurface( hiScoreSurface );

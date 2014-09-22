@@ -142,13 +142,11 @@ void SurfaceGetEdges( SDL_Surface* edgeSurface, const SDL_Rect *rect )
 	src[0] = src[1] = src[2] = src[3] = (unsigned char*) edgeSurface->pixels;
 	srcRowBytes = edgeSurface->pitch;
 
-	width  = rect->w;
-	height = rect->h;
 	// INVESTIGATE: can this be simplified?
 	src[0] += (srcRowBytes * rect->y) + (rect->x * 2);
-	src[1] += (srcRowBytes * rect->y) + ((rect->x + width - kEdgeSize) * 2);
-	src[2] += (srcRowBytes * (rect->y + height - kEdgeSize)) + (rect->x * 2);
-	src[3] += (srcRowBytes * (rect->y + height - kEdgeSize)) + ((rect->x + width - kEdgeSize) * 2);
+	src[1] += (srcRowBytes * rect->y) + ((rect->x + rect->w - kEdgeSize) * 2);
+	src[2] += (srcRowBytes * (rect->y + rect->h - kEdgeSize)) + (rect->x * 2);
+	src[3] += (srcRowBytes * (rect->y + rect->h - kEdgeSize)) + ((rect->x + rect->w - kEdgeSize) * 2);
 
 	for( count=0; count<4; count++ )
 	{
@@ -204,9 +202,9 @@ void SurfaceCurveEdges( SDL_Surface* edgeSurface, const SDL_Rect *rect )
 	srcRowBytes = edgeSurface->pitch;
 
 	src[0] += (srcRowBytes * rect->y) + (rect->x * 2);
-	src[1] += (srcRowBytes * rect->y) + ((rect->x + width - kEdgeSize) * 2);
-	src[2] += (srcRowBytes * (rect->y + height - kEdgeSize)) + (rect->x * 2);
-	src[3] += (srcRowBytes * (rect->y + height - kEdgeSize)) + ((rect->x + width - kEdgeSize) * 2);
+	src[1] += (srcRowBytes * rect->y) + ((rect->x + rect->w - kEdgeSize) * 2);
+	src[2] += (srcRowBytes * (rect->y + rect->h - kEdgeSize)) + (rect->x * 2);
+	src[3] += (srcRowBytes * (rect->y + rect->h - kEdgeSize)) + ((rect->x + rect->w - kEdgeSize) * 2);
 
 	// Draw top/bottom border
 	{
@@ -445,7 +443,7 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 		if( (pauseRect->y + pauseRect->h) > (newRect.y + newRect.h) )
 		{
 			SDL_Rect eraseRect = *pauseRect;
-			eraseRect.h -= newRect.y - eraseRect.y
+			eraseRect.h -= newRect.y - eraseRect.y;
 			eraseRect.y = newRect.y + newRect.h;
 
 			SDLU_BlitSurface( backSurface, &eraseRect,
@@ -756,7 +754,7 @@ static void DrawPauseContents( int *item, int shade )
 
 static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 {
-	SDL_Rect yes = { .y = 280, .x = 220, .h = 20, .w = 40 }
+	SDL_Rect yes = { .y = 280, .x = 220, .h = 20, .w = 40 };
 	SDL_Rect no  = { .y = 280, .x = 400, .h = 20, .w = 40 };
 	SDLU_Point p;
 

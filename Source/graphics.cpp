@@ -105,8 +105,8 @@ void DrawSpriteBlobs( int player, int type )
 
 void CleanSpriteArea( int player, SDL_Rect *myRect )
 {
-	SDLU_BlitSurface( playerSurface[player],       &myRect,
-	                  playerSpriteSurface[player], &myRect  );
+	SDLU_BlitSurface( playerSurface[player],       myRect,
+	                  playerSpriteSurface[player], myRect  );
 
 	SetUpdateRect( player, myRect );
 }

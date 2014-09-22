@@ -80,7 +80,7 @@ void DrawFrozenOpponent( void )
 {
 	SDL_Rect   myRect = { .y = 0, .x = 0, .h = 64, .w = 64 };
 
-	OffsetRect( &myRect, opponentFrame * 64, 0 );
+	SDLU_OffsetRect( &myRect, opponentFrame * 64, 0 );
 
 	SDLU_BlitFrontSurface( opponentSurface, &myRect, &opponentWindowRect );
 }
@@ -99,11 +99,11 @@ void OpponentChatter( bool on )
 
 void UpdateOpponent( void )
 {
-	SDL_Rect myRect  = { .x = 0, .y = 0, .w = 64, .h = 64}
+	SDL_Rect myRect  = { .x = 0, .y = 0, .w = 64, .h = 64};
 	SDL_Rect dstRect = { .x = 0, .y = 0, .w = 64, .h = 64};
 	SDL_Rect maskRect;
 	int      emotiMap[] = {0, 1, 2, 1}, count;
-	bool     draw = false
+	bool     draw = false;
 
 	if( GameTickCount( ) > opponentTime )
 	{
@@ -203,7 +203,7 @@ void UpdateOpponent( void )
 		// SDLU_AcquireSurface( opponentDrawSurface );
 
 		SDLU_BlitSurface( opponentSurface,     &myRect,
-		                  opponentDrawSurface, &dstRect, );
+		                  opponentDrawSurface, &dstRect );
 
 		maskRect = myRect;
 		for( count=0; count<kGlows; count++ )

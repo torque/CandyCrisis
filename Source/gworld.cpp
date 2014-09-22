@@ -28,9 +28,9 @@ void GetBlobGraphics()
 	boardSurface[0] = LoadPICTAsSurface( picBoard, 16 );
 
 	if ( PICTExists( picBoardRight ) ) {
-		blobSurface[1] = LoadPICTAsSurface( picBoardRight, 16 );
+		boardSurface[1] = LoadPICTAsSurface( picBoardRight, 16 );
 	} else {
-		blobSurface[1] = LoadPICTAsSurface( picBoard, 16 );
+		boardSurface[1] = LoadPICTAsSurface( picBoard, 16 );
 	}
 	// Get blob worlds
 
@@ -116,7 +116,7 @@ void SurfaceDrawShadow( const SDL_Rect *myRect, int blob, int state )
 		for( x=0; x<4; x++ )
 		{
 			destRect = *myRect;
-			SDL_OffsetRect( &destRect, offset[x].x, offset[x].y );
+			SDLU_OffsetRect( &destRect, offset[x].x, offset[x].y );
 
 			CalcBlobRect( state, blob-1, &blobRect );
 			SurfaceBlitColor(  maskSurface,  SDLU_GetCurrentSurface(),
@@ -154,7 +154,7 @@ void SurfaceDrawAlpha( const SDL_Rect *myRect, int blob, int mask, int state )
 
 void SurfaceDrawSprite( const SDL_Rect *myRect, int blob, int state )
 {
-	SDL_Rect blobRect;.
+	SDL_Rect blobRect;
 	if( blob > kEmpty )
 	{
 		CalcBlobRect( state, blob-1, &blobRect );

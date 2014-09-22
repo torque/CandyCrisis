@@ -25,6 +25,6 @@ void         SDLU_StopWatchingTyping( void );
 bool         SDLU_CheckTyping( char* ascii, SDLKey* sdl );
 bool         SDLU_IsForeground( void );
 bool         SDLU_PointInRect( SDLU_Point p, SDL_Rect* r );
-bool         SDLU_RectOverlap( const SDL_Rect *a, const SDL_Rect *b );
+bool         SDLU_SeparateRects( const SDL_Rect *a, const SDL_Rect *b );
 void         SDLU_UnionRect( const SDL_Rect* a, const SDL_Rect* b, SDL_Rect* u );
 void         SDLU_OffsetRect( SDL_Rect* r, int x, int y );
