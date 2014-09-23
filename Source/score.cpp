@@ -34,7 +34,6 @@ const char characterList[] =
 void InitScore( void )
 {
 	const double windowLoc[ ] = { 0.16, 0.84 };
-	SDL_Rect     sdlRect;
 
 	scoreWindowRect[0] = scoreWindowRect[1] = scoreWindowZRect;
 	CenterRectOnScreen( &scoreWindowRect[0], windowLoc[0], 0.89 );
@@ -83,7 +82,6 @@ void UpdateScore( int player )
 
 void ShowScore( int player )
 {
-	SDL_Rect   sourceSDLRect, destSDLRect;
 	SDL_Rect   myRect;
 	char       myString[256];
 	int        count;

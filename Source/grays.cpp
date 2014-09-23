@@ -289,7 +289,7 @@ void Bounce( int player )
 {
 	int x, y, bounce, suck, blob, rows, currentBlinkGraphic;
 	SDL_Rect blobRect;
-	double blobTop, compress;
+	double compress;
 	const double compressList[kZapFrames+1] = {
 		-kBlobVertSize + 0.83,
 		-kBlobVertSize + 1.58,

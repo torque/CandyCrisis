@@ -365,7 +365,6 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 	int      colorInt, shading;
 	float    colorFrac, nColorFrac;
 	SDL_Rect newRect;
-	SDL_Rect sdlRect;
 
 	if( *target > 18 )
 	{
@@ -983,7 +982,6 @@ void HandleDialog( int type )
 	const float    lighten[4] = { 12.0f, 6.0f, 1.0f, 6.0f };
 	const SDL_Rect boardWorldZRect = { .y = 0, .x = 0, .h = kBlobVertSize * (kGridDown-1), .w = kBlobHorizSize * kGridAcross };
 	SDL_Rect       fullSDLRect = { .x = 0, .y = 0, .w = 640, .h = 480 };
-	SDL_Rect       joinSDLRect;
 	int            skip = 1;
 	int            count;
 	char           inASCII;

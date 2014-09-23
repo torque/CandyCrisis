@@ -117,7 +117,7 @@ void GameStartMenu( void )
 		{ .x =  30, .y = 360, .w = 110, .h = 20 },
 		{ .x = 530, .y = 360, .w = 110, .h = 20 }
 	};
-	SDL_Rect        destSDLRect, drawRect[4], chunkRect, tempRect;
+	SDL_Rect        drawRect[4], chunkRect;
 	int             blob, count, oldGlow, splat, chunkType, selected;
 	int             skip;
 	SDLU_Point      mouse;

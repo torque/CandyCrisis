@@ -67,7 +67,6 @@ void ShowPull( int player )
 	int      yank[8] = { 20, 18, 15, 8, -6, -26, -46, -66 };
 	int      slide[8] = { kNoDraw, 66, 48, 36, 29, 26, 24, 23 };
 	int      drawA, drawB, offset, count;
-	SDL_Rect sourceSDLRect, destSDLRect;
 
 	if( !nextWindowVisible[player] ) return;
 
@@ -166,7 +165,6 @@ void ShowNext( int player )
 	SDL_Rect blobRect   = { .y = 22, .x = 4, .h = kBlobVertSize, .w = kBlobHorizSize };
 	SDL_Rect shadowRect = { .y = 26, .x = 8, .h = kBlobVertSize, .w = kBlobHorizSize };
 	SDL_Rect srcRect;
-	SDL_Rect sourceSDLRect, destSDLRect;
 
 	if( !nextWindowVisible[player] || control[player] == kNobodyControl ) {
 		return;

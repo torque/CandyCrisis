@@ -35,7 +35,6 @@ void InitGrayMonitors( void )
 
 void ShowGrayMonitor( short player )
 {
-	SDL_Rect   sourceSDLRect, destSDLRect;
 	short      monitor;
 	SDL_Rect   myRect = { .x = 4, .y = 4, .h = kBlobVertSize, .w = kBlobHorizSize };
 	SDL_Rect   srcRect;
