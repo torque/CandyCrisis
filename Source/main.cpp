@@ -196,9 +196,9 @@ bool AnyKeyIsPressed( void )
 	SDLU_PumpEvents();
 	pressedKeys = SDL_GetKeyState( &arraySize );
 
-	// Only check ASCII keys. (Reason: some extended keys, like NUMLOCK or CAPSLOCK,
-	// can be on all the time even if a key really isn't depressed.)
-	if( arraySize > 128 ) arraySize = 128;
+	// NUMLOCK, CAPSLOCK and friends are available as SDLK_[KEY] values
+	// 300 and up.
+	if( arraySize > 300 ) arraySize = 300;
 
 	for( index = 0; index < arraySize; index++ )
 	{

@@ -244,7 +244,7 @@ int SDLU_EventFilter( const SDL_Event *event )
 	if( event->type == SDL_KEYDOWN )
 	{
 		if(    s_interestedInTyping
-		    && event->key.keysym.unicode <= 127
+		    && event->key.keysym.sym < 300
 		    && s_keyBufferFilled < sizeof(s_keyBufferASCII) )
 		{
 			s_keyBufferFilled++;
