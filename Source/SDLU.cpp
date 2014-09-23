@@ -203,10 +203,15 @@ SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 void SDLU_BlitFrontSurface( SDL_Surface* source, SDL_Rect* sourceSDLRect, SDL_Rect* destSDLRect )
 {
 	extern SDL_Surface* frontSurface;
+	static unsigned long lastTick = 0;
 	SDLU_BlitSurface( source,       sourceSDLRect,
 	                  frontSurface, destSDLRect );
 
-	SDL_UpdateRect( frontSurface, destSDLRect->x, destSDLRect->y, destSDLRect->w, destSDLRect->h );
+	unsigned long thisTick = MTickCount();
+	if ( thisTick > lastTick + 1 ) {
+		SDL_Flip( frontSurface );
+		lastTick = thisTick;
+	}
 }
 
 void SDLU_Yield( void )
