@@ -699,14 +699,10 @@ void PrepareStageGraphics( int type )
 
 	DrawPICTInSurface( boardSurface[0], picBoard + backgroundID );
 
-	// NOTE: Many levels have no right-side board, so we copy the left
-	// side over to the right side. This way, if DrawPICTInSurface flunks,
-	// we still have a valid picture.
-
-	// INVESTIGATE: this is theoretically handled during loading the
-	// images as surfaces, so copying here should be redundant.
-	// SDLU_BlitSurface( boardSurface[0], &boardSurface[0]->clip_rect,
-	//                   boardSurface[1], &boardSurface[1]->clip_rect  );
+	// This redraws the opponent's board surface with the image that was
+	// just loaded.
+	SDLU_BlitSurface( boardSurface[0], &boardSurface[0]->clip_rect,
+	                  boardSurface[1], &boardSurface[1]->clip_rect  );
 
 	DrawPICTInSurface( boardSurface[1], picBoardRight + backgroundID );
 
