@@ -784,37 +784,36 @@ static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 
 	nameLength = strlen(highScoreName);
 
-	// return
-	if( inKey == 13 )
-	{
-		if( nameLength > 0 )
-		{
-			*item = kResume;
-			PlayMono( kSquishy );
-			return true;
-		}
-		else
-		{
-			PlayMono( kClick );
-		}
-	}
+	switch( inSDLKey ) {
+		case SDLK_RETURN:
+			if( nameLength > 0 )
+			{
+				*item = kResume;
+				PlayMono( kSquishy );
+				return true;
+			}
+			else
+			{
+				PlayMono( kClick );
+			}
+			break;
 
-	// backspace
-	else if( inKey == 8 )
-	{
-		if( nameLength > 0 )
-		{
-			highScoreName[ nameLength-1 ] = '\0';
-			PlayMono( kClick );
-		}
-	}
+		case SDLK_BACKSPACE:
+			if( nameLength > 0 )
+			{
+				highScoreName[ nameLength-1 ] = '\0';
+				PlayMono( kClick );
+			}
+			break;
 
-	// characters
-	else if( bigFont->width[inKey] != 0 )
-	{
-		highScoreName[ nameLength++ ] = inKey;
-		highScoreName[ nameLength   ] = '\0';
-		PlayMono( kPlace );
+		default:
+			if( bigFont->width[inKey] != 0 )
+			{
+				highScoreName[ nameLength++ ] = inKey;
+				highScoreName[ nameLength   ] = '\0';
+				PlayMono( kPlace );
+			}
+			break;
 	}
 
 	*item = kNothing;
