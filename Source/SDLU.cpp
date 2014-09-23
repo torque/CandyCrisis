@@ -398,10 +398,15 @@ bool SDLU_SeparateRects( const SDL_Rect *a, const SDL_Rect *b ) {
 // Creates a new SDL_Rect from the largest dimensions of two SDL_Rects.
 void SDLU_UnionRect( const SDL_Rect* a, const SDL_Rect* b, SDL_Rect* u )
 {
+	int a_right = a->x + a->w;
+	int b_right = b->x + b->w;
+	int a_bot   = a->y + a->h;
+	int b_bot   = b->y + b->h;
+
 	u->x = ( a->x < b->x )? a->x: b->x;
 	u->y = ( a->y < b->y )? a->y: b->y;
-	u->w = ( a->w > b->w )? a->w: b->w;
-	u->h = ( a->h > b->h )? a->h: b->h;
+	u->w = ( a_right > b_right )? a_right - u->x: b_right - u->x;
+	u->h = ( a_bot > b_bot )? a_bot - u->y: b_bot - u->y;
 }
 
 void SDLU_OffsetRect( SDL_Rect* r, int x, int y )
