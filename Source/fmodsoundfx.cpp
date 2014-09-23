@@ -55,7 +55,12 @@ void PlayStereoFrequency( short player, short which, short freq )
 	{
 		float oldFreq;
 		FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, sound[which], true, &soundChannel[player] );
-		FMOD_Channel_SetPan( soundChannel[player], 1.0f );
+		// SetPan pans the sound from -1 (full right) to 1 (full left.)
+		// which means player 0 should be 1 and player 1 should be -1.
+		// Except hard panning sounds kind of bad so player 0 should be 0.75
+		// and player 1 should be -0.75. The only problem is that solitaire,
+		// high score, and tutorial all use playstereo instead of playmono
+		FMOD_Channel_SetPan( soundChannel[player], 0.75f - 1.5f * player );
 		FMOD_Channel_GetFrequency( soundChannel[player], &oldFreq );
 		FMOD_Channel_SetFrequency( soundChannel[player], oldFreq * (16 + freq)/ 16 );
 		FMOD_Channel_SetPaused( soundChannel[player], false );
