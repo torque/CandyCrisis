@@ -42,6 +42,7 @@ int difficultyTicks, backdropTicks, backdropFrame;
 #define kFallingSplat -1
 #define kTitleItems 7
 #define kIncrementPerFrame 2
+#define kNewBlobFrequency 10
 #define kSplatType 4
 
 #define min(x,y) (((x)<(y))?(x):(y))
@@ -53,6 +54,7 @@ static int      startMenuTime = 0;
 static int      splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats];
 static SDL_Rect splatBlob[kNumSplats];
 static int      glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
+static int      newBlobCounter = 0;
 static SDL_Rect titleRect[kTitleItems] = {
 	{ .y = 155, .x = 203, .h = 52, .w = 223 }, // tutorial
 	{ .y = 225, .x = 179, .h = 56, .w = 272 }, // 1p
@@ -189,7 +191,7 @@ redo:
 		startMenuTime += skip;
 
 		// Add a new falling blob
-		if( glowUpdate == 0 )
+		if( newBlobCounter == 0 )
 		{
 			for( blob=0; blob<kNumSplats; blob++ )
 			{
@@ -207,6 +209,7 @@ redo:
 				}
 			}
 		}
+		newBlobCounter = (newBlobCounter + 1) % kNewBlobFrequency;
 
 		// Erase and redraw falling blobs and chunks
 
