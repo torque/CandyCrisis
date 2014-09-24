@@ -282,7 +282,7 @@ redo:
 					SurfaceBlitCharacter( smallFont, 'S', &dPoint, mBright, mBright >> 2, mBright >> 2, 1 );
 					missBright[count]--;
 				}
-				else if( (combo[count] >= 10) && (bright > 1) )
+				else if( (combo[count] >= 2) && (bright > 1) )
 				{
 					char  number[16] = { 0 };
 					char* scan;
@@ -335,7 +335,7 @@ redo:
 					}
 					else
 					{
-						if( combo[splatSide[blob]] >= 10 ) {
+						if( combo[splatSide[blob]] >= 2 ) {
 							missBright[splatSide[blob]] = 31;
 						}
 						combo[splatSide[blob]] = 0;
