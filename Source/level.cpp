@@ -41,6 +41,7 @@ int difficultyTicks, backdropTicks, backdropFrame;
 #define kIdleSplat -2
 #define kFallingSplat -1
 #define kTitleItems 7
+#define kTitleDefaultGlow 24
 #define kIncrementPerFrame 2
 #define kNewBlobFrequency 10
 #define kSplatType 4
@@ -53,16 +54,16 @@ static bool     shouldFullRepaint = false;
 static int      startMenuTime = 0;
 static int      splatState[kNumSplats], splatColor[kNumSplats], splatSide[kNumSplats];
 static SDL_Rect splatBlob[kNumSplats];
-static int      glowUpdate = 0, titleGlow[kTitleItems] = {24, 24, 24, 24, 24, 24, 24};
 static int      newBlobCounter = 0;
+static int      titleGlow[kTitleItems] = { kTitleDefaultGlow, kTitleDefaultGlow, kTitleDefaultGlow, kTitleDefaultGlow, kTitleDefaultGlow, kTitleDefaultGlow, kTitleDefaultGlow };
 static SDL_Rect titleRect[kTitleItems] = {
 	{ .y = 155, .x = 203, .h = 52, .w = 223 }, // tutorial
 	{ .y = 225, .x = 179, .h = 56, .w = 272 }, // 1p
 	{ .y = 297, .x = 182, .h = 55, .w = 272 }, // 2p
 	{ .y = 358, .x = 183, .h = 70, .w = 275 }, // solitaire
 	{ .y = 429, .x = 280, .h = 49, .w = 110 }, // high scores
-	{ .y = 433, .x = 390, .h = 44, .w = 56 }, // quit
-	{ .y = 430, .x = 187, .h = 49, .w = 93 }, // controls
+	{ .y = 433, .x = 390, .h = 44, .w =  56 }, // quit
+	{ .y = 430, .x = 187, .h = 49, .w =  93 }, // controls
 };
 
 const int kCursorWidth  = 32;
@@ -148,7 +149,7 @@ redo:
 
 	for( count=0; count<kTitleItems; count++ )
 	{
-		titleGlow[count] = 24;
+		titleGlow[count] = kTitleDefaultGlow;
 	}
 
 	for( count=0; count<kNumSplats; count++ )
@@ -391,37 +392,34 @@ redo:
 		}
 
 		// update glows
-		do
-		{
-			glowUpdate = (glowUpdate + 1) % 7;
+		for( int titleItem = 0; titleItem < kTitleItems; ++titleItem ) {
 
-			oldGlow = titleGlow[glowUpdate];
+			oldGlow = titleGlow[titleItem];
 
-			if( selected == glowUpdate )
-			{
-				titleGlow[glowUpdate] -= (4 * startSkip);
-				if( titleGlow[glowUpdate] < 0 ) titleGlow[glowUpdate] = 0;
+			if( selected == titleItem && titleGlow[titleItem] >= 0 ) {
+				titleGlow[titleItem] -= 1;
+
+				if( titleGlow[titleItem] < 0 ) {
+					titleGlow[titleItem] = 0;
+				}
+
+			} else if( titleGlow[titleItem] < kTitleDefaultGlow ) {
+				titleGlow[titleItem] += 1;
+
+				if( titleGlow[titleItem] > kTitleDefaultGlow ) {
+					titleGlow[titleItem] = kTitleDefaultGlow;
+				}
 			}
-			else
-			{
-				titleGlow[glowUpdate] += (4 * startSkip);
-				if( titleGlow[glowUpdate] > 24 ) titleGlow[glowUpdate] = 24;
-			}
 
-			if( titleGlow[glowUpdate] != oldGlow )
+			if( titleGlow[titleItem] != oldGlow )
 			{
 				SurfaceBlitColorOver(  gameStartSurface,       gameStartDrawSurface,
-				                      &titleRect[glowUpdate], &titleRect[glowUpdate],
-				                       0, 0, 0, titleGlow[glowUpdate] );
+				                      &titleRect[titleItem], &titleRect[titleItem],
+				                       0, 0, 0, titleGlow[titleItem] );
 
-				drawRect[kGlow] = titleRect[glowUpdate];
+				drawRect[kGlow] = titleRect[titleItem];
 			}
-
-			// do 5, 6, and 7 all at once because they're small
-			if( glowUpdate == 4 || glowUpdate == 5 )
-				continue;
 		}
-		while( 0 );
 
 		// Reinsert the cursor into the scene
 		InsertCursor( mouse, cursorBackSurface, gameStartDrawSurface );
