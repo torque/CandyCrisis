@@ -278,16 +278,18 @@ void CenterRectOnScreen( SDL_Rect *rect, double locationX, double locationY )
 
 void ReserveMonitor( void )
 {
-	SDL_Surface* icon;
-	SDL_Surface* mask;
 
 	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE | SDL_DOUBLEBUF );
 
+#if !OSXBUNDLE
+	SDL_Surface* icon;
+	SDL_Surface* mask;
 	icon = LoadPICTAsSurface( 10000, 16 );
 	mask = LoadPICTAsSurface( 10001, 1 );
 	SDL_WM_SetIcon( icon, (Uint8*) mask->pixels );
 	SDL_FreeSurface( icon );
 	SDL_FreeSurface( mask );
+#endif
 
 	SDL_ShowCursor( SDL_DISABLE );
 
