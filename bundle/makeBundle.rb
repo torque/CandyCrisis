@@ -18,12 +18,16 @@ class OSXBundle
 	LibraryName     = /\s*(.+?)[\(\s:]/
 	InfoPlistToken  = /#\{.+?\}/
 
-	def initialize( bundleName, infoPlist, icon, resources, *executables )
-		@executables  = executables
-		@baseAppDir   = "#{bundleName}.app/Contents"
-		@infoPlist    = infoPlist
-		@icon         = icon
-		@resources    = resources
+	def initialize( bundleName, contents )
+		appName       = "#{bundleName}.app"
+		if File.exists?( appName )
+			`rm -rf #{appName}`
+		end
+		@baseAppDir   = "#{appName}/Contents"
+		@infoPlist    = contents[:plist]
+		@icon         = contents[:icon]
+		@resources    = contents[:resources]
+		@executables  = contents[:executables]
 
 		@exeDirectory = "#{@baseAppDir}/MacOS"
 		# Copy all dylibs to the Frameworks directory in the app bundle even
@@ -38,7 +42,11 @@ class OSXBundle
 		# its non-system dependencies.
 		@libTree = {}
 		# Wildcards to be replaced in the plist.
-		@info = { 'VERSION' => getVersion( ) }
+		@info = {
+			'NAME' => bundleName,
+			'ICON' => File.basename(@icon, File.extname(@icon)),
+			'VERSION' => getVersion( )
+		}
 	end
 
 	def getVersion
@@ -50,14 +58,16 @@ class OSXBundle
 	end
 
 	def makeBundleSkeleton
-		`mkdir -p #{@exeDirectory} #{@libDirectory}`
-		`cp -R #{@resources} #{@resourceDir}`
+		`mkdir -p "#{@exeDirectory}" "#{@libDirectory}"`
+		@resources.each do |resource|
+			`cp -R "#{resource}" "#{@resourceDir}"`
+		end
 	end
 
 	# The icon goes in the bundle's resource directory. At least that's
 	# where XCode puts it.
 	def copyIcon
-		`cp #{@icon} #{@resourceDir}`
+		`cp -R "#{@icon}" "#{@resourceDir}"`
 	end
 
 	def copyPlistWithTokens
@@ -131,7 +141,7 @@ class OSXBundle
 
 	def copyExe
 		@executables.each do |exe|
-			`cp #{exe} #{@exeDirectory}`
+			`cp "#{exe}" "#{@exeDirectory}"`
 		end
 	end
 
@@ -151,10 +161,10 @@ class OSXBundle
 	def copyLibs
 		@masterLibList.each_value do |fixedLib|
 			if fixedLib != true
-				`cp #{fixedLib} #{@libDirectory}`
+				`cp "#{fixedLib}" "#{@libDirectory}"`
 				# Fucking homebrew stores installed libraries as read only for
 				# some reason that is beyond me.
-				`chmod 755 #{@libDirectory}/#{File.basename fixedLib}`
+				`chmod 755 "#{@libDirectory}/#{File.basename fixedLib}"`
 			end
 		end
 	end
@@ -171,7 +181,12 @@ class OSXBundle
 	end
 end
 
-CandyCrisis = OSXBundle.new( "CandyCrisis", "bundle/Info.plist", "bundle/CandyCrisis.icns", "CandyCrisisResources", "bundle/bundleShim.sh", "CandyCrisis" )
+CandyCrisis = OSXBundle.new( "Candy Crisis", {
+	:plist       => "bundle/Info.plist",
+	:icon        => "bundle/CandyCrisis.icns",
+	:resources   => [ "CandyCrisisResources" ],
+	:executables => [ "bundle/bundleShim.sh", "CandyCrisis" ]
+})
 CandyCrisis.makeBundleSkeleton
 CandyCrisis.copyIcon
 CandyCrisis.copyPlistWithTokens
