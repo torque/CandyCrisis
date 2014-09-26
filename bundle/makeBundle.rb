@@ -21,7 +21,7 @@ class OSXBundle
 	def initialize( bundleName, contents )
 		appName       = "#{bundleName}.app"
 		if File.exists?( appName )
-			`rm -rf #{appName}`
+			`rm -rf "#{appName}"`
 		end
 		@baseAppDir   = "#{appName}/Contents"
 		@infoPlist    = contents[:plist]
