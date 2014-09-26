@@ -163,7 +163,7 @@ SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 							SDL_HWSURFACE,
 							rect->w,
 							rect->h,
-							15,
+							16,
 							0x7C00, 0x03E0, 0x001F, 0x0000 );
 			break;
 
