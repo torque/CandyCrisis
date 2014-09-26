@@ -240,83 +240,76 @@ bool SDLU_IsForeground( void )
 
 int SDLU_EventFilter( const SDL_Event *event )
 {
-	// Put keydowns in a buffer
-	if( event->type == SDL_KEYDOWN )
-	{
-		if(    s_interestedInTyping
-		    && event->key.keysym.sym < 300
-		    && s_keyBufferFilled < sizeof(s_keyBufferASCII) )
-		{
-			s_keyBufferFilled++;
-			s_keyBufferASCII[s_keyBufferPutAt] = event->key.keysym.unicode;
-			s_keyBufferSDL  [s_keyBufferPutAt] = event->key.keysym.sym;
-			s_keyBufferPutAt = (s_keyBufferPutAt + 1) % sizeof(s_keyBufferASCII);
-		}
+	switch( event->type ) {
+		// Put keydowns in a buffer
+		case SDL_KEYDOWN:
+			if(    s_interestedInTyping
+			    && event->key.keysym.sym < 300
+			    && s_keyBufferFilled < sizeof(s_keyBufferASCII) )
+			{
+				s_keyBufferFilled++;
+				s_keyBufferASCII[s_keyBufferPutAt] = event->key.keysym.unicode;
+				s_keyBufferSDL  [s_keyBufferPutAt] = event->key.keysym.sym;
+				s_keyBufferPutAt = (s_keyBufferPutAt + 1) % sizeof(s_keyBufferASCII);
+			}
 
-		if(    (event->key.keysym.sym == SDLK_F4)
-		    && (event->key.keysym.mod & (KMOD_LALT | KMOD_RALT)) )
-		{
+			if( ((event->key.keysym.sym == SDLK_F4) &&
+			    (event->key.keysym.mod & (KMOD_LALT | KMOD_RALT))) ||
+			    ((event->key.keysym.sym == SDLK_q) &&
+			    (event->key.keysym.mod & (KMOD_LMETA | KMOD_RMETA))) )
+			{
+				finished = true;
+			}
+
+			break;
+
+		case SDL_MOUSEBUTTONDOWN:
+			if( event->button.button == SDL_BUTTON_LEFT )
+				s_mouseButton = true;
+
+			s_mousePosition.y = event->button.y;
+			s_mousePosition.x = event->button.x;
+			break;
+
+		case SDL_MOUSEBUTTONUP:
+			if( event->button.button == SDL_BUTTON_LEFT )
+				s_mouseButton = false;
+
+			s_mousePosition.y = event->button.y;
+			s_mousePosition.x = event->button.x;
+			break;
+
+		case SDL_MOUSEMOTION:
+			s_mousePosition.y = event->motion.y;
+			s_mousePosition.x = event->motion.x;
+			s_mouseButton = event->motion.state & SDL_BUTTON(1);
+			break;
+
+		case SDL_QUIT:
 			finished = true;
-		}
+			break;
 
-		return 0;
+		// Handle gaining and losing focus (kind of cheesy)
+		case SDL_ACTIVEEVENT:
+			if( (event->active.state & SDL_APPINPUTFOCUS) )
+			{
+				if( !event->active.gain && s_isForeground )
+				{
+					FreezeGameTickCount();
+					PauseMusic();
+					s_isForeground = false;
+				}
+				else if( event->active.gain && !s_isForeground )
+				{
+					UnfreezeGameTickCount();
+					ResumeMusic();
+					s_isForeground = true;
+
+					DoFullRepaint();
+				}
+			}
+			break;
 	}
-
-	// Get mouse state
-	if( event->type == SDL_MOUSEBUTTONDOWN )
-	{
-		if( event->button.button == SDL_BUTTON_LEFT )
-			s_mouseButton = true;
-
-		s_mousePosition.y = event->button.y;
-		s_mousePosition.x = event->button.x;
-		return 0;
-	}
-
-	if( event->type == SDL_MOUSEBUTTONUP )
-	{
-		if( event->button.button == SDL_BUTTON_LEFT )
-			s_mouseButton = false;
-
-		s_mousePosition.y = event->button.y;
-		s_mousePosition.x = event->button.x;
-		return 0;
-	}
-
-	if( event->type == SDL_MOUSEMOTION )
-	{
-		s_mousePosition.y = event->motion.y;
-		s_mousePosition.x = event->motion.x;
-		s_mouseButton = event->motion.state & SDL_BUTTON(1);
-		return 0;
-	}
-
-	if( event->type == SDL_QUIT )
-	{
-		finished = true;
-		return 0;
-	}
-
-	// Handle gaining and losing focus (kind of cheesy)
-	if( event->type == SDL_ACTIVEEVENT && (event->active.state & SDL_APPINPUTFOCUS) )
-	{
-		if( !event->active.gain && s_isForeground )
-		{
-			FreezeGameTickCount();
-			PauseMusic();
-            s_isForeground = false;
-		}
-		else if( event->active.gain && !s_isForeground )
-		{
-			UnfreezeGameTickCount();
-			ResumeMusic();
-            s_isForeground = true;
-
-			DoFullRepaint();
-		}
-	}
-
-	// We never poll for events, we just process them here, so discard everything.
 	return 0;
 }
 
