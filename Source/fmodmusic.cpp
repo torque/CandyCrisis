@@ -65,10 +65,10 @@ void ChooseMusic( short which )
 
 	if( which >= 0 && which <= kSongs )
 	{
-		result = FMOD_System_CreateStream( fmodSystem, QuickResourceName( "mod", which+128, ".mod" ), FMOD_SOFTWARE | FMOD_LOOP_NORMAL, 0, &music );
+		result = FMOD_System_CreateStream( fmodSystem, QuickResourceName( "mod", which+128, ".mod" ), FMOD_LOOP_NORMAL, NULL, &music );
 		if( result == FMOD_OK )
 		{
-			result = FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, music, !musicOn, &musicChannel );
+			result = FMOD_System_PlaySound( fmodSystem, music, NULL, !musicOn, &musicChannel );
 
 			if( result == FMOD_OK )
 			{

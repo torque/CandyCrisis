@@ -17,7 +17,7 @@ static FMOD_CHANNEL *soundChannel[3];
 
 void InitSound( void )
 {
-	if( FMOD_System_Create( &fmodSystem ) != FMOD_OK )
+	if( FMOD_System_Create( &fmodSystem, FMOD_VERSION ) != FMOD_OK )
 	{
 		musicOn = soundOn = false;
 		return;
@@ -26,7 +26,7 @@ void InitSound( void )
 
 	for( int index = 0; index < kNumSounds; ++index )
 	{
-		result = FMOD_System_CreateStream( fmodSystem, QuickResourceName( "snd", index+128, ".wav" ), FMOD_SOFTWARE | FMOD_LOOP_OFF, NULL, &sound[index] );
+		result = FMOD_System_CreateStream( fmodSystem, QuickResourceName( "snd", index+128, ".wav" ), FMOD_LOOP_OFF, NULL, &sound[index] );
 		if( result != FMOD_OK )
 		{
 			musicOn = soundOn = false;
@@ -39,7 +39,7 @@ void PlayMono( short which )
 {
 	if( soundOn )
 	{
-		FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, sound[which], false, &soundChannel[2]);
+		FMOD_System_PlaySound( fmodSystem, sound[which], NULL, false, &soundChannel[2]);
 	}
 }
 
@@ -53,7 +53,7 @@ void PlayStereoFrequency( short player, short which, short freq )
 	if( soundOn )
 	{
 		float oldFreq;
-		FMOD_System_PlaySound( fmodSystem, FMOD_CHANNEL_FREE, sound[which], true, &soundChannel[player] );
+		FMOD_System_PlaySound( fmodSystem, sound[which], NULL, true, &soundChannel[player] );
 		// SetPan pans the sound from -1 (full left) to 1 (full right).
 		// which means player 0 should be -1 and player 1 should be 1.
 		// Except hard panning sounds kind of bad so player 0 should be
