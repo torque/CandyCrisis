@@ -6,23 +6,24 @@
 # Set all of the linked libraries in the executable to @rpath/library.dylib
 # For dependencies of the linked libraries, set them to be @loader_path/library.dylib.
 
+require 'optparse'
+
 class OSXBundle
 
 	SystemLibDirs   = /^(\/System\/Library|\/usr\/lib)/
 	# https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/dyld.1.html
 	# The default DYLD_FALLBACK_LIBRARY_PATH is $(HOME)/lib:/usr/local/lib:/lib:/usr/lib.
-
-	# If a linked library is not found by its install name it is searched
-	# for in the paths in DYLD_FALLBACK_LIBRARY_PATH.
-	DefaultLibPaths = ENV['DYLD_FALLBACK_LIBRARY_PATH']? ENV['DYLD_FALLBACK_LIBRARY_PATH'].split(':'): ["#{ENV['HOME']}/lib", "/usr/local/lib", "/lib", "/usr/lib"]
+	# the DYLD_FALLBACK_LIBRARY_PATH variable itself never makes it into the ruby interpreter
+	DefaultLibPaths = ["#{ENV['HOME']}/lib", "/usr/local/lib", "/lib", "/usr/lib"]
 	LibraryName     = /\s*(.+?)[\(\s:]/
 	InfoPlistToken  = /#\{.+?\}/
 
-	def initialize( bundleName, contents )
+	def initialize( bundleName, searchPaths, contents )
 		appName       = "#{bundleName}.app"
 		if File.exists?( appName )
 			`rm -rf "#{appName}"`
 		end
+		@searchPaths  = searchPaths + DefaultLibPaths
 		@baseAppDir   = "#{appName}/Contents"
 		@infoPlist    = contents[:plist]
 		@icon         = contents[:icon]
@@ -86,7 +87,7 @@ class OSXBundle
 	def fixLib( lib )
 		filename = File.basename lib
 		errMessage = "Could not find library #{lib}. Searched the following paths:\n"
-		DefaultLibPaths.each do |path|
+		@searchPaths.each do |path|
 			fullLibPath = "#{path}/#{filename}"
 			errMessage += "-> #{fullLibPath}\n"
 			if File.exist? fullLibPath
@@ -111,6 +112,10 @@ class OSXBundle
 			lines = linkedLibs.split( /\n/ )
 			lines.each do |lib|
 				fixedLib = lib = lib.match( LibraryName )[1]
+				if lib.match( SystemLibDirs )
+					next
+				end
+
 				unless File.exist? lib
 					fixedLib = fixLib lib
 				end
@@ -118,7 +123,7 @@ class OSXBundle
 				# so we have to make sure we don't end up recursing infinitely.
 				# The library basename should include version numbers and be
 				# unique.
-				unless lib.match( SystemLibDirs ) || File.basename( lib ) == File.basename( exe )
+				unless File.basename( lib ) == File.basename( exe )
 					# The library needs to be added to libTree even if it's been
 					# seen before.
 					@libTree[exe] << lib
@@ -181,11 +186,24 @@ class OSXBundle
 	end
 end
 
-CandyCrisis = OSXBundle.new( "Candy Crisis", {
+options = {:searchPaths => [], :output => "Candy Crisis"}
+OptionParser.new do |parser|
+  parser.on("-e", "--executable EXECUTABLE", "Executable to bundle") do |exe|
+    options[:executable] = exe
+  end
+  parser.on("-l", "--library-search-path PATH", "path for more library searching") do |path|
+  	options[:searchPaths].append path
+  end
+  parser.on("-o", "--output PATH") do |output|
+  	options[:output] = output
+  end
+end.parse!
+
+CandyCrisis = OSXBundle.new( options[:output], options[:searchPaths], {
 	:plist       => "bundle/Info.plist",
 	:icon        => "bundle/CandyCrisis.icns",
 	:resources   => [ "CandyCrisisResources" ],
-	:executables => [ "bundle/bundleShim.sh", "CandyCrisis" ]
+	:executables => [ "bundle/bundleShim.sh", options[:executable] ]
 })
 CandyCrisis.makeBundleSkeleton
 CandyCrisis.copyIcon
