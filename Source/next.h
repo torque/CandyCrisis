@@ -1,7 +1,7 @@
 // next.h
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 
 void InitNext( void );

@@ -1,6 +1,6 @@
 // next.c
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "next.h"

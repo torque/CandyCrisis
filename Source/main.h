@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 void Initialize( void );
 void RetrieveResources( void );
@@ -267,6 +267,7 @@ enum
 #define pi 3.1415926535898
 
 extern SDL_Surface* frontSurface;
+extern SDL_Window *mainWindow;
 
 extern signed char nextA[2], nextB[2], nextM[2], nextG[2], colorA[2], colorB[2],
     blobX[2], blobY[2], blobR[2], blobSpin[2], speed[2], role[2], halfway[2],

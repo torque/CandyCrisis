@@ -1,7 +1,7 @@
 // blitter.c
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_endian.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_endian.h>
 #include "SDLU.h"
 
 #include "blitter.h"

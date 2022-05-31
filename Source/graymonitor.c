@@ -1,6 +1,6 @@
 // graymonitor.c
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "graymonitor.h"

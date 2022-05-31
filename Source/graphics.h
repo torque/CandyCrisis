@@ -1,7 +1,7 @@
 // graphics.h
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 void DrawSpriteBlobs( int player, int type );
 void EraseSpriteBlobs( int player );

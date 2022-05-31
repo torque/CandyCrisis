@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "hiscore.h"
@@ -259,7 +259,7 @@ void ShowHiscore( void )
 	SDLU_ReleaseSurface( hiScoreSurface );
 
 	SDL_FillRect( frontSurface, &frontSurface->clip_rect, SDL_MapRGB( frontSurface->format, 0, 0, 0 ));
-	SDL_Flip( frontSurface );
+	SDL_UpdateWindowSurface( mainWindow );
 
 	FadeScreen( hiScoreSurface, fadeSurface, 31, -32 );
 	do { } while( !AnyKeyIsPressed( ) && !SDLU_Button() );

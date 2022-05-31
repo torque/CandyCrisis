@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "graphics.h"
@@ -160,7 +160,7 @@ void ShowTitle( void )
 
 	DrawPICTInSurface( frontSurface, picTitle );
 
-	SDL_Flip( frontSurface );
+	SDL_UpdateWindowSurface( mainWindow );
 
 	QuickFadeIn();
 
@@ -178,6 +178,6 @@ void ShowTitle( void )
 	QuickFadeOut();
 
 	SDL_FillRect( frontSurface, &frontSurface->clip_rect, SDL_MapRGB( frontSurface->format, 0, 0, 0 ) );
-	SDL_Flip( frontSurface );
+	SDL_UpdateWindowSurface( mainWindow );
 }
 

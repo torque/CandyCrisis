@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "players.h"

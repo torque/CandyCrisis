@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "pause.h"
@@ -703,7 +703,7 @@ static void DrawControlsContents( int *item, int shade )
 		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );
 		SurfaceBlitCharacter( dashedLineFont, '.', &dPoint, r, g, b, 0 );  // 80 pixels across
 
-		controlName = SDL_GetKeyName( playerKeys[index & 1][index >> 1] );
+		controlName = SDL_GetScancodeName( playerKeys[index & 1].array[index >> 1] );
 		if( controlName == NULL ) controlName = "{";
 
 		dPoint.y = 231 + ((index & ~1) * 13);
@@ -751,7 +751,7 @@ static void DrawPauseContents( int *item, int shade )
 	SDLU_ReleaseSurface( drawSurface );
 }
 
-static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool ContinueSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Scancode )
 {
 	SDL_Rect yes = { .y = 280, .x = 220, .h = 20, .w = 40 };
 	SDL_Rect no  = { .y = 280, .x = 400, .h = 20, .w = 40 };
@@ -778,14 +778,14 @@ static bool ContinueSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 	return( SDLU_Button( ) && (*item != kNothing) );
 }
 
-static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool HiScoreSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Scancode )
 {
 	int nameLength;
 
 	nameLength = strlen(highScoreName);
 
-	switch( inSDLKey ) {
-		case SDLK_RETURN:
+	switch( inSDL_Scancode ) {
+		case SDL_SCANCODE_RETURN:
 			if( nameLength > 0 )
 			{
 				*item = kResume;
@@ -798,7 +798,7 @@ static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 			}
 			break;
 
-		case SDLK_BACKSPACE:
+		case SDL_SCANCODE_BACKSPACE:
 			if( nameLength > 0 )
 			{
 				highScoreName[ nameLength-1 ] = '\0';
@@ -821,7 +821,7 @@ static bool HiScoreSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 }
 
 
-static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool ControlsSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Scancode )
 {
 	SDLU_Point  p;
 	SDL_Rect    dRect;
@@ -877,9 +877,9 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 		}
 	}
 
-	if( inSDLKey != 0 && controlToReplace != -1 )
+	if( inSDL_Scancode != 0 && controlToReplace != -1 )
 	{
-		playerKeys[controlToReplace & 1][controlToReplace >> 1] = inSDLKey;
+		playerKeys[controlToReplace & 1].array[controlToReplace >> 1] = inSDL_Scancode;
 		controlToReplace = -1;
 	}
 
@@ -889,7 +889,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 }
 
 
-static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
+static bool PauseSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Scancode )
 {
 	SDL_Rect targetRect[] =
 	{
@@ -943,7 +943,7 @@ static bool PauseSelected( int *item, unsigned char inKey, SDLKey inSDLKey )
 
 				case kPauseGame:
 					PlayMono( kClick );
-					SDL_WM_IconifyWindow();
+					// SDL_WM_IconifyWindow();
                     WaitForRegainFocus();
 					ItsTimeToRedraw();
 					return false;
@@ -984,7 +984,7 @@ void HandleDialog( int type )
 	int            skip = 1;
 	int            count;
 	char           inASCII;
-	SDLKey         inSDLKey;
+	SDL_Scancode   inSDL_Scancode;
 	SDL_Rect       pauseRect, joinRect;
 
 	// Clear state
@@ -1054,11 +1054,11 @@ void HandleDialog( int type )
 		dialogTimer += skip;
 
 		// Check mouse and keyboard
-		SDLU_CheckTyping( &inASCII, &inSDLKey );
+		SDLU_CheckTyping( &inASCII, &inSDL_Scancode );
 
 		if( (dialogStage == kOpening) && dialogStageComplete )
 		{
-			bool (*DialogSelected[kNumDialogs])( int *item, unsigned char inKey, SDLKey inSDLKey ) =
+			bool (*DialogSelected[kNumDialogs])( int *item, unsigned char inKey, SDL_Scancode inSDL_Scancode ) =
 			{
 				PauseSelected,
 				HiScoreSelected,
@@ -1066,7 +1066,7 @@ void HandleDialog( int type )
 				ControlsSelected
 			};
 
-			if( DialogSelected[dialogType]( &dialogItem, inASCII, inSDLKey ) )
+			if( DialogSelected[dialogType]( &dialogItem, inASCII, inSDL_Scancode ) )
 			{
 				dialogStage = kClosing;
 				dialogTarget = 0;

@@ -1,7 +1,7 @@
 // gworld.h
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #define kBlobHorizSize 24
 #define kBlobVertSize 24

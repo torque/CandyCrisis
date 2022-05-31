@@ -7,8 +7,9 @@
 ///
 
 #include <stdio.h>
+#include <string.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "gameticks.h"
@@ -30,7 +31,7 @@ static bool         s_isForeground = true;
 // for checktyping
 static bool         s_interestedInTyping = false;
 static char         s_keyBufferASCII[16] = { 0 };
-static SDLKey       s_keyBufferSDL[16]   = { (SDLKey) 0};
+static SDL_Scancode s_keyBufferSDL[16]   = { [0 ... 15] = SDL_SCANCODE_UNKNOWN };
 static int          s_keyBufferPullFrom = 0;
 static int          s_keyBufferPutAt = 0;
 static int          s_keyBufferFilled = 0;
@@ -76,20 +77,22 @@ static void	SDLUi_Blit8BitTo1Bit( SDL_Surface* surface8, SDL_Rect* rect8,
 	}
 }
 
-static void SDLUi_SetGrayscaleColors( SDL_Surface* surface )
+static void SDLUi_SetGrayscalePalette( SDL_Surface* surface )
 {
-	SDL_Color  grayscalePalette[256];
-	int        index;
+	// save allocating/freeing another palette by knowing that it gets allocated
+	// when the surface is created
 
-	for( index=0; index<256; index++ )
-	{
-		grayscalePalette[index].r =
-		grayscalePalette[index].g =
-		grayscalePalette[index].b = 255 - index;
-		grayscalePalette[index].unused = 0;
+	// SDL_Palette *palette = SDL_AllocPalette(256);
+
+	for ( unsigned int index = 0; index < 256; index++ ) {
+		uint8_t gray = 255 - index;
+		surface->format->palette->colors[index] = (SDL_Color){
+			.r = gray, .g = gray, .b = gray,
+		};
 	}
 
-	SDL_SetColors( surface, grayscalePalette, 0, 256 );
+	// SDL_SetSurfacePalette( surface, palette );
+	// SDL_FreePalette( palette );
 }
 
 int SDLU_BlitSurface( SDL_Surface* src, SDL_Rect* srcrect,
@@ -153,40 +156,21 @@ void SDLU_ChangeSurfaceDepth( SDL_Surface** surface, int depth )
 SDL_Surface* SDLU_InitSurface( const SDL_Rect* rect, int depth )
 {
 	SDL_Surface*    surface = NULL;
-	SDL_Color       k_oneBitPalette[2] = { { 0xFF, 0xFF, 0xFF, 0x00 },
-	                                       { 0x00, 0x00, 0x00, 0x00 }  };
 
 	switch( depth )
 	{
 		case 16:
-			surface = SDL_CreateRGBSurface(
-							SDL_HWSURFACE,
-							rect->w,
-							rect->h,
-							16,
-							0x7C00, 0x03E0, 0x001F, 0x0000 );
+			surface = SDL_CreateRGBSurfaceWithFormat(0, rect->w, rect->h, 16, SDL_PIXELFORMAT_XRGB1555);
 			break;
 
 		case 8:
-			surface = SDL_CreateRGBSurface(
-							SDL_HWSURFACE,
-							rect->w,
-							rect->h,
-							8,
-							0, 0, 0, 0 );
-
-			SDLUi_SetGrayscaleColors( surface );
+			surface = SDL_CreateRGBSurfaceWithFormat(0, rect->w, rect->h, 8, SDL_PIXELFORMAT_INDEX8);
+			SDLUi_SetGrayscalePalette( surface );
 			break;
 
 		case 1:
-			surface = SDL_CreateRGBSurface(
-							SDL_HWSURFACE,
-							rect->w,
-							rect->h,
-							1,
-							0, 0, 0, 0 );
-
-			SDL_SetColors( surface, k_oneBitPalette, 0, 2 );
+			// this automatically sets up the palette
+			surface = SDL_CreateRGBSurfaceWithFormat(0, rect->w, rect->h, 1, SDL_PIXELFORMAT_INDEX1LSB);
 			break;
 	}
 
@@ -209,7 +193,7 @@ void SDLU_BlitFrontSurface( SDL_Surface* source, SDL_Rect* sourceSDLRect, SDL_Re
 
 	unsigned long thisTick = MTickCount();
 	if ( thisTick > lastTick + 1 ) {
-		SDL_Flip( frontSurface );
+		SDL_UpdateWindowSurface( mainWindow );
 		lastTick = thisTick;
 	}
 }
@@ -238,7 +222,7 @@ bool SDLU_IsForeground( void )
 	return s_isForeground;
 }
 
-int SDLU_EventFilter( const SDL_Event *event )
+int SDLU_EventFilter( void *userdata, SDL_Event *const event )
 {
 	switch( event->type ) {
 		// Put keydowns in a buffer
@@ -248,19 +232,37 @@ int SDLU_EventFilter( const SDL_Event *event )
 			    && s_keyBufferFilled < sizeof(s_keyBufferASCII) )
 			{
 				s_keyBufferFilled++;
-				s_keyBufferASCII[s_keyBufferPutAt] = event->key.keysym.unicode;
-				s_keyBufferSDL  [s_keyBufferPutAt] = event->key.keysym.sym;
+				// TODO SDL2: this is wrong because it ignores modifiers and
+				// therefore letter case. SDL2 provides the SDL_TEXTINPUT
+				// event (and corresponding SDL_TextInputEvent struct) which
+				// contains a buffer of (one? null terminated? UTF-8?)
+				// character(s).
+				s_keyBufferASCII[s_keyBufferPutAt] = event->key.keysym.sym;
+				s_keyBufferSDL  [s_keyBufferPutAt] = event->key.keysym.scancode;
 				s_keyBufferPutAt = (s_keyBufferPutAt + 1) % sizeof(s_keyBufferASCII);
 			}
 
 			if( ((event->key.keysym.sym == SDLK_F4) &&
-			    (event->key.keysym.mod & (KMOD_LALT | KMOD_RALT))) ||
+			    (event->key.keysym.mod & KMOD_ALT)) ||
 			    ((event->key.keysym.sym == SDLK_q) &&
-			    (event->key.keysym.mod & (KMOD_LMETA | KMOD_RMETA))) )
+			    (event->key.keysym.mod & KMOD_GUI)) )
 			{
 				finished = true;
 			}
 
+			break;
+
+		case SDL_TEXTINPUT:
+			fprintf(stderr, "text input: %zu: %s\n", strnlen(event->text.text, SDL_TEXTINPUTEVENT_TEXT_SIZE), event->text.text);
+			// TODO: just check consecutive bytes < 128 because our fonts etc
+			// only accept ascii characters. Maybe we should do a lookup table
+			// based on the drawable characters. This is annoyingly coupled
+			// because pause.c has logic based on SDL keycodes mixed with ascii
+			// input (specifically, return and backspace for the high score
+			// name input). Those may get passed through as ascii characters
+			// here, but even if they do, it will require overhauling the
+			// dialog handling to be able to work with this, since the other
+			// keyboard dialog, the controls selector, uses only the keycodes.
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -290,23 +292,21 @@ int SDLU_EventFilter( const SDL_Event *event )
 			break;
 
 		// Handle gaining and losing focus (kind of cheesy)
-		case SDL_ACTIVEEVENT:
-			if( (event->active.state & SDL_APPINPUTFOCUS) )
-			{
-				if( !event->active.gain && s_isForeground )
-				{
-					FreezeGameTickCount();
-					PauseMusic();
-					s_isForeground = false;
-				}
-				else if( event->active.gain && !s_isForeground )
-				{
-					UnfreezeGameTickCount();
-					ResumeMusic();
-					s_isForeground = true;
+		case SDL_APP_WILLENTERBACKGROUND:
+			if (s_isForeground) {
+				FreezeGameTickCount();
+				PauseMusic();
+				s_isForeground = false;
+			}
+			break;
 
-					DoFullRepaint();
-				}
+		case SDL_APP_DIDENTERFOREGROUND:
+			if (!s_isForeground) {
+				UnfreezeGameTickCount();
+				ResumeMusic();
+				s_isForeground = true;
+
+				DoFullRepaint();
 			}
 			break;
 	}
@@ -316,20 +316,18 @@ int SDLU_EventFilter( const SDL_Event *event )
 void SDLU_StartWatchingTyping( void )
 {
 	s_interestedInTyping = true;
-	s_keyBufferFilled = s_keyBufferPullFrom = s_keyBufferPutAt = 0;
-	SDL_EnableUNICODE( 1 );
-	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
+	SDL_StartTextInput();
 }
 
 void SDLU_StopWatchingTyping( void )
 {
 	s_interestedInTyping = false;
-	SDL_EnableUNICODE( 0 );
-	SDL_EnableKeyRepeat( 0, 0 );
+	SDL_StopTextInput();
 }
 
-bool SDLU_CheckTyping( char* ascii, SDLKey* sdl )
+bool SDLU_CheckTyping( char* ascii, SDL_Scancode* sdl )
 {
+	// TODO: rip out the ascii character stuff
 	if( s_keyBufferFilled > 0 )
 	{
 		*ascii = s_keyBufferASCII[s_keyBufferPullFrom];
@@ -340,7 +338,7 @@ bool SDLU_CheckTyping( char* ascii, SDLKey* sdl )
 	}
 
 	*ascii = '\0';
-	*sdl   = SDLK_UNKNOWN;
+	*sdl   = SDL_SCANCODE_UNKNOWN;
 	return false;
 }
 

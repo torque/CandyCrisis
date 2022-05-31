@@ -1,7 +1,7 @@
 // blitter.h
 #pragma once
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "font.h"
 #include "main.h"

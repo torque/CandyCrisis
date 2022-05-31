@@ -1,7 +1,7 @@
 TARGET := CandyCrisis
 CC     := clang
 CFLAGS := -std=c99 -Wall -O3 -IFMOD/api/core/inc
-LIBS   := $(shell sdl-config --libs) -lSDL_image -LFMOD/api/core/lib -lfmod
+LIBS   := $(shell sdl2-config --libs) -lSDL2_image -LFMOD/api/core/lib -lfmod
 
 SOURCE_DIRS := Source
 SOURCES     := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))

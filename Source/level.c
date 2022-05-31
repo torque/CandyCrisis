@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "level.h"
@@ -522,7 +522,7 @@ redo:
 
 			DrawPICTInSurface( boardSurface[0], picBoard + currentID );
 			DrawPICTInSurface( frontSurface, picBackdrop + currentID );
-			SDL_Flip( frontSurface );
+			SDL_UpdateWindowSurface( mainWindow );
 
 			QuickFadeIn();
 			HandleDialog( kControlsDialog );
@@ -538,7 +538,7 @@ void ShowGameOverScreen( void )
 	QuickFadeOut();
 
 	DrawPICTInSurface( frontSurface, picGameOver );
-	SDL_Flip( frontSurface );
+	SDL_UpdateWindowSurface( mainWindow );
 
 	QuickFadeIn();
 	do

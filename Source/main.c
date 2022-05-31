@@ -13,8 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "SDLU.h"
 
 #include "main.h"
@@ -45,6 +45,7 @@
 
 
 SDL_Surface* frontSurface;
+SDL_Window *mainWindow;
 signed char  nextA[2], nextB[2], nextM[2], nextG[2], colorA[2], colorB[2],
              blobX[2], blobY[2], blobR[2], blobSpin[2], speed[2], role[2], halfway[2],
              control[2], dropping[2], magic[2], grenade[2], anim[2];
@@ -191,10 +192,10 @@ bool AnyKeyIsPressed( void )
 {
 	int index;
 	int arraySize;
-	unsigned char* pressedKeys;
+	const unsigned char* pressedKeys;
 
 	SDLU_PumpEvents();
-	pressedKeys = SDL_GetKeyState( &arraySize );
+	pressedKeys = SDL_GetKeyboardState( &arraySize );
 
 	// NUMLOCK, CAPSLOCK and friends are available as SDLK_[KEY] values
 	// 300 and up.
@@ -213,24 +214,18 @@ bool AnyKeyIsPressed( void )
 
 bool ControlKeyIsPressed( void )
 {
-	int arraySize;
-	unsigned char* pressedKeys;
-
 	SDLU_PumpEvents();
-	pressedKeys = SDL_GetKeyState( &arraySize );
+	SDL_Keymod mods = SDL_GetModState();
 
-	return pressedKeys[ SDLK_LCTRL ] || pressedKeys[ SDLK_RCTRL ];
+	return (bool)(mods & KMOD_CTRL);
 }
 
 bool OptionKeyIsPressed( void )
 {
-	int arraySize;
-	unsigned char* pressedKeys;
-
 	SDLU_PumpEvents();
-	pressedKeys = SDL_GetKeyState( &arraySize );
+	SDL_Keymod mods = SDL_GetModState();
 
-	return pressedKeys[ SDLK_LALT ] || pressedKeys[ SDLK_RALT ];
+	return (bool)(mods & KMOD_ALT);
 }
 
 void RetrieveResources( void )
@@ -279,21 +274,23 @@ void CenterRectOnScreen( SDL_Rect *rect, double locationX, double locationY )
 void ReserveMonitor( void )
 {
 
-	frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE | SDL_DOUBLEBUF );
+	// frontSurface = SDL_SetVideoMode( 640, 480, 16, SDL_HWSURFACE | SDL_DOUBLEBUF );
+	mainWindow = SDL_CreateWindow("Candy Crisis", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
+	frontSurface = SDL_GetWindowSurface( mainWindow );
 
 #if !OSXBUNDLE
 	SDL_Surface* icon;
-	SDL_Surface* mask;
+	// SDL_Surface* mask;
 	icon = LoadPICTAsSurface( 10000, 16 );
-	mask = LoadPICTAsSurface( 10001, 1 );
-	SDL_WM_SetIcon( icon, (Uint8*) mask->pixels );
+	// mask = LoadPICTAsSurface( 10001, 1 );
+	// TODO: need to blit mask onto icon, or actually modify the icon files to
+	// be pre-masked with alpha.
+	SDL_SetWindowIcon( mainWindow, icon );
 	SDL_FreeSurface( icon );
-	SDL_FreeSurface( mask );
+	// SDL_FreeSurface( mask );
 #endif
 
 	SDL_ShowCursor( SDL_DISABLE );
-
-	SDL_WM_SetCaption( "Candy Crisis", "CandyCrisis" );
 }
 
 void ReleaseMonitor( void )
@@ -342,14 +339,14 @@ void Initialize( void )
 	strcpy( candyCrisisResources, "CandyCrisisResources/" );
 #endif
 
-	if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
+	if( SDL_Init( SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO ) < 0 )
 	{
 		Error( "SDL_Init failed" );
 	}
 
 	atexit( SDL_Quit );
 
-	SDL_SetEventFilter( SDLU_EventFilter );
+	SDL_SetEventFilter( SDLU_EventFilter, NULL );
 }
 
 void QuickFadeIn( void )

@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "SDLU.h"
 
 #include "tutorial.h"
@@ -113,7 +113,7 @@ void StartBalloon( const char *message )
 
 			search[0] = '%';
 			search[1] = 's';
-			sprintf( temp, balloonMsg, SDL_GetKeyName( playerKeys[1][replace] ) );
+			sprintf( temp, balloonMsg, SDL_GetScancodeName( playerKeys[0].array[replace] ) );
 			strcpy( balloonMsg, temp );
 		}
 	}
