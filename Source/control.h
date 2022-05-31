@@ -1,6 +1,8 @@
 // control.h
 #pragma once
 
+#include <stdbool.h>
+
 #include "main.h"
 
 void PlayerControl( int player );

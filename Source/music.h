@@ -1,6 +1,8 @@
 // music.h
 #pragma once
 
+#include <stdbool.h>
+
 void PauseMusic( void );
 void ResumeMusic( void );
 void FastMusic( void );

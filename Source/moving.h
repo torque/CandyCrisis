@@ -1,6 +1,8 @@
 // moving.h
 #pragma once
 
+#include <stdbool.h>
+
 bool CanMoveDirection( int player, int dirX, int dirY );
 void CalcSecondBlobOffset( int player, int *x, int *y );
 bool CanGoLeft( int player );

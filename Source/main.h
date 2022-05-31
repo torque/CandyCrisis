@@ -1,6 +1,8 @@
 // main.h
 #pragma once
 
+#include <stdbool.h>
+
 #include <SDL/SDL.h>
 
 void Initialize( void );

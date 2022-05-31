@@ -1,11 +1,11 @@
 TARGET := CandyCrisis
-CXX    := clang++
-CFLAGS := -Wall -O3
-LIBS   := $(shell sdl-config --libs) -lSDL_image -lfmodex
+CC     := clang
+CFLAGS := -std=c99 -Wall -O3 -IFMOD/api/core/inc
+LIBS   := $(shell sdl-config --libs) -lSDL_image -LFMOD/api/core/lib -lfmod
 
 SOURCE_DIRS := Source
-SOURCES     := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.cpp))
-OBJECTS     := $(SOURCES:.cpp=.o)
+SOURCES     := $(foreach dir, $(SOURCE_DIRS), $(wildcard $(dir)/*.c))
+OBJECTS     := $(SOURCES:.c=.o)
 
 .PHONY: all debug clean osxbundle
 
@@ -23,11 +23,11 @@ osxbundle: all
 
 $(TARGET): $(OBJECTS)
 	@echo LINK $@
-	@$(CXX) $^ $(LIBS) -o $@
+	@$(CC) $^ $(LIBS) -o $@
 
-%.o: %.cpp
-	@echo CXX $@
-	@$(CXX) $(CFLAGS) -c $< -o $@
+%.o: %.c
+	@echo CC   $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(TARGET)

@@ -28,28 +28,29 @@
 
 #define min(x,y) (((x)<(y))?(x):(y))
 
-Combo defaultBest =
-{
-	/*bestGrid[kGridAcross][kGridDown] = */
-	.grid = { { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,      1,      1,      1,      2,      2 },
-	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,      1,      1 },
-	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty },
-	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty } },
-	.a  = 2, // blob type of a segment
-	.b  = 2, // blob type of b segment
-	.m  = false,
-	.g  = false,
-	.lv = kTutorialLevel, // level to be displayed on high score playback.
-	.x  = 1,
-	.r  = upRotate,
-	.player = 0,
-	.value = (40*1) + (50*9),
-	.name = "Tutorial"
-};
+#define DEFAULT_BEST { \
+	/*bestGrid[kGridAcross][kGridDown] = */ \
+	.grid = { { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty }, \
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty }, \
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,      1,      1,      1,      2,      2 }, \
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty,      1,      1 }, \
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty }, \
+	          { kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty, kEmpty } }, \
+	.a  = 2, /*blob type of a segment*/ \
+	.b  = 2, /*blob type of b segment*/ \
+	.m  = false, \
+	.g  = false, \
+	.lv = kTutorialLevel, /*level to be displayed on high score playback.*/ \
+	.x  = 1, \
+	.r  = upRotate, \
+	.player = 0, \
+	.value = (40*1) + (50*9), \
+	.name = "Tutorial" \
+}
 
-Combo best = defaultBest;
+Combo defaultBest = DEFAULT_BEST;
+
+Combo best = DEFAULT_BEST;
 
 Combo evenBetter;
 Combo potentialCombo[2];

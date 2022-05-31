@@ -1,6 +1,8 @@
 // soundfx.h
 #pragma once
 
+#include <stdbool.h>
+
 void InitSound( void );
 void PlayStereo( short player, short which );
 void PlayStereoFrequency( short player, short which, short freq );

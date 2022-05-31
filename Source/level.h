@@ -1,6 +1,8 @@
 // level.h
 #pragma once
 
+#include <stdbool.h>
+
 void InitGame( int player1, int player2 );
 bool InitCharacter( int player, int level );
 void PrepareStageGraphics( int type );

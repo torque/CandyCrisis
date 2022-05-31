@@ -1,6 +1,8 @@
 //  SDLU.h
 #pragma once
 
+#include <stdbool.h>
+
 typedef struct SDLU_Point
 {
 	int x;
