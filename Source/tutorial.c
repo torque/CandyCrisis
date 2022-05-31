@@ -24,7 +24,7 @@
 
 SDL_Rect        balloonRect;
 SkittlesFontPtr balloonFont;
-SDLU_Point      balloonPt;
+SDL_Point      balloonPt;
 char*           balloonChar;
 char            balloonMsg[256];
 int             balloonTime, tutorialTime;
@@ -97,7 +97,7 @@ void StopBalloon( void )
 
 void StartBalloon( const char *message )
 {
-	SDLU_Point  balloonTip, balloonFill;
+	SDL_Point  balloonTip, balloonFill;
 	int         replace;
 	const char *match[] = { "~~", "||", "``", "{{" };
 	char       *search;

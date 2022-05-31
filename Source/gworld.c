@@ -102,7 +102,7 @@ void SurfaceDrawBlob( int player, const SDL_Rect *myRect, int blob, int state, i
 void SurfaceDrawShadow( const SDL_Rect *myRect, int blob, int state )
 {
 	int x;
-	SDLU_Point offset[4] = {
+	SDL_Point offset[4] = {
 		{ .y = -2, .x =  0 },
 		{ .y =  0, .x = -2 },
 		{ .y =  2, .x =  0 },

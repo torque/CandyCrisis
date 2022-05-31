@@ -57,7 +57,7 @@ SDL_Rect     playerWindowZRect, playerWindowRect[2];
 bool         playerWindowVisible[2] = { true, true };
 KeyList      hitKey[2];
 int          backgroundID = -1;
-SDLU_Point   blobWindow[8][2];
+SDL_Point   blobWindow[8][2];
 void         (*DoFullRepaint)() = NoPaint;
 bool         needsRefresh = false;
 
@@ -261,7 +261,7 @@ void RetrieveResources( void )
 
 void CenterRectOnScreen( SDL_Rect *rect, double locationX, double locationY )
 {
-	SDLU_Point dest = { .x = 0, .y = 0 };
+	SDL_Point dest = { .x = 0, .y = 0 };
 
 	dest.x = (int)(locationX * (640 - (rect->w)));
 	dest.x &= ~3; // floor x position to mod4 for some reason.

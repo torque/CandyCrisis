@@ -177,7 +177,7 @@ void ShowHiscore( void )
 	SDL_Rect         fullSDLRect = { 0, 0, 640, 480 };
 	SkittlesFontPtr  font;
 	SDL_Color        anyColor;
-	SDLU_Point           dPoint;
+	SDL_Point           dPoint;
 	const char*      highScores = "HIGH SCORES";
 	int              r, g, b;
 
@@ -293,7 +293,7 @@ void ShowBestCombo( void )
 	SkittlesFontPtr font;
 	const char *bestCombo = "BEST COMBO", *constScan;
 	char bestInfo[256], *scan;
-	SDLU_Point dPoint;
+	SDL_Point dPoint;
 	int levelCap;
 
 	font = GetFont( picHiScoreFont );

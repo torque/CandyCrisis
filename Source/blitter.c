@@ -474,7 +474,7 @@ void SurfaceBlitWeightedDualAlpha( SDL_Surface* back,        SDL_Surface* source
 	}
 }
 
-void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int alpha )
+void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDL_Point *dPoint, int r, int g, int b, int alpha )
 {
 	if( alpha == 31 )
 	{
@@ -548,7 +548,7 @@ void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDL
 	}
 }
 
-void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int dropShadow )
+void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDL_Point *dPoint, int r, int g, int b, int dropShadow )
 {
 	SDL_Surface*    destSurface = SDLU_GetCurrentSurface();
 	unsigned char*  src;

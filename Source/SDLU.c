@@ -23,7 +23,7 @@ static SDL_Surface* s_acquireList[k_acquireMax];
 
 // for button and getmouse
 static int          s_mouseButton;
-static SDLU_Point   s_mousePosition;
+static SDL_Point   s_mousePosition;
 
 // for event loop
 static bool         s_isForeground = true;
@@ -342,7 +342,7 @@ bool SDLU_CheckTyping( char* ascii, SDL_Scancode* sdl )
 	return false;
 }
 
-void SDLU_GetMouse( SDLU_Point* pt )
+void SDLU_GetMouse( SDL_Point* pt )
 {
 	SDLU_PumpEvents();
 	*pt = s_mousePosition;
@@ -373,14 +373,6 @@ void SDLU_ReleaseSurface( SDL_Surface* surface )
 		Error( "SDLU_ReleaseSurface: underflow" );
 
 	s_acquireHead--;
-}
-
-bool SDLU_PointInRect( SDLU_Point p, SDL_Rect* r )
-{
-	return (p.x >= r->x)        &&
-	       (p.x <  r->x + r->w) &&
-	       (p.y >= r->y)        &&
-	       (p.y <  r->y + r->h);
 }
 
 // Returns true if rects do not overlap

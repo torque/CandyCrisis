@@ -258,7 +258,7 @@ void Win( int player )
 void DrawTimerCount( int player )
 {
 	SDL_Rect playerRect;
-	SDLU_Point dPoint  = { .y = (kBlobVertSize * 3), .x = 15 };
+	SDL_Point dPoint  = { .y = (kBlobVertSize * 3), .x = 15 };
 
 	SDLU_AcquireSurface( playerSurface[player] );
 
@@ -292,7 +292,7 @@ void DrawTimerCount( int player )
 void DrawTimerBonus( int player )
 {
 	SDL_Rect playerRect;
-	SDLU_Point dPoint  = { .y = (kBlobVertSize * 6), .x = 15 };
+	SDL_Point dPoint  = { .y = (kBlobVertSize * 6), .x = 15 };
 	int timer, bonus;
 
 	SDLU_AcquireSurface( playerSurface[player] );

@@ -23,9 +23,9 @@ void SurfaceBlitWeightedDualAlpha( SDL_Surface*    back,     SDL_Surface*    sou
                                    const SDL_Rect* backRect, const SDL_Rect* srcRect, const SDL_Rect* maskRect, const SDL_Rect* alphaRect, const SDL_Rect* destRect,
                                    int inWeight );
 
-void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int alpha );
+void SurfaceBlitWeightedCharacter( SkittlesFontPtr font, unsigned char text, SDL_Point *dPoint, int r, int g, int b, int alpha );
 
-void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDLU_Point *dPoint, int r, int g, int b, int dropShadow );
+void SurfaceBlitCharacter( SkittlesFontPtr font, unsigned char text, SDL_Point *dPoint, int r, int g, int b, int dropShadow );
 
 void SurfaceBlitBlendOver( SDL_Surface*    source,     SDL_Surface*    dest,
                            const SDL_Rect* sourceRect, const SDL_Rect* destRect,
@@ -45,4 +45,4 @@ void InitBlitter( void );
 
 extern bool       update[2][kGridAcross][kGridDown];
 extern bool       refresh[2];
-extern SDLU_Point topLeft[2];
+extern SDL_Point topLeft[2];

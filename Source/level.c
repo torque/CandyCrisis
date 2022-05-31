@@ -69,14 +69,14 @@ static SDL_Rect titleRect[kTitleItems] = {
 const int kCursorWidth  = 32;
 const int kCursorHeight = 32;
 
-static void InsertCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
+static void InsertCursor( SDL_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
 {
 	SkittlesFontPtr cursorFont = GetFont( picFont );
 	// INVESTIGATE
 	// See if cursorFrontSDLRect is actually redundant.
 	SDL_Rect        cursorBackSDLRect =  { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
 	SDL_Rect        cursorFrontSDLRect = { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
-	SDLU_Point      mouseHereToo = mouseHere;
+	SDL_Point      mouseHereToo = mouseHere;
 
 	cursorFrontSDLRect.x = mouseHere.x;
 	cursorFrontSDLRect.y = mouseHere.y;
@@ -90,7 +90,7 @@ static void InsertCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surfac
 	SDLU_ReleaseSurface( surface );
 }
 
-static void RemoveCursor( SDLU_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
+static void RemoveCursor( SDL_Point mouseHere, SDL_Surface* scratch, SDL_Surface* surface )
 {
 	SDL_Rect      cursorBackSDLRect =  { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
 	SDL_Rect      cursorFrontSDLRect = { .x = 0, .y = 0, .w = kCursorWidth, .h = kCursorHeight };
@@ -123,8 +123,8 @@ void GameStartMenu( void )
 	SDL_Rect        drawRect[4], chunkRect;
 	int             blob, count, oldGlow, splat, chunkType, selected;
 	int             skip;
-	SDLU_Point      mouse;
-	SDLU_Point      dPoint;
+	SDL_Point      mouse;
+	SDL_Point      dPoint;
 	unsigned long   black;
 	int             currentID;
 	int             combo[2], comboBright[2], missBright[2];
@@ -384,7 +384,7 @@ redo:
 		selected = -1;
 		for( count=0; count<kTitleItems; count++ )
 		{
-			if( SDLU_PointInRect( mouse, &titleRect[count] ) )
+			if( SDL_PointInRect( &mouse, &titleRect[count] ) )
 			{
 				selected = count;
 				break;
@@ -975,7 +975,7 @@ void Victory( void )
 	SkittlesFontPtr textFont, titleFont, bubbleFont;
 	SDL_Surface*    backBuffer;
 	SDL_Surface*    frontBuffer;
-	SDLU_Point      dPoint[] ={
+	SDL_Point      dPoint[] ={
 		{ .y = 230, .x = 340 },
 		{ .y = 230, .x =  30 },
 		{ .y = 230, .x =  30 },
@@ -984,9 +984,9 @@ void Victory( void )
 		{ .y = 230, .x = 340 },
 		{ .y = 230, .x =  30 }
 	};
-	SDLU_Point      bubblePoint, textPoint, shadowPoint;
-	SDLU_Point      setPoint[7][6];
-	SDLU_Point      msgSetPoint[7][2];
+	SDL_Point      bubblePoint, textPoint, shadowPoint;
+	SDL_Point      setPoint[7][6];
+	SDL_Point      msgSetPoint[7][2];
 	long            ticks;
 	int             vertScroll, picture, weight, line, minimum;
 	int             scrollDir[] = {1, -1, 1, -1, 1, -1, -1};

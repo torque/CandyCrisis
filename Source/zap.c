@@ -27,7 +27,7 @@
 signed char death[2][kGridAcross][kGridDown];
 int zapIteration[2];
 int grenadeFrame[2] = {kBlastFrames + 1, kBlastFrames + 1}, zapScoreFrame[2];
-SDLU_Point zapScorePt[2];
+SDL_Point zapScorePt[2];
 SDL_Rect grenadeRect[2];
 SkittlesFontPtr zapFont, zapOutline;
 char zapScore[2][20] = { "", "" };
@@ -210,7 +210,7 @@ void KillBlobs( int player )
 	                                        kGrayBlink3, kGrayBlink3 };
 	SDL_Rect myRect;
 	bool busy = false;
-	SDLU_Point dPoint, oPoint;
+	SDL_Point dPoint, oPoint;
 	char *scan;
 
 	if( blobTime[player] > GameTickCount( ) )

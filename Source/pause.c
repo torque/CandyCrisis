@@ -72,7 +72,7 @@ enum
 	kTextAlmostWhite
 };
 
-static SDLU_Point DrawRainbowText( SkittlesFontPtr font, const char *line, SDLU_Point dPoint, float wave, int bright )
+static SDL_Point DrawRainbowText( SkittlesFontPtr font, const char *line, SDL_Point dPoint, float wave, int bright )
 {
 	int   length, current;
 	int   r,g,b;
@@ -464,7 +464,7 @@ static bool DrawDialogBox( bool larger, int animationType, int *target, int skip
 
 static void DrawDialogCursor( SDL_Rect *pauseRect, int *shade )
 {
-	SDLU_Point p, q;
+	SDL_Point p, q;
 
 	SDLU_GetMouse( &p );
 
@@ -541,13 +541,13 @@ static void DrawContinueContents( int *item, int shade )
 		"No",
 		""
 	};
-	SDLU_Point dPoint[4] = {
+	SDL_Point dPoint[4] = {
 		{ .y = 233, .x = 210},
 		{ .y = 280, .x = 220},
 		{ .y = 280, .x = 400},
 		{ .y = 335, .x = 400}
 	};
-	SDLU_Point hPoint = { .y = 255, .x = 320};
+	SDL_Point hPoint = { .y = 255, .x = 320};
 	static int lastCountdown = 0;
 	int index, countdown, fade;
 	int r, g, b;
@@ -597,7 +597,7 @@ static void DrawContinueContents( int *item, int shade )
 
 		for( shade = 4; shade > 0; shade-- )
 		{
-			SDLU_Point hP = hPoint;
+			SDL_Point hP = hPoint;
 
 			hP.x += 2 * shade;
 			hP.y += 2 * shade;
@@ -617,13 +617,13 @@ static void DrawContinueContents( int *item, int shade )
 
 static void DrawHiScoreContents( int *item, int shade )
 {
-	SDLU_Point dPoint[3] = {
+	SDL_Point dPoint[3] = {
 		{ .y = 240, .x = 640},
 		{ .y = 260, .x = 640},
 		{ .y = 335, .x = 400}
 	};
-	SDLU_Point hPoint = { .y = 294, .x = 145};
-	SDLU_Point dashedLinePoint = { .y = 320, .x = 140 };
+	SDL_Point hPoint = { .y = 294, .x = 145};
+	SDL_Point dashedLinePoint = { .y = 320, .x = 140 };
 	int    index;
 	int    nameLength;
 	char  *line[3], *scan;
@@ -673,7 +673,7 @@ static void DrawHiScoreContents( int *item, int shade )
 static void DrawControlsContents( int *item, int shade )
 {
 	bool    highlight;
-	SDLU_Point      dPoint;
+	SDL_Point      dPoint;
 	int         index;
 	const char* controlName;
 	int         r, g, b;
@@ -725,7 +725,7 @@ static void DrawControlsContents( int *item, int shade )
 
 static void DrawPauseContents( int *item, int shade )
 {
-	SDLU_Point dPoint;
+	SDL_Point dPoint;
 	int itemCount = 6;
 	int index;
 	const char *line[7] = { "{ Music [",           "{ End Game",
@@ -755,7 +755,7 @@ static bool ContinueSelected( int *item, unsigned char inKey, SDL_Scancode inSDL
 {
 	SDL_Rect yes = { .y = 280, .x = 220, .h = 20, .w = 40 };
 	SDL_Rect no  = { .y = 280, .x = 400, .h = 20, .w = 40 };
-	SDLU_Point p;
+	SDL_Point p;
 
 	if( continueTimeOut )
 	{
@@ -771,8 +771,8 @@ static bool ContinueSelected( int *item, unsigned char inKey, SDL_Scancode inSDL
 
 	SDLU_GetMouse( &p );
 
-	     if( SDLU_PointInRect( p, &yes ) ) *item = kContinue;
-	else if( SDLU_PointInRect( p, &no  ) ) *item = kEndGame;
+	     if( SDL_PointInRect( &p, &yes ) ) *item = kContinue;
+	else if( SDL_PointInRect( &p, &no  ) ) *item = kEndGame;
 	else *item = kNothing;
 
 	return( SDLU_Button( ) && (*item != kNothing) );
@@ -823,7 +823,7 @@ static bool HiScoreSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_
 
 static bool ControlsSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Scancode )
 {
-	SDLU_Point  p;
+	SDL_Point  p;
 	SDL_Rect    dRect;
 	int         index;
 	static bool lastDown = false;
@@ -837,7 +837,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDL_Scancode inSDL
 	down = SDLU_Button();
 	SDLU_GetMouse( &p );
 
-	if( SDLU_PointInRect( p, &okRect ) )
+	if( SDL_PointInRect( &p, &okRect ) )
 	{
 		*item = kControlsOK;
 		if( down )
@@ -847,7 +847,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDL_Scancode inSDL
 			controlToReplace = -1;
 		}
 	}
-	else if( SDLU_PointInRect( p, &resetRect ) )
+	else if( SDL_PointInRect( &p, &resetRect ) )
 	{
 		*item = kControlsReset;
 		if( down && !lastDown )
@@ -865,7 +865,7 @@ static bool ControlsSelected( int *item, unsigned char inKey, SDL_Scancode inSDL
 			dRect.h = 24;
 			dRect.w = 175;
 
-			if( SDLU_PointInRect( p, &dRect ) )
+			if( SDL_PointInRect( &p, &dRect ) )
 			{
 				*item = k1PLeft + index;
 				if( down && !lastDown && !AnyKeyIsPressed() )
@@ -906,7 +906,7 @@ static bool PauseSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Sc
 	static bool lastDown = false;
 	int trigger;
 	int index;
-	SDLU_Point p;
+	SDL_Point p;
 
 	SDLU_GetMouse( &p );
 
@@ -921,7 +921,7 @@ static bool PauseSelected( int *item, unsigned char inKey, SDL_Scancode inSDL_Sc
 		*item = kNothing;
 		for( index=0; index<arrsize(targetRect); index++ )
 		{
-			if( SDLU_PointInRect( p, &targetRect[index] ) )
+			if( SDL_PointInRect( &p, &targetRect[index] ) )
 			{
 				*item = index;
 			}
