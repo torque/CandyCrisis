@@ -4,14 +4,9 @@
 void LoadPrefs( void );
 void SavePrefs( void );
 
-void GeneratePrefsFile( void );
-long UniqueSystem( void );
-
-unsigned char *FindPrefsLine( unsigned char *prefsText, long prefsLength, long searchCode, long dataQuantity );
-
 typedef struct
 {
-	long itemName;
+	unsigned char itemName[4];
 	void *itemPointer;
 	short size;
 }

@@ -3,9 +3,12 @@
 // NOTE THAT NONE OF THIS CODE IS ENDIAN-SAVVY.
 // PREFERENCES FILES WILL NOT TRANSFER BETWEEN PLATFORMS.
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "prefs.h"
 
@@ -18,76 +21,85 @@
 #define kPrefsMaxSize 65536
 
 PrefList prefList[] = {
-	{ 'mod ', &musicOn,   sizeof( bool       ) },
-	{ 'sfx ', &soundOn,   sizeof( bool       ) },
-	{ 'keys', playerKeys, sizeof( playerKeys ) },
-	{ 'high', scores,     sizeof( scores     ) },
-	{ 'cmbx', &best,      sizeof( best       ) }
+	{ "mod ", &musicOn,   sizeof( bool       ) },
+	{ "sfx ", &soundOn,   sizeof( bool       ) },
+	{ "keys", playerKeys, sizeof( playerKeys ) },
+	{ "high", scores,     sizeof( scores     ) },
+	{ "cmbx", &best,      sizeof( best       ) }
 };
 
 #define kPrefListSize (sizeof(prefList)/sizeof(prefList[0]))
 
-/* Loads the preferences from a file in the System Folder:Preferences. */
+static unsigned char* FindPrefsLine( unsigned char *prefsText, long prefsLength, unsigned char *const searchCode, long dataQuantity );
 
 void LoadPrefs( void )
 {
-	FILE *F;
-	int fileSize, count, digitsLeft;
-	unsigned char info, *infoAt, *dataAt, *fileData;
-	char prefsPath[512];
-	sprintf( prefsPath, "%s/.CandyCrisisPrefs", getenv( "HOME" ) );
+	char *prefDir = SDL_GetPrefPath("", "CandyCrisis");
+	if (prefDir == NULL) return;
 
-	F = fopen( prefsPath, "r" );
+	int dirFd = open(prefDir, O_RDONLY);
+	if (dirFd < 0) goto cleanup_prefpath;
 
-	if( F != NULL )
-	{
-		fileData = (unsigned char*) calloc( 1, kPrefsMaxSize );
-		if( fileData != NULL )
-		{
-			fileSize = fread( fileData, 1, kPrefsMaxSize, F );
-			if( fileSize >= 0 )
-			{
-				for( count=0; count<kPrefListSize; count++ )
-				{
-					infoAt = FindPrefsLine( fileData, fileSize, prefList[count].itemName, prefList[count].size );
-					if( infoAt )
-					{
-						dataAt = (unsigned char*) prefList[count].itemPointer;
-						digitsLeft = prefList[count].size;
+	int prefFd = openat(dirFd, "prefs", O_RDONLY);
+	if (prefFd < 0) goto close_dir;
 
-						while( digitsLeft-- )
-						{
-							info  = ((*infoAt >= 'A')? (*infoAt - 'A' + 0xA): (*infoAt - '0')) << 4;
-							infoAt++;
-							info |= ((*infoAt >= 'A')? (*infoAt - 'A' + 0xA): (*infoAt - '0'));
-							infoAt++;
+	FILE *prefFile = fdopen(prefFd, "r");
+	if (prefFile == NULL) goto close_pref_fd;
 
-							*dataAt++ = info;
-						}
-					}
-				}
+	fseek(prefFile, 0, SEEK_END);
+	long size = ftell(prefFile);
+	fseek(prefFile, 0, SEEK_SET);
+
+	unsigned char *prefData = calloc(1, size);
+	if (prefData == NULL) goto close_pref;
+
+	int bytesRead = fread(prefData, 1, size, prefFile);
+	if (bytesRead != size) goto free_buf;
+
+	for ( int count = 0; count < kPrefListSize; count++ ) {
+		unsigned char *infoAt = FindPrefsLine(
+			prefData, size, prefList[count].itemName, prefList[count].size
+		);
+
+		if ( infoAt ) {
+			unsigned char *dataAt = prefList[count].itemPointer;
+			int digitsLeft = prefList[count].size;
+
+			while ( digitsLeft-- ) {
+				unsigned char info  = ((*infoAt >= 'A')? (*infoAt - 'A' + 0xA): (*infoAt - '0')) << 4;
+				infoAt++;
+				info |= ((*infoAt >= 'A')? (*infoAt - 'A' + 0xA): (*infoAt - '0'));
+				infoAt++;
+
+				*dataAt++ = info;
 			}
-
-			free( fileData );
 		}
-
-		fclose( F );
 	}
+
+free_buf:
+	free(prefData);
+close_pref:
+	// this also closes the fd, so skip that call
+	fclose(prefFile);
+	goto close_dir;
+close_pref_fd:
+	close(prefFd);
+close_dir:
+	close(dirFd);
+cleanup_prefpath:
+	SDL_free(prefDir);
+	return;
 }
 
 /* Finds a specific line in the prefs. */
 
-unsigned char* FindPrefsLine( unsigned char *prefsText, long prefsLength, long searchCode, long dataQuantity )
+static unsigned char* FindPrefsLine( unsigned char *prefsText, long prefsLength, unsigned char *const searchCode, long dataQuantity )
 {
 	unsigned char *prefsAt, *check, *endCheck;
 
 	for( prefsAt = prefsText; prefsAt < (prefsText+prefsLength-3); prefsAt++ )
 	{
-		if( (prefsAt[0] == ((searchCode >> 24) & 0xFF)) &&
-		    (prefsAt[1] == ((searchCode >> 16) & 0xFF)) &&
-		    (prefsAt[2] == ((searchCode >>  8) & 0xFF)) &&
-		    (prefsAt[3] == ((searchCode      ) & 0xFF))    )
-		{
+		if ( memcmp(prefsAt, searchCode, sizeof(((PrefList){0}).itemName)) == 0 ) {
 			prefsAt += 6;
 
 			// perform sizing check
@@ -124,33 +136,38 @@ unsigned char* FindPrefsLine( unsigned char *prefsText, long prefsLength, long s
 
 void SavePrefs( void )
 {
-	FILE *F;
-	short count, size;
-	unsigned char* dataAt;
-	char prefsPath[512];
-	sprintf( prefsPath, "%s/.CandyCrisisPrefs", getenv( "HOME" ) );
+	char *prefDir = SDL_GetPrefPath("", "CandyCrisis");
+	if (prefDir == NULL) return;
 
-	F = fopen( prefsPath, "w" );
+	int dirFd = open(prefDir, O_RDONLY);
+	if (dirFd < 0) goto cleanup_prefpath;
 
-	if( F != NULL )
-	{
-		for( count=0; count<kPrefListSize; count++ )
-		{
-			fprintf( F, "%c%c%c%c: ", (char)(prefList[count].itemName >> 24) & 0xFF,
-			                          (char)(prefList[count].itemName >> 16) & 0xFF,
-			                          (char)(prefList[count].itemName >>  8) & 0xFF,
-			                          (char)(prefList[count].itemName      ) & 0xFF  );
+	int prefFd = openat(dirFd, "prefs", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+	if (prefFd < 0) goto close_dir;
 
-			dataAt = (unsigned char*) prefList[count].itemPointer;
-			for( size=0; size<prefList[count].size; size++ )
-			{
-				fprintf( F, "%02X", *dataAt );
-				dataAt++;
-			}
+	FILE *prefFile = fdopen(prefFd, "w");
+	if (prefFile == NULL) goto close_pref_fd;
 
-			fputc( '\n', F );
+	for ( int count = 0; count < kPrefListSize; count++ ) {
+		fprintf( prefFile, "%.4s: ", prefList[count].itemName);
+
+		unsigned char *dataAt = prefList[count].itemPointer;
+		for ( int size = 0; size < prefList[count].size; size++ ) {
+			fprintf( prefFile, "%02X", *dataAt );
+			dataAt++;
 		}
+
+		fputc( '\n', prefFile );
 	}
 
-	fclose( F );
+	// this also closes the fd, so skip that call
+	fclose(prefFile);
+	goto close_dir;
+close_pref_fd:
+	close(prefFd);
+close_dir:
+	close(dirFd);
+cleanup_prefpath:
+	SDL_free(prefDir);
+	return;
 }
