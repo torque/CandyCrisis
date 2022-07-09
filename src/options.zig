@@ -1,4 +1,5 @@
 const std = @import("std");
+const StructField = std.builtin.Type.StructField;
 
 const Brand = enum {
     Option,
@@ -63,15 +64,18 @@ pub fn ValuedOption(comptime resultType: type) type {
         short: ?[]const u8 = null,
         long: ?[]const u8 = null,
         help: ?[]const u8 = null,
+
         envVar: ?[]const u8 = null,
         hideResult: bool = false,
         eager: bool = false,
+
+        args: ArgCount = .{ .Some = 1 },
 
         pub fn ResultType(_: @This()) type {
             return resultType;
         }
 
-        pub fn optional(self: @This()) bool {
+        pub fn required(self: @This()) bool {
             return self.default == .none;
         }
     };
@@ -112,6 +116,10 @@ pub const FlagOption = struct {
     pub fn ResultType(_: @This()) type {
         return bool;
     }
+
+    pub fn required(self: @This()) bool {
+        return self.default == .none;
+    }
 };
 
 const HelpFlag = FlagOption{
@@ -137,6 +145,10 @@ pub fn Argument(comptime resultType: type) type {
         pub fn ResultType(_: @This()) type {
             return resultType;
         }
+
+        pub fn required(self: @This()) bool {
+            return self.default == .none;
+        }
     };
 }
 
@@ -149,11 +161,14 @@ pub fn Command(comptime spec: anytype) type {
     comptime for (spec) |param| {
         switch (@TypeOf(param).brand) {
             .Argument => argCount += 1,
-            .Option, .Flag => if (param.default == .none) {
+            .Option, .Flag => if (param.required()) {
                 requiredOptions += 1;
             },
         }
     };
+
+    const ResultType = CommandResult(spec);
+    const RequiredType = RequiredTracker(spec);
 
     return struct {
         name: []const u8,
@@ -163,15 +178,63 @@ pub fn Command(comptime spec: anytype) type {
             return self.help orelse "";
         }
 
-        pub fn parse(_: @This(), comptime argit_type: type, argit: *argit_type) !CommandResult(spec) {
-            // @compileLog("parse");
-            _ = argit.next();
+        fn scryTruthiness(alloc: std.mem.Allocator, input: []const u8) !bool {
+            // empty string is falsy.
+            if (input.len == 0) return false;
 
-            // we can't actually make use of the default values because there's
-            // no way to only partially initialize the struct without a big
-            // goofy hack (maybe I will do that later)
-            var result: CommandResult(spec) = undefined;
+            if (input.len <= 5) {
+                const comp = try std.ascii.allocLowerString(alloc, input);
+                inline for ([_][]const u8{ "false", "no", "0" }) |candidate| {
+                    if (std.mem.eql(u8, comp, candidate)) {
+                        return false;
+                    }
+                }
+            }
+            // TODO: actually try float conversion on input string? This seems
+            // really silly to me, in the context of the shell, but for example
+            // MY_VAR=0 evaluates to false but MY_VAR=0.0 evaluates to true. And
+            // if we accept multiple representations of zero, a whole can of
+            // worms gets opened. Should 0x0 be falsy? 0o0? That's a lot of
+            // goofy edge cases.
 
+            // any nonempty value is considered to be truthy.
+            return true;
+        }
+
+        fn extractEnvVars(alloc: std.mem.Allocator, result: *ResultType, required: *RequiredType) !void {
+            const env: std.process.EnvMap = try std.process.getEnvMap(alloc);
+            inline for (spec) |param| {
+                switch (@TypeOf(param).brand) {
+                    .Option => {
+                        if (param.envVar) |want| {
+                            if (env.get(want)) |value| {
+                                comptime if (param.required()) {
+                                    @field(required, param.name) = true;
+                                };
+
+                                var handler = param.handler;
+                                @field(result, param.name) = try handler(value);
+                            }
+                        }
+                    },
+                    .Flag => {
+                        if (param.envVar) |want| {
+                            if (env.get(want)) |value| {
+                                comptime if (param.required()) {
+                                    @field(required, param.name) = true;
+                                };
+
+                                @field(result, param.name) = try scryTruthiness(alloc, value);
+                            }
+                        }
+                    },
+                    .Argument => continue,
+                }
+            }
+        }
+
+        inline fn createCommandresult() ResultType {
+            var result: ResultType = undefined;
             inline for (spec) |param| {
                 if (param.hideResult == false) {
                     @field(result, param.name) = switch (param.default) {
@@ -180,12 +243,28 @@ pub fn Command(comptime spec: anytype) type {
                     };
                 }
             }
+            return result;
+        }
+
+        pub fn parse(_: @This(), alloc: std.mem.Allocator, comptime argit_type: type, argit: *argit_type) !ResultType {
+            // @compileLog("parse");
+            _ = alloc;
+            _ = argit.next();
+
+            // we can't actually make use of the default values because there's
+            // no way to only partially initialize the struct without a big
+            // goofy hack (maybe I will do that later)
+            var result: ResultType = createCommandresult();
+            var required: RequiredType = .{};
+
+            try extractEnvVars(alloc, &result, &required);
 
             var seenArgs: u32 = 0;
-            var seenReqdOpts: u32 = 0;
             argloop: while (argit.next()) |arg| {
                 // is arg.len > 0 a redundant check? I guess not
                 if (arg.len > 1 and arg[0] == '-') {
+                    // TODO: this is wrong. after -- all items must be parsed as
+                    // arguments, not options.
                     if (arg.len == 2 and arg[1] == '-') continue :argloop;
 
                     if (arg[1] == '-') {
@@ -197,9 +276,11 @@ pub fn Command(comptime spec: anytype) type {
                                     var handler = param.handler;
                                     if (param.long) |flag| {
                                         if (std.mem.eql(u8, flag, arg)) {
-                                            if (param.default == .none) seenReqdOpts += 1;
+                                            comptime if (param.required()) {
+                                                @field(required, param.name) = true;
+                                            };
 
-                                            const val = argit.next() orelse break :argloop;
+                                            const val = argit.next() orelse return OptionError.MissingArgument;
                                             if (param.hideResult == false) {
                                                 @field(result, param.name) = try handler(val);
                                             }
@@ -208,24 +289,18 @@ pub fn Command(comptime spec: anytype) type {
                                     }
                                 },
                                 .Flag => {
-                                    if (param.long.truthy) |truthy| {
-                                        if (std.mem.eql(u8, truthy, arg)) {
-                                            if (param.default == .none) seenReqdOpts += 1;
+                                    inline for (.{ .{ param.long.truthy, true }, .{ param.long.falsy, false } }) |variant| {
+                                        if (variant[0]) |flag| {
+                                            if (std.mem.eql(u8, flag, arg)) {
+                                                comptime if (param.required()) {
+                                                    @field(required, param.name) = true;
+                                                };
 
-                                            if (param.hideResult == false) {
-                                                @field(result, param.name) = true;
+                                                if (param.hideResult == false) {
+                                                    @field(result, param.name) = variant[1];
+                                                }
+                                                continue :argloop;
                                             }
-                                            continue :argloop;
-                                        }
-                                    }
-                                    if (param.long.falsy) |falsy| {
-                                        if (std.mem.eql(u8, falsy, arg)) {
-                                            if (param.default == .none) seenReqdOpts += 1;
-
-                                            if (param.hideResult == false) {
-                                                @field(result, param.name) = false;
-                                            }
-                                            continue :argloop;
                                         }
                                     }
                                 },
@@ -245,7 +320,9 @@ pub fn Command(comptime spec: anytype) type {
                                         var handler = param.handler;
                                         if (param.short) |flag| {
                                             if (flag[1] == shorty) {
-                                                if (param.default == .none) seenReqdOpts += 1;
+                                                comptime if (param.required()) {
+                                                    @field(required, param.name) = true;
+                                                };
 
                                                 const val = if (arg.len > (idx + 2)) arg[(idx + 2)..] else argit.next() orelse return OptionError.MissingArgument;
                                                 if (param.hideResult == false) {
@@ -256,24 +333,18 @@ pub fn Command(comptime spec: anytype) type {
                                         }
                                     },
                                     .Flag => {
-                                        if (param.short.truthy) |truthy| {
-                                            if (truthy[1] == shorty) {
-                                                if (param.default == .none) seenReqdOpts += 1;
+                                        inline for (.{ .{ param.short.truthy, true }, .{ param.short.falsy, false } }) |variant| {
+                                            if (variant[0]) |flag| {
+                                                if (flag[1] == shorty) {
+                                                    comptime if (param.required()) {
+                                                        @field(required, param.name) = true;
+                                                    };
 
-                                                if (param.hideResult == false) {
-                                                    @field(result, param.name) = true;
+                                                    if (param.hideResult == false) {
+                                                        @field(result, param.name) = variant[1];
+                                                    }
+                                                    continue :shortloop;
                                                 }
-                                                continue :shortloop;
-                                            }
-                                        }
-                                        if (param.short.falsy) |falsy| {
-                                            if (falsy[1] == shorty) {
-                                                if (param.default == .none) seenReqdOpts += 1;
-
-                                                if (param.hideResult == false) {
-                                                    @field(result, param.name) = false;
-                                                }
-                                                continue :shortloop;
                                             }
                                         }
                                     },
@@ -310,8 +381,12 @@ pub fn Command(comptime spec: anytype) type {
                 return OptionError.MissingArgument;
             } else if (seenArgs > argCount) {
                 return OptionError.ExtraArguments;
-            } else if (seenReqdOpts != requiredOptions) {
-                return OptionError.MissingOption;
+            }
+
+            inline for (@typeInfo(@TypeOf(required)).Struct.fields) |field| {
+                if (@field(required, field.name) == false) {
+                    return OptionError.MissingOption;
+                }
             }
 
             return result;
@@ -320,12 +395,9 @@ pub fn Command(comptime spec: anytype) type {
 }
 
 pub fn CommandResult(comptime spec: anytype) type {
-    const StructField = std.builtin.Type.StructField;
-
     comptime {
         // not sure how to do this without iterating twice, so let's iterate
         // twice
-
         var outsize = 0;
         for (spec) |param| {
             if (param.hideResult == false) outsize += 1;
@@ -362,26 +434,66 @@ pub fn CommandResult(comptime spec: anytype) type {
     }
 }
 
+fn RequiredTracker(comptime spec: anytype) type {
+    comptime {
+        // not sure how to do this without iterating twice, so let's iterate
+        // twice
+        var outsize = 0;
+        for (spec) |param| {
+            switch (@TypeOf(param).brand) {
+                .Argument => continue,
+                else => {
+                    if (param.required()) outsize += 1;
+                },
+            }
+        }
+
+        var fields: [outsize]StructField = undefined;
+
+        var idx = 0;
+        for (spec) |param| {
+            if ((@TypeOf(param).brand) != .Argument and param.required()) {
+                fields[idx] = .{
+                    .name = param.name,
+                    .field_type = bool,
+                    .default_value = &false,
+                    .is_comptime = false,
+                    .alignment = @alignOf(bool),
+                };
+
+                idx += 1;
+            }
+        }
+
+        return @Type(.{ .Struct = .{
+            .layout = .Auto,
+            .fields = &fields,
+            .decls = &.{},
+            .is_tuple = false,
+        } });
+    }
+}
+
 pub fn main() !void {
     const command = Command(
         .{
             HelpFlag,
-            // FlagOption(){
-            //     .name = "flag",
-            //     .default = .{ .value = false },
-            //     .short = .{ .truthy = "-f" },
-            //     .long = .{ .truthy = "--flag", .falsy = "--no-flag" },
-            // },
-            // StringOption{ .name = "input", .short = "-i", .long = "--input", .default = .{ .value = "waoh" } },
-            // StringOption{ .name = "output", .long = "--output" },
-            // ValuedOption(?i32){
-            //     .name = "number",
-            //     .short = "-n",
-            //     .long = "--number",
-            //     .default = .{ .value = null },
-            //     .handler = i32Handler,
-            // },
-            // StringArg{ .name = "theman" },
+            FlagOption{
+                .name = "flag",
+                .default = .{ .value = false },
+                .short = .{ .truthy = "-f" },
+                .long = .{ .truthy = "--flag", .falsy = "--no-flag" },
+            },
+            StringOption{ .name = "input", .short = "-i", .long = "--input", .envVar = "OPTS_INPUT" },
+            StringOption{ .name = "output", .long = "--output", .default = .{ .value = "waoh" } },
+            ValuedOption(?i32){
+                .name = "number",
+                .short = "-n",
+                .long = "--number",
+                .default = .none,
+                .handler = i32Handler,
+            },
+            StringArg{ .name = "theman" },
         },
     ){ .name = "main", .help = 
     \\ Test command line functionality
@@ -395,6 +507,6 @@ pub fn main() !void {
     const allocator = arena.allocator();
     var argit = try std.process.argsWithAllocator(allocator);
 
-    const result = try command.parse(std.process.ArgIterator, &argit);
+    const result = try command.parse(allocator, std.process.ArgIterator, &argit);
     std.debug.print("res: {any}\n", .{result});
 }
